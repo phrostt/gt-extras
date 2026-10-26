@@ -74,6 +74,7 @@ public class WillContainer extends AmountContainer {
     @Override
     public void loadCustomPersistedData(net.minecraft.nbt.CompoundTag tag) {
         super.loadCustomPersistedData(tag);
+        if (typeIndex != 0) stored = 0;
         outputActive = tag.contains(nbtKey + "_out") ? tag.getBoolean(nbtKey + "_out") : typeIndex == 0;
     }
 
@@ -121,15 +122,24 @@ public class WillContainer extends AmountContainer {
             setStored(stored - moved);
             budget -= moved;
         }
+        boolean log = stored >= GEM_WORTH && machine.getOffsetTimer() % 200 == 0;
         for (Direction dir : Direction.values()) {
             if (stored <= 0) break;
             BlockEntity be = level.getBlockEntity(pos.relative(dir));
             if (be == null || be instanceof IMachineBlockEntity) continue;
             IItemHandler items = be.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).resolve()
                     .orElse(null);
+            if (log) {
+                com.gtextras.GTExtras.LOGGER.info("[gtextras] will out {} at {}: stored {} side {} inventory {} slots {}",
+                        nbtKey, pos, stored, dir, be.getClass().getSimpleName(), items == null ? -1 : items.getSlots());
+            }
             if (items == null) continue;
             budget = fillGems(items, budget);
             spitGems(items);
+        }
+        if (log) {
+            com.gtextras.GTExtras.LOGGER.info("[gtextras] will out {} at {}: after pass stored {} active {}",
+                    nbtKey, pos, stored, outputActive);
         }
     }
 

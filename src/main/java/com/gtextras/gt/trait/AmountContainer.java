@@ -170,6 +170,12 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         return out;
     }
 
+    protected final java.util.List<AmountContainer> groupPeers() {
+        var controller = formedController();
+        if (controller == null) return java.util.List.of();
+        return groupMembers(controller);
+    }
+
     private static final String POOL_TAG = "gtextras_pool";
 
     protected final void sync() {

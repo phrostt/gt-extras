@@ -9,7 +9,8 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class RotationMotorBlock extends RotatedPillarKineticBlock implements IBE<RotationMotorBlockEntity> {
+public class RotationMotorBlock extends RotatedPillarKineticBlock implements IBE<RotationMotorBlockEntity>,
+        com.lowdragmc.lowdraglib.client.model.custommodel.ICTMPredicate {
 
     public RotationMotorBlock(Properties properties) {
         super(properties);
@@ -33,5 +34,24 @@ public class RotationMotorBlock extends RotatedPillarKineticBlock implements IBE
     @Override
     public BlockEntityType<? extends RotationMotorBlockEntity> getBlockEntityType() {
         return CouplerRegistry.MOTOR_TYPE.get();
+    }
+
+    @Override
+    public boolean isConnected(net.minecraft.world.level.BlockAndTintGetter level, BlockState state, BlockPos pos,
+                               BlockState other, BlockPos otherPos, Direction side) {
+        if (other.getBlock() == this) return true;
+        net.minecraft.resources.ResourceLocation key =
+                net.minecraftforge.registries.ForgeRegistries.BLOCKS.getKey(other.getBlock());
+        if (key == null) return false;
+        String ns = key.getNamespace();
+        if (!ns.equals("gtceu") && !ns.equals(com.gtextras.GTExtras.MOD_ID)) return false;
+        com.gregtechceu.gtceu.api.machine.MetaMachine machine =
+                com.gregtechceu.gtceu.api.machine.MetaMachine.getMachine(level, otherPos);
+        if (machine instanceof com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController
+                || machine instanceof com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart) {
+            return true;
+        }
+        String path = key.getPath();
+        return path.endsWith("_casing") || path.contains("casing");
     }
 }

@@ -56,9 +56,17 @@ public class SourceContainer extends AmountContainer {
 
         if (handlerIO == IO.IN) {
             if (getSpace() <= 0) return;
+            java.util.Set<net.minecraft.core.BlockPos> outputTargets = new java.util.HashSet<>();
+            for (AmountContainer peer : groupPeers()) {
+                if (peer == this || peer.io() != IO.OUT) continue;
+                for (ISpecialSourceProvider other : SourceUtil.canGiveSource(peer.getMachine().getPos(), level, RANGE)) {
+                    outputTargets.add(other.getCurrentPos().immutable());
+                }
+            }
             List<ISpecialSourceProvider> providers = SourceUtil.canTakeSource(machine.getPos(), level, RANGE);
             for (ISpecialSourceProvider provider : providers) {
                 if (budget <= 0 || getSpace() <= 0) break;
+                if (outputTargets.contains(provider.getCurrentPos().immutable())) continue;
                 ISourceTile tile = provider.getSource();
                 if (tile == null) continue;
                 int want = Math.min(Math.min(tile.getSource(), getSpace()), budget);
