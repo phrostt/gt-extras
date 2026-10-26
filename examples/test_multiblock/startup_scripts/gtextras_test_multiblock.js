@@ -4,7 +4,7 @@ GTCEuStartupEvents.registry('gtceu:recipe_type', event => {
     event.create('extras_test')
         .category('multiblock')
         .setEUIO('in')
-        .setMaxIOSize(2, 2, 0, 0)
+        .setMaxIOSize(3, 3, 2, 2)
         .setSound(GTSoundEntries.COMPUTATION);
 });
 
@@ -20,8 +20,10 @@ GTCEuStartupEvents.registry('gtceu:machine', event => {
             .aisle('CCSCC', 'CCCCC', 'CCCCC')
             .where('S', Predicates.controller(Predicates.blocks(definition.get())))
             .where('C', Predicates.blocks(GTBlocks.CASING_STEEL_SOLID.get()).setMinGlobalLimited(18)
-                .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setMaxGlobalLimited(1))
-                .or(Predicates.abilities(PartAbility.EXPORT_ITEMS).setMaxGlobalLimited(1))
+                .or(Predicates.abilities(PartAbility.IMPORT_ITEMS).setMaxGlobalLimited(2))
+                .or(Predicates.abilities(PartAbility.EXPORT_ITEMS).setMaxGlobalLimited(2))
+                .or(Predicates.abilities(PartAbility.IMPORT_FLUIDS).setMaxGlobalLimited(2))
+                .or(Predicates.abilities(PartAbility.EXPORT_FLUIDS).setMaxGlobalLimited(2))
                 .or(Predicates.abilities(PartAbility.INPUT_ENERGY).setMinGlobalLimited(1).setMaxGlobalLimited(2))
                 .or(Predicates.abilities(GTX.MANA_INPUT).setMaxGlobalLimited(1))
                 .or(Predicates.abilities(GTX.MANA_OUTPUT).setMaxGlobalLimited(1))
@@ -32,9 +34,8 @@ GTCEuStartupEvents.registry('gtceu:machine', event => {
                 .or(Predicates.abilities(GTX.WILL_INPUT).setMaxGlobalLimited(1))
                 .or(Predicates.abilities(GTX.WILL_OUTPUT).setMaxGlobalLimited(1))
                 .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setMaxGlobalLimited(1))
-                .or(Predicates.abilities(GTX.ROTATION_READER).setMaxGlobalLimited(1))
-                .or(Predicates.blocks('gtextras:rotation_coupler').setMaxGlobalLimited(1))
-                .or(Predicates.blocks('gtextras:rotation_motor').setMaxGlobalLimited(1)))
+                .or(Predicates.blocks('gtextras:rotation_interface').setMaxGlobalLimited(1))
+                .or(Predicates.blocks('create:gearbox', 'create:vertical_gearbox').setMaxGlobalLimited(2)))
             .where('#', Predicates.air())
             .build())
         .workableCasingModel('gtceu:block/casings/solid/machine_casing_solid_steel',

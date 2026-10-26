@@ -59,8 +59,11 @@ public final class ManaCaps {
             player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gtextras.hatch.mana_bind_far"), true);
             return;
         }
-        hatch.container().bindPool(clicked);
-        player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gtextras.hatch.mana_bind_ok"), true);
+        int result = hatch.container().links().toggle(clicked);
+        hatch.container().markLinksDirty();
+        player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
+                result > 0 ? "gtextras.hatch.mana_bind_ok" : result == 0 ? "gtextras.hatch.mana_bind_removed"
+                        : "gtextras.hatch.mana_bind_full", hatch.container().links().size()), true);
     }
 
     private static void attach(AttachCapabilitiesEvent<BlockEntity> event) {
@@ -72,6 +75,7 @@ public final class ManaCaps {
     private static final class Provider implements ICapabilityProvider {
 
         private final MetaMachineBlockEntity be;
+        private LazyOptional<vazkii.botania.api.mana.ManaReceiver> busCached;
 
         private Provider(MetaMachineBlockEntity be) {
             this.be = be;
@@ -81,12 +85,12 @@ public final class ManaCaps {
         public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
             if (cap == BotaniaForgeCapabilities.WANDABLE) {
                 MetaMachine machine = be.getMetaMachine();
-                if (machine instanceof ManaHatchMachine hatch && hatch.container().io()
-                        == com.gregtechceu.gtceu.api.capability.recipe.IO.OUT) {
+                if (machine instanceof ManaHatchMachine hatch) {
                     vazkii.botania.api.block.Wandable wandable = (player, stack, face) -> {
                         if (player == null || player.level().isClientSide) return true;
                         if (player.isShiftKeyDown()) {
-                            hatch.container().bindPool(null);
+                            hatch.container().links().clear();
+                            hatch.container().markLinksDirty();
                             player.displayClientMessage(net.minecraft.network.chat.Component
                                     .translatable("gtextras.hatch.mana_bind_clear"), true);
                             return true;
@@ -103,6 +107,13 @@ public final class ManaCaps {
             if (cap == BotaniaForgeCapabilities.MANA_RECEIVER) {
                 MetaMachine machine = be.getMetaMachine();
                 if (machine instanceof ManaHatchMachine hatch) {
+                    if (net.minecraftforge.fml.ModList.get().isLoaded("appbot")) {
+                        if (busCached == null || !busCached.isPresent()) {
+                            vazkii.botania.api.mana.ManaReceiver wrapped = AppbotLink.wrap(hatch.container());
+                            busCached = LazyOptional.of(() -> wrapped);
+                        }
+                        return busCached.cast();
+                    }
                     return LazyOptional.of(hatch::container).cast();
                 }
             }

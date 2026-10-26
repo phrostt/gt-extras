@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gtextras.gt.ExtrasAbilities;
 import com.gtextras.gt.ExtrasCapabilities;
 import com.gtextras.gt.rotation.MinRpmCondition;
+import com.gtextras.gt.rotation.OutputRpmCondition;
 
 public final class GTX {
 
@@ -29,11 +30,14 @@ public final class GTX {
     public static final PartAbility SOURCE_OUTPUT = ExtrasAbilities.SOURCE_OUTPUT;
     public static final PartAbility BLOOD_INPUT = ExtrasAbilities.BLOOD_INPUT;
     public static final PartAbility BLOOD_OUTPUT = ExtrasAbilities.BLOOD_OUTPUT;
-    public static final PartAbility ROTATION_READER = ExtrasAbilities.ROTATION_READER;
 
     private GTX() {}
 
     public static RecipeCondition<?> minRpm(int rpm) {
         return new MinRpmCondition(rpm);
+    }
+
+    public static RecipeCondition<?> outputRpm(int rpm) {
+        return new OutputRpmCondition(rpm);
     }
 }

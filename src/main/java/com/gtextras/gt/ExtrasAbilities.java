@@ -12,7 +12,6 @@ public final class ExtrasAbilities {
     public static final PartAbility BLOOD_OUTPUT = new PartAbility("gtextras_blood_output");
     public static final PartAbility WILL_INPUT = new PartAbility("gtextras_will_input");
     public static final PartAbility WILL_OUTPUT = new PartAbility("gtextras_will_output");
-    public static final PartAbility ROTATION_READER = new PartAbility("gtextras_rotation_reader");
 
     private ExtrasAbilities() {}
 }

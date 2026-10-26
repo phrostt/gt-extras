@@ -94,7 +94,7 @@ public class WillContainer extends AmountContainer {
         BlockPos pos = machine.getPos();
         int budget = transferPerOperation;
         if (handlerIO == IO.IN && typeIndex != 0) return;
-        if (typeIndex == 0) {
+        if (typeIndex == 0 && handlerIO == IO.IN) {
             int space = Math.min(getSpace(), budget);
             for (int i = 0; i < ExtrasCapabilities.WILL_NAMES.length && space > 0; i++) {
                 int moved = ExtrasFluids.pull(level, pos, ExtrasFluids.will(i), space);
@@ -122,40 +122,55 @@ public class WillContainer extends AmountContainer {
             setStored(stored - moved);
             budget -= moved;
         }
-        boolean log = stored >= GEM_WORTH && machine.getOffsetTimer() % 200 == 0;
         for (Direction dir : Direction.values()) {
             if (stored <= 0) break;
             BlockEntity be = level.getBlockEntity(pos.relative(dir));
             if (be == null || be instanceof IMachineBlockEntity) continue;
             IItemHandler items = be.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).resolve()
                     .orElse(null);
-            if (log) {
-                com.gtextras.GTExtras.LOGGER.info("[gtextras] will out {} at {}: stored {} side {} inventory {} slots {}",
-                        nbtKey, pos, stored, dir, be.getClass().getSimpleName(), items == null ? -1 : items.getSlots());
-            }
             if (items == null) continue;
             budget = fillGems(items, budget);
             spitGems(items);
         }
-        if (log) {
-            com.gtextras.GTExtras.LOGGER.info("[gtextras] will out {} at {}: after pass stored {} active {}",
-                    nbtKey, pos, stored, outputActive);
-        }
     }
 
-    private static final int GEM_WORTH = 144;
+    public static final int GEM_WORTH = 144;
+
+    public ItemStack gem() {
+        return gemStack();
+    }
+
+    public int itemWorth(ItemStack stack) {
+        if (stack.getItem() instanceof IDemonWillGem) return 0;
+        return discreteWorth(stack);
+    }
+
+    private ItemStack gemStack() {
+        String name = typeIndex == 0 ? "default" : ExtrasCapabilities.WILL_NAMES[typeIndex];
+        net.minecraft.world.item.Item gem = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(
+                new net.minecraft.resources.ResourceLocation("bloodmagic", name + "crystal"));
+        if (gem == null || gem == net.minecraft.world.item.Items.AIR) return ItemStack.EMPTY;
+        return new ItemStack(gem);
+    }
 
     private void spitGems(IItemHandler items) {
         for (int slot = 0; slot < items.getSlots(); slot++) {
-            if (items.getStackInSlot(slot).getItem() instanceof IDemonWillGem) return;
+            ItemStack held = items.getStackInSlot(slot);
+            if (!(held.getItem() instanceof IDemonWillGem tartaric)) continue;
+            boolean otherType = false;
+            for (EnumDemonWillType kind : TYPES) {
+                if (kind != type && tartaric.getWill(kind, held) > 0) {
+                    otherType = true;
+                    break;
+                }
+            }
+            if (!otherType && tartaric.fillWill(type, held, 1, false) >= 1) return;
         }
-        net.minecraft.world.item.Item gem = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(
-                new net.minecraft.resources.ResourceLocation("gtceu",
-                        (typeIndex == 0 ? "demon" : ExtrasCapabilities.WILL_NAMES[typeIndex]) + "_gem"));
-        if (gem == null || gem == net.minecraft.world.item.Items.AIR) return;
+        ItemStack gem = gemStack();
+        if (gem.isEmpty()) return;
         int spat = 0;
-        while (stored >= GEM_WORTH && spat < 8) {
-            ItemStack left = net.minecraftforge.items.ItemHandlerHelper.insertItem(items, new ItemStack(gem), false);
+        while (stored >= GEM_WORTH && spat < 1) {
+            ItemStack left = net.minecraftforge.items.ItemHandlerHelper.insertItem(items, gem.copyWithCount(1), false);
             if (!left.isEmpty()) break;
             setStored(stored - GEM_WORTH);
             spat++;
@@ -179,10 +194,7 @@ public class WillContainer extends AmountContainer {
             int need = (int) (wanted - stored);
             int got = pullFromItems(need, simulate);
             if (!simulate && got > 0) {
-                int before = stored;
                 setStored(stored + got);
-                com.gtextras.GTExtras.LOGGER.info("[gtextras] will {}: pulled {} from inventories at {} for recipe {}, buffer {} -> {}",
-                        nbtKey, got, machine.getPos(), recipe.id, before, stored);
             } else if (simulate && got > 0) {
                 java.util.List<Integer> rest = new java.util.ArrayList<>(1);
                 long remaining = Math.max(0L, wanted - stored - got);
@@ -255,7 +267,7 @@ public class WillContainer extends AmountContainer {
         int extra = matchExtra(stack);
         if (extra > 0) return extra;
         if (stack.getItem() instanceof IDiscreteDemonWill crystal) {
-            return (int) Math.floor(crystal.getDiscretization(stack));
+            return GEM_WORTH;
         }
         return materialWorth(stack);
     }
@@ -295,6 +307,14 @@ public class WillContainer extends AmountContainer {
         for (int slot = 0; slot < items.getSlots() && budget > 0 && stored > 0; slot++) {
             ItemStack stack = items.getStackInSlot(slot);
             if (stack.isEmpty() || !(stack.getItem() instanceof IDemonWillGem gem)) continue;
+            boolean otherType = false;
+            for (EnumDemonWillType kind : TYPES) {
+                if (kind != type && gem.getWill(kind, stack) > 0) {
+                    otherType = true;
+                    break;
+                }
+            }
+            if (otherType) continue;
             int give = Math.min(stored, budget);
             double filled = gem.fillWill(type, stack, give, true);
             int used = (int) Math.floor(filled);

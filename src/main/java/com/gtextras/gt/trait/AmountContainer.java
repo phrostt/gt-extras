@@ -27,6 +27,36 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
     private boolean grouped;
     protected int fluidIndex;
     private TickableSubscription tickSubscription;
+    private boolean passive = true;
+    private long demandUntil;
+
+    public boolean passive() {
+        return passive;
+    }
+
+    public void setPassive(boolean value) {
+        if (machine.isRemote()) return;
+        for (var trait : machine.getTraits()) {
+            if (trait instanceof AmountContainer other) other.passive = value;
+        }
+        machine.markDirty();
+    }
+
+    public int costPerOperation() {
+        return costResource == null ? 0 : HatchConfig.cost(costResource, costTier);
+    }
+
+    public int operationInterval() {
+        return operationInterval;
+    }
+
+    private boolean demanded() {
+        net.minecraft.world.level.Level level = machine.getLevel();
+        if (level != null && level.getGameTime() < demandUntil) return true;
+        var controller = formedController();
+        return controller instanceof com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine logic
+                && (logic.getRecipeLogic().isWorking() || logic.getRecipeLogic().isWaiting());
+    }
 
     protected AmountContainer(MetaMachine machine, IO handlerIO, RecipeCapability<Integer> capability, int capacity,
                               int transferPerOperation, int operationInterval, String nbtKey) {
@@ -77,6 +107,37 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
                 entry.fluid().getFluidType().getDescription(), String.format("%s", entry.ratio()));
     }
 
+    public int maxPerTick() {
+        return Math.max(1, transferPerOperation / Math.max(1, operationInterval));
+    }
+
+    public void emptyBuffer() {
+        if (machine.isRemote()) return;
+        stored = 0;
+        sync();
+        notifyListeners();
+        machine.markDirty();
+    }
+
+    public int fluidIndex() {
+        return fluidIndex;
+    }
+
+    public void selectFluid(int index) {
+        int size = fluidList().size();
+        if (size == 0) return;
+        fluidIndex = Math.max(0, Math.min(size - 1, index));
+        machine.markDirty();
+    }
+
+    public List<ExtrasFluids.Entry> fluidChoices() {
+        return fluidList();
+    }
+
+    public MetaMachine owner() {
+        return machine;
+    }
+
     public IO io() {
         return handlerIO;
     }
@@ -91,6 +152,10 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
 
     public int getSpace() {
         return capacity - stored;
+    }
+
+    public void markLinksDirty() {
+        machine.markDirty();
     }
 
     public void setStored(int value) {
@@ -259,6 +324,7 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
             return;
         }
         sync();
+        if (!passive && !demanded()) return;
         long cost = costResource == null ? 0 : HatchConfig.cost(costResource, costTier);
         if (cost <= 0) {
             transferWithNeighbours();
@@ -291,6 +357,7 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
 
         long remaining = wanted - moved;
         if (remaining <= 0) return null;
+        if (machine.getLevel() != null) demandUntil = machine.getLevel().getGameTime() + 40;
         reportShortfall(recipe, io, wanted, io == IO.IN ? stored : capacity - stored);
         List<Integer> result = new ArrayList<>(1);
         result.add((int) Math.min(remaining, Integer.MAX_VALUE));
@@ -339,6 +406,7 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         if (grouped) sync();
         tag.putInt(nbtKey, grouped ? 0 : stored);
         tag.putInt(nbtKey + "_fluid", fluidIndex);
+        tag.putBoolean(nbtKey + "_passive", passive);
     }
 
     @Override
@@ -348,5 +416,6 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         lastSeen = 0;
         grouped = false;
         fluidIndex = Math.max(0, tag.getInt(nbtKey + "_fluid"));
+        passive = !tag.contains(nbtKey + "_passive") || tag.getBoolean(nbtKey + "_passive");
     }
 }

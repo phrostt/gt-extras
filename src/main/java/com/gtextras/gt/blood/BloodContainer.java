@@ -35,12 +35,17 @@ public class BloodContainer extends AmountContainer {
         if (level == null) return;
         BlockPos pos = machine.getPos();
         if (handlerIO == IO.IN) {
-            int moved = ExtrasFluids.pull(level, pos, ExtrasFluids.blood(),
-                    Math.min(getSpace(), transferPerOperation));
-            if (moved > 0) setStored(stored + moved);
-            int eaten = ExtrasFluids.eat(level, pos, ExtrasFluids.blood(), ExtrasFluids.bloodItems(),
-                    Math.min(getSpace(), transferPerOperation));
-            if (eaten > 0) setStored(stored + eaten);
+            int budget = transferPerOperation;
+            int moved = ExtrasFluids.pull(level, pos, ExtrasFluids.blood(), Math.min(getSpace(), budget));
+            if (moved > 0) {
+                setStored(stored + moved);
+                budget -= moved;
+            }
+            if (budget > 0) {
+                int eaten = ExtrasFluids.eat(level, pos, ExtrasFluids.blood(), ExtrasFluids.bloodItems(),
+                        Math.min(getSpace(), budget));
+                if (eaten > 0) setStored(stored + eaten);
+            }
         } else {
             int moved = ExtrasFluids.push(level, pos, ExtrasFluids.blood(), Math.min(stored, transferPerOperation), fluidIndex);
             if (moved > 0) setStored(stored - moved);

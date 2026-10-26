@@ -2,8 +2,12 @@ package com.gtextras.gt.blood;
 
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
-import com.gregtechceu.gtceu.api.machine.feature.IInteractedMachine;
+import com.gregtechceu.gtceu.api.machine.feature.IUIMachine;
 import com.gregtechceu.gtceu.api.machine.multiblock.part.TieredPartMachine;
+
+import com.lowdragmc.lowdraglib.gui.modular.ModularUI;
+
+import com.gtextras.gt.trait.HatchUI;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -14,7 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class BloodHatchMachine extends TieredPartMachine implements IInteractedMachine {
+public class BloodHatchMachine extends TieredPartMachine implements IUIMachine {
 
     private final BloodContainer container;
 
@@ -28,22 +32,21 @@ public class BloodHatchMachine extends TieredPartMachine implements IInteractedM
     }
 
     @Override
-    public boolean shouldOpenUI(Player player, InteractionHand hand, BlockHitResult hit) {
-        return false;
-    }
-
-    @Override
-    public InteractionResult onUse(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand,
-                                   BlockHitResult hit) {
-        if (!player.isShiftKeyDown() && player.getItemInHand(hand).isEmpty()) {
-            if (!world.isClientSide) {
-                player.displayClientMessage(Component.translatable("gtextras.hatch.blood_status",
-                        String.format("%,d", container.getStored()), String.format("%,d", container.getCapacity())),
-                        true);
+    public ModularUI createUI(Player player) {
+        HatchUI.Panel panel = HatchUI.start(container, "Blood", 0xFFB01818);
+        if (container.io() == IO.OUT) {
+            java.util.List<String> names = new java.util.ArrayList<>();
+            for (var entry : container.fluidChoices()) {
+                net.minecraft.resources.ResourceLocation key = net.minecraftforge.registries.ForgeRegistries.FLUIDS
+                        .getKey(entry.fluid());
+                names.add(key == null ? "?" : key.getPath().replace('_', ' ') + "  (" + key.getNamespace() + ")");
             }
-            return InteractionResult.sidedSuccess(world.isClientSide);
+            HatchUI.scrollChoices(panel, "Output fluid", 60, names, container::fluidIndex, container::selectFluid);
+            HatchUI.note(panel, "Pushes into the tank in front of the hatch.");
+        } else {
+            HatchUI.note(panel, "Pulls from tanks next to the hatch.");
         }
-        return InteractionResult.PASS;
+        return HatchUI.finish(this, player, panel);
     }
 
     @Override

@@ -11,6 +11,8 @@ public final class MotorClient {
 
     public static final ResourceLocation SHAFT_MODEL = new ResourceLocation(GTExtras.MOD_ID, "block/rotation_motor_shaft");
 
+    public static final ResourceLocation TIP_MODEL = new ResourceLocation(GTExtras.MOD_ID, "block/rotation_motor_shaft_tip");
+
     private MotorClient() {}
 
     public static void register(EntityRenderersEvent.RegisterRenderers event) {
@@ -19,5 +21,6 @@ public final class MotorClient {
 
     public static void registerModels(ModelEvent.RegisterAdditional event) {
         event.register(SHAFT_MODEL);
+        event.register(TIP_MODEL);
     }
 }

@@ -14,7 +14,7 @@ public final class NeedsReader {
 
     public record Needs(long manaIn, long manaInTick, long manaOut, long manaOutTick,
                         long sourceIn, long sourceInTick, long sourceOut, long sourceOutTick,
-                        long bloodIn, long bloodInTick, long bloodOut, long bloodOutTick, int rpm, long[][] will) {
+                        long bloodIn, long bloodInTick, long bloodOut, long bloodOutTick, int rpm, int outRpm, long[][] will) {
         public boolean hasWill(int index) {
             long[] w = will[index];
             return w[0] + w[1] + w[2] + w[3] > 0;
@@ -42,6 +42,10 @@ public final class NeedsReader {
         public boolean hasRpm() {
             return rpm > 0;
         }
+
+        public boolean hasOutRpm() {
+            return outRpm > 0;
+        }
     }
 
     private NeedsReader() {}
@@ -51,9 +55,13 @@ public final class NeedsReader {
             return null;
         }
         int rpm = 0;
+        int outRpm = 0;
         for (RecipeCondition<?> condition : recipe.conditions) {
             if (condition instanceof MinRpmCondition min) {
                 rpm = Math.max(rpm, min.getRpm());
+            }
+            if (condition instanceof com.gtextras.gt.rotation.OutputRpmCondition out) {
+                outRpm = Math.max(outRpm, out.getRpm());
             }
         }
         long[][] will = new long[ExtrasCapabilities.WILL.length][];
@@ -69,8 +77,8 @@ public final class NeedsReader {
                 sum(recipe.outputs, ExtrasCapabilities.SOURCE), sum(recipe.tickOutputs, ExtrasCapabilities.SOURCE),
                 sum(recipe.inputs, ExtrasCapabilities.BLOOD), sum(recipe.tickInputs, ExtrasCapabilities.BLOOD),
                 sum(recipe.outputs, ExtrasCapabilities.BLOOD), sum(recipe.tickOutputs, ExtrasCapabilities.BLOOD),
-                rpm, will);
-        return needs.hasMana() || needs.hasSource() || needs.hasBlood() || needs.hasRpm() || needs.hasAnyWill()
+                rpm, outRpm, will);
+        return needs.hasMana() || needs.hasSource() || needs.hasBlood() || needs.hasRpm() || needs.hasOutRpm() || needs.hasAnyWill()
                 ? needs : null;
     }
 

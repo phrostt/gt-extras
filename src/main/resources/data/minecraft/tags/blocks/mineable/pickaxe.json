@@ -33,16 +33,6 @@
     "gtextras:source_output_hatch_luv",
     "gtextras:source_output_hatch_zpm",
     "gtextras:source_output_hatch_uv",
-    "gtextras:rotation_reader_hatch_lv",
-    "gtextras:rotation_reader_hatch_mv",
-    "gtextras:rotation_reader_hatch_hv",
-    "gtextras:rotation_reader_hatch_ev",
-    "gtextras:rotation_reader_hatch_iv",
-    "gtextras:rotation_reader_hatch_luv",
-    "gtextras:rotation_reader_hatch_zpm",
-    "gtextras:rotation_reader_hatch_uv",
-    "gtextras:rotation_coupler",
-    "gtextras:rotation_motor",
     "gtextras:blood_input_hatch_lv",
     "gtextras:blood_input_hatch_mv",
     "gtextras:blood_input_hatch_hv",
@@ -74,6 +64,7 @@
     "gtextras:will_output_hatch_iv",
     "gtextras:will_output_hatch_luv",
     "gtextras:will_output_hatch_zpm",
-    "gtextras:will_output_hatch_uv"
+    "gtextras:will_output_hatch_uv",
+    "gtextras:rotation_interface"
   ]
 }

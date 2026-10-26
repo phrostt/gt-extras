@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "gtextras:block/rotation_interface"
+    },
+    "axis=y": {
+      "model": "gtextras:block/rotation_interface"
+    },
+    "axis=z": {
+      "model": "gtextras:block/rotation_interface"
+    }
+  }
+}

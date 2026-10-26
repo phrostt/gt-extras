@@ -102,7 +102,12 @@ public final class ExtraBadges {
             }
         }
         if (needs.hasRpm()) {
-            out.add(new TextLine("Needs " + needs.rpm() + " RPM or more", RPM_COLOR));
+            out.add(new TextLine("Consumes rotation: needs " + needs.rpm() + "+ RPM", RPM_COLOR));
+            out.add(new TextLine("Needs an INPUT Rotation Interface", RPM_COLOR));
+        }
+        if (needs.hasOutRpm()) {
+            out.add(new TextLine("Generates rotation: " + Math.min(256, needs.outRpm()) + " RPM", RPM_COLOR));
+            out.add(new TextLine("Needs an OUTPUT Rotation Interface", RPM_COLOR));
         }
         return out;
     }
@@ -169,11 +174,17 @@ public final class ExtraBadges {
             currentDuration = recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe gt ? gt.duration : 0;
             currentText = needs == null ? List.of() : buildText(needs, currentDuration);
             if (needs != null && recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe gtRecipe
-                    && (needs.hasRpm() || config.stressRecipeTypes.contains(String.valueOf(gtRecipe.recipeType.registryName)))) {
+                    && (needs.hasRpm() || needs.hasOutRpm() || config.stressRecipeTypes.contains(String.valueOf(gtRecipe.recipeType.registryName)))) {
                 long load = Math.max(1L, Math.abs(com.gregtechceu.gtceu.api.recipe.RecipeHelper.getRealEUt(gtRecipe).getTotalEU()));
                 List<TextLine> withLoad = new ArrayList<>(currentText);
-                withLoad.add(new TextLine("Rotation load: " + String.format("%,d", load) + " su per RPM", RPM_COLOR));
-                withLoad.add(new TextLine("  " + String.format("%,d", load * 64) + " su at 64 RPM", TOTAL_IN_COLOR));
+                if (needs.hasOutRpm()) {
+                    withLoad.add(new TextLine("Provides " + String.format("%,d", load * 64) + " su total", OUT_COLOR));
+                } else {
+                    withLoad.add(new TextLine("Rotation load: " + String.format("%,d", load) + " su per RPM",
+                            RPM_COLOR));
+                    withLoad.add(new TextLine("  " + String.format("%,d", load * 64) + " su at 64 RPM",
+                            TOTAL_IN_COLOR));
+                }
                 currentText = withLoad;
             }
             if (needs == null) {
@@ -206,6 +217,17 @@ public final class ExtraBadges {
                     lines.add(Component.translatable("gtextras.tooltip.badge.rpm_req", needs.rpm())
                             .withStyle(ChatFormatting.GRAY));
                     badges.add(new Badge(icon, lines, Integer.toString(needs.rpm()), NEUTRAL_COLOR));
+                }
+            }
+            if (needs.hasOutRpm()) {
+                ItemStack icon = stack("create:speedometer");
+                if (!icon.isEmpty()) {
+                    List<Component> lines = new ArrayList<>();
+                    lines.add(Component.translatable("gtextras.tooltip.badge.rpm_out").withStyle(ChatFormatting.GOLD));
+                    lines.add(Component.translatable("gtextras.tooltip.badge.rpm_out_info",
+                            Math.min(256, needs.outRpm())).withStyle(ChatFormatting.GRAY));
+                    badges.add(new Badge(icon, lines, Integer.toString(Math.min(256, needs.outRpm())),
+                            OUT_COLOR));
                 }
             }
             badges.sort(java.util.Comparator.comparingInt(b -> b.color() == NEUTRAL_COLOR ? 0 : 1));

@@ -16,7 +16,7 @@ import vazkii.botania.api.BotaniaForgeCapabilities;
 import vazkii.botania.api.mana.ManaPool;
 import vazkii.botania.api.mana.ManaReceiver;
 
-public class ManaContainer extends AmountContainer implements ManaReceiver {
+public class ManaContainer extends AmountContainer implements ManaReceiver, com.gtextras.gt.trait.Linkable {
 
     public static final int INTERVAL = 10;
 
@@ -39,106 +39,143 @@ public class ManaContainer extends AmountContainer implements ManaReceiver {
         Level level = machine.getLevel();
         if (level == null) return;
         BlockPos pos = machine.getPos();
+        int budget = transferPerOperation;
         if (handlerIO == IO.IN) {
             int moved = com.gtextras.gt.trait.ExtrasFluids.pull(level, pos, com.gtextras.gt.trait.ExtrasFluids.mana(),
-                    Math.min(getSpace(), transferPerOperation));
-            if (moved > 0) setStored(stored + moved);
-            int eaten = com.gtextras.gt.trait.ExtrasFluids.eat(level, pos,
-                    com.gtextras.gt.trait.ExtrasFluids.mana(), com.gtextras.gt.trait.ExtrasFluids.manaItems(),
-                    Math.min(getSpace(), transferPerOperation));
-            if (eaten > 0) setStored(stored + eaten);
-        } else if (boundPool == null && com.gtextras.gt.trait.ExtrasFluids.hasTank(level, pos)) {
+                    Math.min(getSpace(), budget));
+            if (moved > 0) {
+                setStored(stored + moved);
+                budget -= moved;
+            }
+            if (budget > 0) {
+                int eaten = com.gtextras.gt.trait.ExtrasFluids.eat(level, pos,
+                        com.gtextras.gt.trait.ExtrasFluids.mana(), com.gtextras.gt.trait.ExtrasFluids.manaItems(),
+                        Math.min(getSpace(), budget));
+                if (eaten > 0) {
+                    setStored(stored + eaten);
+                    budget -= eaten;
+                }
+            }
+        } else if (links.isEmpty() && com.gtextras.gt.trait.ExtrasFluids.hasTank(level, pos)) {
             int moved = com.gtextras.gt.trait.ExtrasFluids.push(level, pos, com.gtextras.gt.trait.ExtrasFluids.mana(),
                     Math.min(stored, transferPerOperation), Math.min(fluidIndex, Math.max(0, fluidList().size() - 1)));
             if (moved > 0) setStored(stored - moved);
             return;
         }
-        int budget = transferPerOperation;
+        if (budget <= 0 || links.isEmpty()) return;
         if (handlerIO == IO.OUT) {
-            if (boundPool != null) {
-                pushBound(level, pos, budget);
-                return;
-            }
+            pushLinked(level, pos, budget);
+        } else {
+            pullLinked(level, pos, budget);
         }
-        for (Direction dir : Direction.values()) {
-            if (budget <= 0) break;
-            BlockEntity be = level.getBlockEntity(pos.relative(dir));
-            if (be == null || be instanceof com.gregtechceu.gtceu.api.machine.IMachineBlockEntity) continue;
-            ManaReceiver other = be.getCapability(BotaniaForgeCapabilities.MANA_RECEIVER, dir.getOpposite())
-                    .resolve().orElse(null);
-            if (other == null || other == this) continue;
+    }
 
-            if (handlerIO == IO.IN) {
-                if (!(other instanceof ManaPool)) continue;
-                int move = Math.min(Math.min(other.getCurrentMana(), getSpace()), budget);
-                if (move <= 0) continue;
+    private static boolean creative(BlockEntity be) {
+        net.minecraft.resources.ResourceLocation key = net.minecraftforge.registries.ForgeRegistries.BLOCKS
+                .getKey(be.getBlockState().getBlock());
+        return key != null && key.getPath().contains("creative");
+    }
+
+    private void pullLinked(Level level, BlockPos pos, int budget) {
+        for (BlockPos target : links.ordered()) {
+            if (getSpace() <= 0 || budget <= 0) return;
+            if (target.distSqr(pos) > BIND_RANGE * BIND_RANGE || !level.isLoaded(target)) continue;
+            BlockEntity be = level.getBlockEntity(target);
+            if (be == null) continue;
+            ManaReceiver other = be.getCapability(BotaniaForgeCapabilities.MANA_RECEIVER).resolve().orElse(null);
+            if (other == null || other == this) continue;
+            boolean infinite = creative(be);
+            int move = Math.min(Math.min(infinite ? Integer.MAX_VALUE : other.getCurrentMana(), getSpace()), budget);
+            if (move <= 0) continue;
+            int taken;
+            if (infinite) {
+                taken = move;
+            } else {
                 int before = other.getCurrentMana();
                 other.receiveMana(-move);
-                int taken = before - other.getCurrentMana();
-                if (taken > 0) {
-                    setStored(stored + taken);
-                    budget -= taken;
-                    com.gtextras.gt.trait.TransferFx.orb(level, be.getBlockPos(), pos,
-                            com.gtextras.gt.trait.TransferFx.MANA);
-                }
-            } else {
-                if (other.isFull()) continue;
-                int move = Math.min(stored, budget);
-                if (move <= 0) continue;
-                int before = other.getCurrentMana();
-                other.receiveMana(move);
-                int given = other.getCurrentMana() - before;
-                if (given > 0) {
-                    setStored(stored - given);
-                    budget -= given;
-                    com.gtextras.gt.trait.TransferFx.orb(level, pos, be.getBlockPos(),
-                            com.gtextras.gt.trait.TransferFx.MANA);
-                }
+                taken = before - other.getCurrentMana();
+            }
+            if (taken > 0) {
+                setStored(stored + taken);
+                budget -= taken;
+                links.advance();
+                com.gtextras.gt.trait.TransferFx.orb(level, target, pos, com.gtextras.gt.trait.TransferFx.MANA);
             }
         }
     }
 
     public static final int BIND_RANGE = 6;
-    private BlockPos boundPool;
+    private final com.gtextras.gt.trait.LinkSet links = new com.gtextras.gt.trait.LinkSet();
 
-    public BlockPos boundPool() {
-        return boundPool;
+    @Override
+    public boolean canLink(Level level, BlockPos target) {
+        BlockEntity be = level.getBlockEntity(target);
+        return be != null && be.getCapability(BotaniaForgeCapabilities.MANA_RECEIVER).resolve().isPresent();
     }
 
-    public void bindPool(BlockPos pos) {
-        boundPool = pos;
-        machine.markDirty();
+    @Override
+    public int linkRange() {
+        return BIND_RANGE;
+    }
+
+    @Override
+    public int[] linkColor() {
+        return com.gtextras.gt.trait.TransferFx.MANA;
+    }
+
+    @Override
+    public boolean linkable() {
+        return true;
+    }
+
+    @Override
+    public BlockPos linkOrigin() {
+        return machine.getPos();
+    }
+
+    @Override
+    public com.gtextras.gt.trait.LinkSet links() {
+        return links;
     }
 
     @Override
     public void saveCustomPersistedData(net.minecraft.nbt.CompoundTag tag, boolean forDrop) {
         super.saveCustomPersistedData(tag, forDrop);
-        if (boundPool != null) tag.putLong(nbtKey + "_pool", boundPool.asLong());
+        links.save(tag, nbtKey + "_links");
     }
 
     @Override
     public void loadCustomPersistedData(net.minecraft.nbt.CompoundTag tag) {
         super.loadCustomPersistedData(tag);
-        boundPool = tag.contains(nbtKey + "_pool") ? BlockPos.of(tag.getLong(nbtKey + "_pool")) : null;
+        links.load(tag, nbtKey + "_links");
     }
 
-    private int pushBound(Level level, BlockPos pos, int budget) {
-        if (boundPool == null || stored <= 0 || budget <= 0) return budget;
-        if (boundPool.distSqr(pos) > BIND_RANGE * BIND_RANGE || !level.isLoaded(boundPool)) return budget;
-        BlockEntity be = level.getBlockEntity(boundPool);
-        if (be == null) return budget;
-        ManaReceiver target = be.getCapability(BotaniaForgeCapabilities.MANA_RECEIVER).resolve().orElse(null);
-        if (target == null || target.isFull()) return budget;
-        int move = Math.min(stored, budget);
-        int before = target.getCurrentMana();
-        target.receiveMana(move);
-        int given = target.getCurrentMana() - before;
-        if (given > 0) {
-            setStored(stored - given);
-            budget -= given;
-            com.gtextras.gt.trait.TransferFx.orb(level, pos, boundPool, com.gtextras.gt.trait.TransferFx.MANA);
+    private void pushLinked(Level level, BlockPos pos, int budget) {
+        for (BlockPos target : links.ordered()) {
+            if (stored <= 0 || budget <= 0) return;
+            if (target.distSqr(pos) > BIND_RANGE * BIND_RANGE || !level.isLoaded(target)) continue;
+            BlockEntity be = level.getBlockEntity(target);
+            if (be == null) continue;
+            ManaReceiver receiver = be.getCapability(BotaniaForgeCapabilities.MANA_RECEIVER).resolve().orElse(null);
+            if (receiver == null) continue;
+            boolean sink = creative(be);
+            if (!sink && receiver.isFull()) continue;
+            int move = Math.min(stored, budget);
+            int given;
+            if (sink) {
+                given = move;
+            } else {
+                int before = receiver.getCurrentMana();
+                receiver.receiveMana(move);
+                given = receiver.getCurrentMana() - before;
+            }
+            if (given > 0) {
+                setStored(stored - given);
+                budget -= given;
+                links.advance();
+                com.gtextras.gt.trait.TransferFx.orb(level, pos, target, com.gtextras.gt.trait.TransferFx.MANA);
+            }
         }
-        return budget;
     }
 
     @Override

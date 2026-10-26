@@ -170,7 +170,7 @@ public final class ExtrasFluids {
         return out;
     }
 
-    private static int itemWorth(net.minecraft.world.item.ItemStack stack, List<Entry> fluids, List<ItemValue> extras) {
+    public static int itemWorth(net.minecraft.world.item.ItemStack stack, List<Entry> fluids, List<ItemValue> extras) {
         for (ItemValue entry : extras) {
             ResourceLocation id = ResourceLocation.tryParse(entry.key());
             if (id == null) continue;

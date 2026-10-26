@@ -23,7 +23,7 @@ public final class HatchConfig {
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-        builder.comment("Per tier hatch sizes. storage is the internal buffer. rate is the most the hatch moves per tick with neighbouring pools, jars and tanks.");
+        builder.comment("Per tier hatch sizes. storage is the internal buffer. rate is the most the hatch moves per tick (an older world config file keeps old values, delete it to pick up new defaults) with neighbouring pools, jars and tanks.");
         PARTICLES = builder.comment("Spawn Ars Nouveau style orbs when a mana or source hatch moves resources to or from a neighbouring block.")
                 .define("transferParticles", true);
         for (String resource : RESOURCES) {
@@ -65,8 +65,8 @@ public final class HatchConfig {
     private static int defaultRate(String resource, int tier) {
         int storage = defaultStorage(resource, tier);
         return switch (resource) {
-            case "mana" -> Math.max(1, storage / 200);
-            case "source" -> Math.max(1, storage / 50);
+            case "mana" -> Math.max(1, storage / 1000);
+            case "source" -> Math.max(1, storage / 250);
             default -> Math.max(1, storage / 100);
         };
     }

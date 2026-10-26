@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gtextras.GTExtras;
 import com.gtextras.gt.mana.ManaCaps;
 import com.gtextras.gt.rotation.MinRpmCondition;
+import com.gtextras.gt.rotation.OutputRpmCondition;
 
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
@@ -46,14 +47,17 @@ public final class GTExtrasGT {
                     (GTCEuAPI.RegisterEvent<?, RecipeConditionType> event) -> registerConditions());
         }
         if (create) {
-            com.gtextras.gt.rotation.coupler.CouplerRegistry.init(modBus);
-            if (net.minecraftforge.fml.loading.FMLEnvironment.dist == net.minecraftforge.api.distmarker.Dist.CLIENT) {
-                modBus.addListener(com.gtextras.gt.rotation.coupler.client.MotorClient::register);
-                modBus.addListener(com.gtextras.gt.rotation.coupler.client.MotorClient::registerModels);
-            }
+            com.gtextras.gt.rotation.RotationRegistry.init(modBus);
         }
+        com.gtextras.gt.tool.ExtrasItems.init(modBus);
         if (botania) {
             com.gtextras.gt.mana.ManaCaps.init();
+        }
+        if (ars) {
+            com.gtextras.gt.source.SourceCaps.init();
+        }
+        if (blood) {
+            com.gtextras.gt.trait.HatchStorageCaps.init();
         }
         GTExtras.LOGGER.info("[{}] GregTech hatches enabled (botania={}, ars_nouveau={}, create={})",
                 GTExtras.MOD_ID, botania, ars, create);
@@ -65,11 +69,12 @@ public final class GTExtrasGT {
         if (ars) ExtrasMachines.initSource();
         if (blood) ExtrasMachines.initBlood();
         if (blood) ExtrasMachines.initWill();
-        if (create) ExtrasMachines.initRotation();
     }
 
     private static void registerConditions() {
         ExtrasConditions.MIN_RPM = GTRegistries.RECIPE_CONDITIONS.register("gtextras_min_rpm",
                 new RecipeConditionType<>(MinRpmCondition::new, MinRpmCondition.CODEC));
+        ExtrasConditions.OUTPUT_RPM = GTRegistries.RECIPE_CONDITIONS.register("gtextras_output_rpm",
+                new RecipeConditionType<>(OutputRpmCondition::new, OutputRpmCondition.CODEC));
     }
 }

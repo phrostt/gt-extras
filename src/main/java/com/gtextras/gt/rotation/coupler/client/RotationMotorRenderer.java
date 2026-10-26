@@ -28,8 +28,14 @@ public class RotationMotorRenderer implements BlockEntityRenderer<RotationMotorB
         if (!own.hasProperty(RotatedPillarKineticBlock.AXIS)) return;
         Direction.Axis axis = own.getValue(RotatedPillarKineticBlock.AXIS);
 
+        drawCasing(be, own, axis, poseStack, buffer, packedLight);
+
         float time = be.getLevel().getGameTime() + partialTick;
-        float degrees = (time * be.getSpeed() * 3.0f / 10.0f) % 360.0f;
+        net.minecraft.core.BlockPos at = be.getBlockPos();
+        int sum = (axis == Direction.Axis.X ? 0 : at.getX()) + (axis == Direction.Axis.Y ? 0 : at.getY())
+                + (axis == Direction.Axis.Z ? 0 : at.getZ());
+        float offset = sum % 2 == 0 ? 22.5f : 0.0f;
+        float degrees = (time * be.getSpeed() * 3.0f / 10.0f + offset) % 360.0f;
         Direction positive = Direction.get(Direction.AxisDirection.POSITIVE, axis);
         Vector3f direction = new Vector3f(positive.getStepX(), positive.getStepY(), positive.getStepZ());
 
@@ -46,7 +52,29 @@ public class RotationMotorRenderer implements BlockEntityRenderer<RotationMotorB
         poseStack.translate(-0.5, -0.5, -0.5);
         dispatcher.getModelRenderer().renderModel(poseStack.last(), buffer.getBuffer(RenderType.cutout()), own, model,
                 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.cutout());
+        BakedModel tip = Minecraft.getInstance().getModelManager().getModel(MotorClient.TIP_MODEL);
+        Direction negative = positive.getOpposite();
+        if (!blocksEnd(be, positive)) {
+            dispatcher.getModelRenderer().renderModel(poseStack.last(), buffer.getBuffer(RenderType.cutout()), own,
+                    tip, 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY, ModelData.EMPTY,
+                    RenderType.cutout());
+        }
+        if (!blocksEnd(be, negative)) {
+            poseStack.pushPose();
+            poseStack.translate(0.5, 0.5, 0.5);
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f));
+            poseStack.translate(-0.5, -0.5, -0.5);
+            dispatcher.getModelRenderer().renderModel(poseStack.last(), buffer.getBuffer(RenderType.cutout()), own,
+                    tip, 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY, ModelData.EMPTY,
+                    RenderType.cutout());
+            poseStack.popPose();
+        }
         poseStack.popPose();
+    }
+
+    private static boolean blocksEnd(RotationMotorBlockEntity be, Direction dir) {
+        net.minecraft.core.BlockPos other = be.getBlockPos().relative(dir);
+        return be.getLevel().getBlockState(other).isSolidRender(be.getLevel(), other);
     }
 
     private static BlockState sampleCasing(RotationMotorBlockEntity be) {
@@ -63,6 +91,11 @@ public class RotationMotorRenderer implements BlockEntityRenderer<RotationMotorB
         }
         BlockState best = null;
         int bestCount = 0;
+        if (counts.isEmpty()) {
+            net.minecraft.world.level.block.Block steel = net.minecraftforge.registries.ForgeRegistries.BLOCKS.getValue(
+                    new net.minecraft.resources.ResourceLocation("gtceu", "steel_machine_casing"));
+            return steel == null ? null : steel.defaultBlockState();
+        }
         for (java.util.Map.Entry<BlockState, Integer> entry : counts.entrySet()) {
             if (entry.getValue() > bestCount) {
                 best = entry.getKey();
