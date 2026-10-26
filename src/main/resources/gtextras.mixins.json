@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.gtextras.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "gtextras.refmap.json",
+  "client": [
+    "CoilRecipeSizeMixin",
+    "LdlibJeiTooltipMixin",
+    "CoilJeiSlotMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

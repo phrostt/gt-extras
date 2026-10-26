@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "botania"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "pattern": [
+    "PXP",
+    "CHC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/rhodium_plated_palladium"
+    },
+    "C": {
+      "tag": "gtceu:circuits/luv"
+    },
+    "H": {
+      "item": "gtceu:luv_machine_hull"
+    },
+    "X": {
+      "item": "botania:mana_pool"
+    }
+  },
+  "result": {
+    "item": "gtextras:mana_input_hatch_luv"
+  }
+}

@@ -1,0 +1,3 @@
+Test multiblock: extras_test_multiblock (recipe type extras_test)
+Generator multiblock: extras_test_generator (recipe type extras_gen)
+Fluid tank test: put a tank next to a hatch. Input hatches take every fluid in config/gtextras-fluids.toml. Output hatches push the fluid picked by sneak-right-click with a screwdriver.
