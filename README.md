@@ -35,7 +35,7 @@ Every other mod is optional. A feature turns on when the mod it needs is install
 
 ## Hatches
 
-All hatches come in **LV to UV**, for example `gtextras:mana_input_hatch_hv`. Storage and transfer rate per tier are in `gtextras-hatches.toml`, and the tooltip shows the numbers. An empty hand right click shows the contents in the action bar. Hatches only work while they are part of a formed multiblock. On their own they do nothing, and a multiblock that is not formed stops them too.
+All hatches come in **LV to UV**, for example `gtextras:mana_input_hatch_hv`. Storage and transfer rate per tier are in `gtextras-hatches.toml`, and the tooltip shows the numbers. An empty hand right click shows the contents in the action bar. Hatches only work while they are part of a formed multiblock. All hatches of one kind in a multiblock share one buffer, as large as the smallest of them, so what an input hatch eats is what an output hatch can push out. On their own they do nothing, and a multiblock that is not formed stops them too.
 
 ### Mana Input / Output Hatch
 *Needs Botania.*

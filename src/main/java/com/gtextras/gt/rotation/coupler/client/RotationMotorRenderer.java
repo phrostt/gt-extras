@@ -28,8 +28,6 @@ public class RotationMotorRenderer implements BlockEntityRenderer<RotationMotorB
         if (!own.hasProperty(RotatedPillarKineticBlock.AXIS)) return;
         Direction.Axis axis = own.getValue(RotatedPillarKineticBlock.AXIS);
 
-        drawCasing(be, own, axis, poseStack, buffer, packedLight);
-
         float time = be.getLevel().getGameTime() + partialTick;
         float degrees = (time * be.getSpeed() * 3.0f / 10.0f) % 360.0f;
         Direction positive = Direction.get(Direction.AxisDirection.POSITIVE, axis);

@@ -16,12 +16,15 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
 
     protected final IO handlerIO;
     protected final RecipeCapability<Integer> capability;
-    protected final int capacity;
+    protected final int baseCapacity;
+    protected int capacity;
     protected final int transferPerOperation;
     protected final int operationInterval;
     protected final String nbtKey;
 
     protected int stored;
+    private int lastSeen;
+    private boolean grouped;
     protected int fluidIndex;
     private TickableSubscription tickSubscription;
 
@@ -30,6 +33,7 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         super(machine);
         this.handlerIO = handlerIO;
         this.capability = capability;
+        this.baseCapacity = capacity;
         this.capacity = capacity;
         this.transferPerOperation = transferPerOperation;
         this.operationInterval = operationInterval;
@@ -142,6 +146,69 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         return out;
     }
 
+    private com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController formedController() {
+        if (!(machine instanceof com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine part)) {
+            return null;
+        }
+        for (var controller : part.getControllers()) {
+            if (controller.isFormed()) return controller;
+        }
+        return null;
+    }
+
+    private java.util.List<AmountContainer> groupMembers(
+            com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController controller) {
+        java.util.List<AmountContainer> out = new ArrayList<>();
+        for (var other : controller.getParts()) {
+            if (!(other instanceof MetaMachine meta)) continue;
+            for (var trait : meta.getTraits()) {
+                if (trait instanceof AmountContainer found && found.capability == capability) {
+                    out.add(found);
+                }
+            }
+        }
+        return out;
+    }
+
+    private static final String POOL_TAG = "gtextras_pool";
+
+    protected final void sync() {
+        if (machine.isRemote()) return;
+        var controller = formedController();
+        if (controller == null) return;
+        net.minecraft.world.level.Level level = controller.self().getLevel();
+        if (level == null) return;
+        net.minecraft.world.level.block.entity.BlockEntity be = level.getBlockEntity(controller.self().getPos());
+        if (be == null) return;
+        java.util.List<AmountContainer> group = groupMembers(controller);
+        if (!group.contains(this)) return;
+        net.minecraft.nbt.CompoundTag root = be.getPersistentData();
+        net.minecraft.nbt.CompoundTag pools = root.getCompound(POOL_TAG);
+        int cap = Integer.MAX_VALUE;
+        long total = pools.getInt(nbtKey);
+        for (AmountContainer member : group) {
+            cap = Math.min(cap, member.baseCapacity);
+            total += member.stored - member.lastSeen;
+        }
+        int pool = (int) Math.max(0L, Math.min(cap, total));
+        if (pools.getInt(nbtKey) != pool || !root.contains(POOL_TAG)) {
+            pools.putInt(nbtKey, pool);
+            root.put(POOL_TAG, pools);
+            be.setChanged();
+        }
+        for (AmountContainer member : group) {
+            boolean changed = member.stored != pool;
+            member.capacity = cap;
+            member.stored = pool;
+            member.lastSeen = pool;
+            member.grouped = true;
+            if (changed) {
+                member.notifyListeners();
+                member.machine.markDirty();
+            }
+        }
+    }
+
     private boolean inFormedMultiblock() {
         if (!(machine instanceof com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine part)) {
             return false;
@@ -174,7 +241,18 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
 
     private void tick() {
         if (machine.getOffsetTimer() % operationInterval != 0) return;
-        if (!inFormedMultiblock()) return;
+        if (!inFormedMultiblock()) {
+            if (grouped) {
+                grouped = false;
+                capacity = baseCapacity;
+                stored = 0;
+                lastSeen = 0;
+                notifyListeners();
+                machine.markDirty();
+            }
+            return;
+        }
+        sync();
         long cost = costResource == null ? 0 : HatchConfig.cost(costResource, costTier);
         if (cost <= 0) {
             transferWithNeighbours();
@@ -189,6 +267,7 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
     @Override
     public List<Integer> handleRecipeInner(IO io, GTRecipe recipe, List<Integer> left, boolean simulate) {
         if (io != handlerIO) return left;
+        sync();
         long wanted = 0;
         for (Integer value : left) {
             if (value != null) wanted += value;
@@ -251,14 +330,17 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
     @Override
     public void saveCustomPersistedData(CompoundTag tag, boolean forDrop) {
         super.saveCustomPersistedData(tag, forDrop);
-        tag.putInt(nbtKey, stored);
+        if (grouped) sync();
+        tag.putInt(nbtKey, grouped ? 0 : stored);
         tag.putInt(nbtKey + "_fluid", fluidIndex);
     }
 
     @Override
     public void loadCustomPersistedData(CompoundTag tag) {
         super.loadCustomPersistedData(tag);
-        stored = Math.max(0, Math.min(capacity, tag.getInt(nbtKey)));
+        stored = Math.max(0, Math.min(baseCapacity, tag.getInt(nbtKey)));
+        lastSeen = 0;
+        grouped = false;
         fluidIndex = Math.max(0, tag.getInt(nbtKey + "_fluid"));
     }
 }

@@ -155,6 +155,9 @@ public class WillContainer extends AmountContainer {
     @Override
     public java.util.List<Integer> handleRecipeInner(IO io, com.gregtechceu.gtceu.api.recipe.GTRecipe recipe,
                                                      java.util.List<Integer> left, boolean simulate) {
+        if (typeIndex != 0 && rawSource != null) {
+            return rawSource.handleRecipeInner(io, recipe, left, simulate);
+        }
         if (io != IO.IN || handlerIO != IO.IN) {
             return super.handleRecipeInner(io, recipe, left, simulate);
         }
