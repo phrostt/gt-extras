@@ -58,6 +58,7 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
     private int progress;
     private int duration;
     private float reqRpm;
+    private String waitingReason = "";
 
     public RotationInterfaceBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -98,6 +99,7 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
             compound.putInt("IfProgress", progress);
             compound.putInt("IfDuration", duration);
             compound.putFloat("IfReq", reqRpm);
+            compound.putString("IfWait", waitingReason);
         }
     }
 
@@ -114,6 +116,7 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
             progress = compound.getInt("IfProgress");
             duration = compound.getInt("IfDuration");
             reqRpm = compound.getFloat("IfReq");
+            waitingReason = compound.getString("IfWait");
         }
     }
 
@@ -151,6 +154,11 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
         int newProgress = 0;
         int newDuration = 0;
         float newReq = 0.0f;
+        String newWait = "";
+        if (controller != null && controller.getRecipeLogic().isWaiting()
+                && controller.getRecipeLogic().getWaitingReason() != null) {
+            newWait = controller.getRecipeLogic().getWaitingReason().getString();
+        }
         if (controller != null) {
             newMachine = controller.self().getDefinition().getDescriptionId();
         }
@@ -180,8 +188,9 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
         int pct = newDuration <= 0 ? 0 : newProgress * 100 / newDuration;
         int oldPct = duration <= 0 ? 0 : progress * 100 / duration;
         boolean infoChanged = blocked != wasBlocked || pct != oldPct || reqRpm != newReq
-                || !machineId.equals(newMachine) || duration != newDuration;
+                || !machineId.equals(newMachine) || !waitingReason.equals(newWait) || duration != newDuration;
         machineId = newMachine;
+        waitingReason = newWait;
         progress = newProgress;
         duration = newDuration;
         reqRpm = newReq;
@@ -285,7 +294,7 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
         return switch (mode) {
             case GENERATE -> "Generating rotation";
             case LOAD -> "Consuming rotation";
-            default -> blocked ? "Blocked" : "Idle";
+            default -> blocked ? "Blocked" : !waitingReason.isEmpty() ? "Paused: " + shortText(waitingReason) : "Idle";
         };
     }
 
@@ -293,8 +302,18 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
         return capacity <= 0.0f ? 0.0f : Math.min(1.0f, stress / capacity);
     }
 
+    private static String shortText(String text) {
+        return text.length() > 28 ? text.substring(0, 27) + "." : text;
+    }
+
     private String machineName() {
-        return machineId.isEmpty() ? "none" : net.minecraft.network.chat.Component.translatable(machineId).getString();
+        if (machineId.isEmpty()) return "none";
+        String name = net.minecraft.network.chat.Component.translatable(machineId).getString();
+        if (name.equals(machineId)) {
+            String raw = machineId.substring(machineId.lastIndexOf('.') + 1).replace('_', ' ');
+            name = raw.isEmpty() ? machineId : Character.toUpperCase(raw.charAt(0)) + raw.substring(1);
+        }
+        return name.length() > 30 ? name.substring(0, 29) + "." : name;
     }
 
     private float actualSu(float perRpm) {
@@ -303,9 +322,11 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
 
     @Override
     public ModularUI createUI(Player player) {
-        WidgetGroup group = new WidgetGroup(0, 0, 176, 168);
+        int w = 200;
+        int in = w - 16;
+        WidgetGroup group = new WidgetGroup(0, 0, w, 168);
         group.addWidget(text(8, 6, () -> "Rotation Interface"));
-        group.addWidget(new ButtonWidget(8, 18, 160, 14, GuiTextures.BUTTON, click -> toggleType()));
+        group.addWidget(new ButtonWidget(8, 18, in, 14, GuiTextures.BUTTON, click -> toggleType()));
         LabelWidget typeLabel = new LabelWidget(14, 21, () -> output
                 ? "Type: OUTPUT (click to switch)" : "Type: INPUT (click to switch)");
         typeLabel.setColor(0xFFFFFFFF);
@@ -313,7 +334,7 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
         group.addWidget(text(8, 38, () -> "Status: " + modeText()));
         group.addWidget(text(8, 49, () -> "Machine: " + machineName()));
         group.addWidget(text(8, 60, () -> duration > 0
-                ? String.format("Recipe: %d%% at %,d EU/t", progress * 100 / duration, eut)
+                ? String.format("Recipe: %d done, %,d EU/t", progress * 100 / duration, eut)
                 : "Recipe: none running"));
         group.addWidget(text(8, 71, () -> output
                 ? String.format("Output target: %.0f RPM", reqRpm)
@@ -326,13 +347,13 @@ public class RotationInterfaceBlockEntity extends GeneratingKineticBlockEntity i
         }));
         group.addWidget(text(8, 104, () -> String.format("Network: %,.0f / %,.0f su", stress, capacity)));
         group.addWidget(text(8, 118, () -> "Network stress"));
-        group.addWidget(new ProgressWidget(() -> (double) networkFraction(), 8, 129, 160, 12)
+        group.addWidget(new ProgressWidget(() -> (double) networkFraction(), 8, 129, in, 12)
                 .setProgressTexture(new ColorRectTexture(0xFF373737), new ColorRectTexture(0xFF55AA55)));
         LabelWidget bar = new LabelWidget(12, 132, () -> overStressed ? "OVERSTRESSED"
-                : String.format("%.0f%%", networkFraction() * 100.0f));
+                : Math.round(networkFraction() * 100.0f) + " percent");
         bar.setColor(0xFFFFFFFF);
         group.addWidget(bar);
         group.addWidget(text(8, 148, () -> output ? "Output never accepts rotation." : "Input never generates rotation."));
-        return new ModularUI(176, 168, this, player).background(GuiTextures.BACKGROUND).widget(group);
+        return new ModularUI(w, 168, this, player).background(GuiTextures.BACKGROUND).widget(group);
     }
 }
