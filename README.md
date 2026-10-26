@@ -4,7 +4,7 @@
 
 **Mana, Source, Blood and Demonic Will for GregTech CEu Modern, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
 
-Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.18.0
 
 </div>
 
@@ -19,6 +19,12 @@ Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x
 * **Recipe viewer extras** for EMI and JEI: coil and research badges, a requirement grid for the new resources, Blood Magic meteor and ritual tabs.
 
 Every other mod is optional. A feature turns on when the mod it needs is installed.
+
+## Installation
+
+1. Install Minecraft 1.20.1 with Forge 47 or newer and GregTech CEu Modern 7.5.x.
+2. Drop the GT Extras jar into `mods/`, along with whichever optional mods you want features for (see below).
+3. Start the game once. The configs are written on first launch.
 
 ## Requirements
 
@@ -160,24 +166,30 @@ The Wand of the Forest (mana) and the Dominion Wand (source) link hatches the sa
 A tartaric gem holds one type. An empty gem takes whichever type fills it first. Converting between types is done in a recipe: take one type in, give another out, and let the energy be the cost.
 
 ### Rotation Interface
-*Needs Create.* A single block that uses the rotation reader texture. Place it in the multiblock next to a Create gearbox or vertical gearbox; both are normal pattern blocks and can sit anywhere the pattern allows. Each interface is either an **Output** (default) or an **Input**. Right click it to open its screen and press the type button to switch. The screen also shows the status, the controller machine, the recipe progress and EU/t, the target or required RPM, the network speed, the su provided or consumed, and the network stress. An Output never loads or accepts rotation, and an Input never generates it. Use one of each when a multiblock both needs and makes rotation.
+*Needs Create.*
 
-| Recipe has | Interface does |
-|---|---|
-| `GTX.minRpm(n)` | Input only: loads the Create network with a stress that grows with the recipe EU/t, and the recipe runs only while the network spins at n RPM or more. |
-| `GTX.outputRpm(n)` | Output only (and the recipe needs an Output interface in the multiblock): drives the network at n RPM (maximum 256), with a stress capacity that grows with the recipe EU/t. |
-| the other kind of recipe | Stays idle. |
-
-Recipe pages (EMI and JEI) show "Consumes rotation: needs N+ RPM, needs an INPUT Rotation Interface" or "Generates rotation: N RPM, needs an OUTPUT Rotation Interface" with the su involved, plus a speedometer badge, so a recipe with no item or fluid output still explains itself.
-| network already driven | If the Create network is already spinning from another source when a generating recipe starts, the interface does not start generating and the screen shows Blocked. Create destroys a generator whose rotation conflicts with the network. |
+One block that connects a GregTech multiblock to a Create kinetic network. Each interface is fixed to one type, set from its screen: **Output** (generates rotation, the default) or **Input** (consumes rotation). An Output never loads or accepts rotation, and an Input never generates it. A multiblock that both needs and makes rotation uses one of each.
 
 | | |
 |---|---|
 | Block | `gtextras:rotation_interface` (recipe: Create gearbox plus HV machine casing, shapeless) |
 | Pattern | `Predicates.blocks('gtextras:rotation_interface')` and `Predicates.blocks('create:gearbox', 'create:vertical_gearbox')` |
-| Breaking | Wrench or pickaxe; it drops itself. |
-| Screen | Right click the interface (not with a Create wrench) to open a screen with its mode (generating, consuming or idle), the network speed, the target RPM, the su it provides or loads, and the network stress bar with an OVERSTRESSED warning. |
-| Orientation | The interface is a pillar block with a shaft on the two faces along its axis, and a Create gearbox has shafts on its four sides but not on the two faces along its own axis. The interface only connects when its shaft end touches a shaft face of the gearbox. Rotate either block with a Create wrench, or use a vertical gearbox, until they connect. |
+| Breaking | Wrench or pickaxe. It drops itself. |
+| Setting the type | Right click the interface (not with a Create wrench) to open its screen, then press the type button. |
+| Orientation | The interface is a pillar block with a shaft on the two faces along its axis. A Create gearbox has shafts on its four sides but not on the two faces along its own axis. The interface only connects when its shaft end touches a shaft face of the gearbox. Rotate either block with a Create wrench, or use a vertical gearbox, until they connect. |
+
+**Screen.** The type, the status, the controller machine, the recipe progress and EU/t, the target or required RPM, the network speed, the su provided or consumed, and the network stress with an OVERSTRESSED warning. When a recipe is paused it also shows the reason in short text.
+
+| Recipe has | Interface does |
+|---|---|
+| `GTX.minRpm(n)` | Input only: loads the Create network with a stress that grows with the recipe EU/t. The recipe runs only while the network spins at n RPM or more, and pauses below that. |
+| `GTX.outputRpm(n)` | Output only: drives the network at n RPM (maximum 256), with a stress capacity that grows with the recipe EU/t. |
+| the other kind of recipe | The interface stays idle. |
+| Network already driven | If the network is already spinning from another source when a generating recipe starts, the Output does not start and the screen shows Blocked. Create destroys a generator whose rotation conflicts with the network. |
+
+A wrong type for a recipe gives a short, clear message in the controller's status panel instead of silently doing nothing.
+
+Recipe pages (EMI and JEI) show "Consumes rotation: needs N+ RPM, needs an INPUT Rotation Interface" or "Generates rotation: N RPM, needs an OUTPUT Rotation Interface", with the su involved and a speedometer badge. A recipe with no item or fluid output still explains itself.
 
 ---
 
@@ -195,8 +207,8 @@ const GTX = Java.loadClass('com.gtextras.api.GTX')
 | `.output(GTX.MANA, n)` | Gives `n` at the end of the recipe |
 | `.input(GTX.MANA, n).perTick(true)` | Draws `n` every tick while running |
 | `.output(GTX.MANA, n).perTick(true)` | Produces `n` every tick while running |
-| `.addCondition(GTX.minRpm(n))` | Loads the Rotation Interface's network and needs at least `n` RPM |
-| `.addCondition(GTX.outputRpm(n))` | Makes the Rotation Interface drive the network at `n` RPM |
+| `.addCondition(GTX.minRpm(n))` | Consumes rotation: needs an **Input** Rotation Interface in the multiblock and a network spinning at `n` RPM or more; the recipe pauses below that |
+| `.addCondition(GTX.outputRpm(n))` | Generates rotation: needs an **Output** Rotation Interface, which drives the network at `n` RPM (maximum 256) with stress from the recipe's real EU/t |
 
 `perTick(true)` applies to the input or output written just before it. Capabilities: `GTX.MANA`, `GTX.SOURCE`, `GTX.BLOOD`, `GTX.WILL_RAW`, `GTX.WILL_CORROSIVE`, `GTX.WILL_DESTRUCTIVE`, `GTX.WILL_VENGEFUL`, `GTX.WILL_STEADFAST`.
 
@@ -224,7 +236,7 @@ Used in a pattern like `Predicates.abilities(GTX.MANA_INPUT)`.
 | `GTX.BLOOD_INPUT`, `GTX.BLOOD_OUTPUT` | Blood hatches |
 | `GTX.WILL_INPUT`, `GTX.WILL_OUTPUT` | Will hatches |
 
-Working examples are in `examples/test_multiblock/`.
+Working examples, including rotation recipes for both interface types, are in `examples/test_multiblock/`.
 
 ---
 
@@ -285,6 +297,14 @@ To wire up your own multiblock, add its recipe category id and the data key your
 | `tier` | coil tier | Pyrolyse Oven, Cracking Unit |
 
 If a category has no entry, `autoDetectKeys` is tried in order. `showResearchIcon` is a master toggle for the research badge, and `researchExcludedCategories` lists categories to skip.
+
+---
+
+## Known issues
+
+* The Rotation Interface can be finicky next to a regular Create gearbox. If it reads no speed, rotate the gearbox or use a vertical gearbox so a shaft face touches the interface.
+* A multiblock controller's own screen can say it is running normally while a recipe is paused for lack of rotation. The interface screen shows the true state.
+* If another EMI addon also adds a Blood Magic meteor tab, you will see two tabs. Turn one off.
 
 ---
 

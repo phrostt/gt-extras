@@ -182,9 +182,17 @@ ServerEvents.recipes(event => {
         });
     });
 
+    event.recipes.gtceu.extras_test('gtextras:rotation_sand')
+        .itemInputs('minecraft:gravel')
+        .itemOutputs('minecraft:sand')
+        .addCondition(GTX.minRpm(32))
+        .duration(100)
+        .EUt(LV);
+
     [16, 64, 128, 256].forEach(rpm => {
         event.recipes.gtceu.extras_test('gtextras:test_rpm_' + rpm)
             .itemInputs(next())
+            .itemOutputs('minecraft:dirt')
             .addCondition(GTX.minRpm(rpm))
             .duration(100)
             .EUt(LV);
@@ -193,6 +201,8 @@ ServerEvents.recipes(event => {
     [['lv', LV], ['mv', MV], ['hv', HV], ['ev', EV]].forEach(tier => {
         event.recipes.gtceu.extras_test('gtextras:test_stress_' + tier[0])
             .itemInputs(next())
+            .itemOutputs('minecraft:coarse_dirt')
+            .addCondition(GTX.minRpm(32))
             .duration(600)
             .EUt(tier[1]);
     });

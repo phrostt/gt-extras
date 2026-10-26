@@ -34,7 +34,7 @@ GTCEuStartupEvents.registry('gtceu:machine', event => {
                 .or(Predicates.abilities(GTX.WILL_INPUT).setMaxGlobalLimited(1))
                 .or(Predicates.abilities(GTX.WILL_OUTPUT).setMaxGlobalLimited(1))
                 .or(Predicates.abilities(PartAbility.PARALLEL_HATCH).setMaxGlobalLimited(1))
-                .or(Predicates.blocks('gtextras:rotation_interface').setMaxGlobalLimited(1))
+                .or(Predicates.blocks('gtextras:rotation_interface').setMaxGlobalLimited(2))
                 .or(Predicates.blocks('create:gearbox', 'create:vertical_gearbox').setMaxGlobalLimited(2)))
             .where('#', Predicates.air())
             .build())

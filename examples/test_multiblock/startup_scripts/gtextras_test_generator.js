@@ -22,7 +22,7 @@ GTCEuStartupEvents.registry('gtceu:machine', event => {
                 .or(Predicates.abilities(GTX.MANA_INPUT).setMaxGlobalLimited(1))
                 .or(Predicates.abilities(GTX.SOURCE_INPUT).setMaxGlobalLimited(1))
                 .or(Predicates.abilities(GTX.BLOOD_INPUT).setMaxGlobalLimited(1))
-                .or(Predicates.blocks('gtextras:rotation_interface').setMaxGlobalLimited(1))
+                .or(Predicates.blocks('gtextras:rotation_interface').setMaxGlobalLimited(2))
                 .or(Predicates.blocks('create:gearbox', 'create:vertical_gearbox').setMaxGlobalLimited(2)))
             .where('#', Predicates.air())
             .build())

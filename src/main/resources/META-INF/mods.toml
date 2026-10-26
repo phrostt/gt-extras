@@ -8,8 +8,18 @@ modId="gtextras"
 version="${file.jarVersion}"
 displayName="GT Extras"
 authors="Phrost"
+displayURL="https://github.com/phrostt/gt-extras"
+credits="Built for GregTech CEu Modern, with support for Botania, Ars Nouveau, Blood Magic, Create, EMI and JEI."
 description='''
-GregTech add-ons for Minecraft Forge 1.20.1: heating coil and research info on GregTech's EMI/JEI recipe pages, Blood Magic ritual and meteor tabs, and Botania mana, Ars Nouveau source and Create rotation and Blood Magic life essence hatches.
+GT Extras adds resource hatches and recipe-page info for GregTech CEu Modern.
+
+Hatches (LV to UV): Botania mana, Ars Nouveau Source, Blood Magic blood and the five types of Demonic Will, usable as multiblock parts and in KubeJS recipes, with a Link Tool for mana and source and ME network support.
+
+Create Rotation Interface: a block set to Input or Output that lets a GregTech multiblock consume or generate Create rotation.
+
+Recipe viewer extras for EMI and JEI: coil and research badges, a resource requirement grid, rotation info, and Blood Magic ritual and meteor tabs.
+
+Every other mod is optional. Each feature turns on when the mod it needs is installed.
 '''
 
 [[dependencies.gtextras]]

@@ -1,0 +1,24 @@
+# Changelog
+
+## 0.18.0
+
+First complete build. Nothing from the earlier 0.17.x builds has been compiled or tested by the author before this one, so treat it as a release candidate.
+
+### Added
+* Blood and Will hatches for every tier from LV to UV, alongside the mana and Source hatches.
+* Rotation Interface with a fixed Input or Output type, set by a button on its screen.
+  * Output never accepts or loads rotation, and Input never generates it.
+  * The screen shows the type, status, machine, recipe progress and EU/t, target or required RPM, network speed, su and network stress, and the reason a recipe is paused.
+  * Failure messages are short so they fit GregTech's controller status panel.
+* EMI and JEI recipe pages show the rotation requirement, with su and a speedometer badge, for `GTX.minRpm` and `GTX.outputRpm` recipes.
+* Test scripts in `examples/test_multiblock/`, with `TESTING.txt`.
+
+### Changed
+* Shift right click no longer toggles the Rotation Interface. Right click opens the screen.
+* Output interfaces refuse to start while another source already drives the Create network.
+* `mods.toml` description, display URL and credits updated.
+* README rewritten for every feature, with a Known issues section.
+
+### Known issues
+* The Rotation Interface can be finicky next to a regular Create gearbox.
+* A controller's own screen can say it is running normally while a recipe is paused for lack of rotation.
