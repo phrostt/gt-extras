@@ -76,5 +76,8 @@ public final class GTExtrasGT {
                 new RecipeConditionType<>(MinRpmCondition::new, MinRpmCondition.CODEC));
         ExtrasConditions.OUTPUT_RPM = GTRegistries.RECIPE_CONDITIONS.register("gtextras_output_rpm",
                 new RecipeConditionType<>(OutputRpmCondition::new, OutputRpmCondition.CODEC));
+        ExtrasConditions.DAMAGE_ITEM = GTRegistries.RECIPE_CONDITIONS.register("gtextras_damage_item",
+                new RecipeConditionType<>(com.gtextras.gt.durability.DamageItemCondition::new,
+                        com.gtextras.gt.durability.DamageItemCondition.CODEC));
     }
 }

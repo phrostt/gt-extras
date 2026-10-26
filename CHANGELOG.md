@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.19.0
+
+### Added
+* `GTX.damageItem(item, amount)` recipe condition. Works on every GT machine and multiblock. The item may be an id or a `#tag`. The recipe needs a matching item with enough durability in an input slot, and takes the durability when the recipe finishes. Items that run out of durability are removed. Enchantments such as Unbreaking apply.
+* New mixin on `RecipeLogic.onRecipeFinish` to apply the damage.
+* Sanguine Synthesizer: new Alchemical Reaction Chamber mode (`sanguine_arc`), and tools in Alchemy Table recipes now lose durability instead of being consumed.
+
+### Known limits
+* Damage is applied once per finished recipe, not once per parallel.
+
 ## 0.18.0
 
 First complete build. Nothing from the earlier 0.17.x builds has been compiled or tested by the author before this one, so treat it as a release candidate.

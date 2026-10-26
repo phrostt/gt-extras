@@ -47,6 +47,8 @@
   "gtextras.recipe.source.out": "Source out: %s",
   "gtextras.recipe.source.in_tick": "Source: %s/t",
   "gtextras.recipe.source.out_tick": "Source out: %s/t",
+  "gtextras.recipe.condition.damage_item": "Uses %1$s durability of %2$s",
+  "gtextras.recipe.damage_item_missing": "Needs %2$s with %1$s durability left",
   "gtextras.recipe.condition.min_rpm": "Input: %s+ RPM",
   "gtextras.recipe.condition.output_rpm": "Output: %s RPM",
   "gtextras.recipe.rotation_no_interface": "Needs Output interface",

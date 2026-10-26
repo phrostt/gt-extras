@@ -183,6 +183,7 @@ One block that connects a GregTech multiblock to a Create kinetic network. Each 
 | Recipe has | Interface does |
 |---|---|
 | `GTX.minRpm(n)` | Input only: loads the Create network with a stress that grows with the recipe EU/t. The recipe runs only while the network spins at n RPM or more, and pauses below that. |
+| `GTX.damageItem(item, n)` | Works on any GT machine or multiblock: the recipe needs that item (or `#tag`) with at least n durability left in an input slot, and takes n durability from it when the recipe finishes. A broken item is removed. Pair it with `.notConsumable(item)` so JEI shows the tool. |
 | `GTX.outputRpm(n)` | Output only: drives the network at n RPM (maximum 256), with a stress capacity that grows with the recipe EU/t. |
 | the other kind of recipe | The interface stays idle. |
 | Network already driven | If the network is already spinning from another source when a generating recipe starts, the Output does not start and the screen shows Blocked. Create destroys a generator whose rotation conflicts with the network. |
@@ -208,6 +209,7 @@ const GTX = Java.loadClass('com.gtextras.api.GTX')
 | `.input(GTX.MANA, n).perTick(true)` | Draws `n` every tick while running |
 | `.output(GTX.MANA, n).perTick(true)` | Produces `n` every tick while running |
 | `.addCondition(GTX.minRpm(n))` | Consumes rotation: needs an **Input** Rotation Interface in the multiblock and a network spinning at `n` RPM or more; the recipe pauses below that |
+| `.addCondition(GTX.damageItem('modid:tool', 1))` | Uses 1 durability of the item (or `'#modid:tag'`) from any input slot when the recipe completes; the recipe will not start without a usable one. Add `.notConsumable('modid:tool')` too so the item shows in JEI and is not consumed |
 | `.addCondition(GTX.outputRpm(n))` | Generates rotation: needs an **Output** Rotation Interface, which drives the network at `n` RPM (maximum 256) with stress from the recipe's real EU/t |
 
 `perTick(true)` applies to the input or output written just before it. Capabilities: `GTX.MANA`, `GTX.SOURCE`, `GTX.BLOOD`, `GTX.WILL_RAW`, `GTX.WILL_CORROSIVE`, `GTX.WILL_DESTRUCTIVE`, `GTX.WILL_VENGEFUL`, `GTX.WILL_STEADFAST`.

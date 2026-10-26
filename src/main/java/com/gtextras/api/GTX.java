@@ -40,4 +40,8 @@ public final class GTX {
     public static RecipeCondition<?> outputRpm(int rpm) {
         return new OutputRpmCondition(rpm);
     }
+
+    public static RecipeCondition<?> damageItem(String item, int amount) {
+        return new com.gtextras.gt.durability.DamageItemCondition(item, amount);
+    }
 }
