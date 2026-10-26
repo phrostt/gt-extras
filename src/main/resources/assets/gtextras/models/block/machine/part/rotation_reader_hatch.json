@@ -1,7 +1,0 @@
-{
-  "parent": "gtceu:block/overlay/2_layer/front_emissive",
-  "textures": {
-    "overlay": "gtextras:block/overlay/machine/overlay_rotation_reader",
-    "overlay_emissive": "gtextras:block/overlay/machine/overlay_rotation_reader_emissive"
-  }
-}
