@@ -1,0 +1,7 @@
+{
+  "parent": "gtceu:block/overlay/2_layer/front_emissive",
+  "textures": {
+    "overlay": "gtextras:block/overlay/machine/overlay_will_output",
+    "overlay_emissive": "gtextras:block/overlay/machine/overlay_will_output_emissive"
+  }
+}

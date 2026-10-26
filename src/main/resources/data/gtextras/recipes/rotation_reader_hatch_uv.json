@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "pattern": [
+    "PXP",
+    "CHC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/darmstadtium"
+    },
+    "C": {
+      "tag": "gtceu:circuits/uv"
+    },
+    "H": {
+      "item": "gtceu:uv_machine_hull"
+    },
+    "X": {
+      "item": "create:rotation_speed_controller"
+    }
+  },
+  "result": {
+    "item": "gtextras:rotation_reader_hatch_uv"
+  }
+}

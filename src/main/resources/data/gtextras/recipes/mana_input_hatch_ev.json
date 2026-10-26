@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "botania"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "pattern": [
+    "PXP",
+    "CHC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/titanium"
+    },
+    "C": {
+      "tag": "gtceu:circuits/ev"
+    },
+    "H": {
+      "item": "gtceu:ev_machine_hull"
+    },
+    "X": {
+      "item": "botania:mana_pool"
+    }
+  },
+  "result": {
+    "item": "gtextras:mana_input_hatch_ev"
+  }
+}

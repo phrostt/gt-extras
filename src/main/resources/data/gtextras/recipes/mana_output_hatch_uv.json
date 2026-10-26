@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "botania"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "pattern": [
+    "PHP",
+    "CXC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/darmstadtium"
+    },
+    "C": {
+      "tag": "gtceu:circuits/uv"
+    },
+    "H": {
+      "item": "gtceu:uv_machine_hull"
+    },
+    "X": {
+      "item": "botania:mana_pool"
+    }
+  },
+  "result": {
+    "item": "gtextras:mana_output_hatch_uv"
+  }
+}

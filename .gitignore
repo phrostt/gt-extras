@@ -1,0 +1,9 @@
+.gradle/
+build/
+bin/
+run/
+.idea/
+*.iml
+
+# mod jars used only for compiling the GregTech hatches
+libs/*.jar

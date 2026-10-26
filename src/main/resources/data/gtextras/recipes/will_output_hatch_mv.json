@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "bloodmagic"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "pattern": [
+    "PHP",
+    "CXC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/aluminium"
+    },
+    "C": {
+      "tag": "gtceu:circuits/mv"
+    },
+    "H": {
+      "item": "gtceu:mv_machine_hull"
+    },
+    "X": {
+      "item": "bloodmagic:soulgemlesser"
+    }
+  },
+  "result": {
+    "item": "gtextras:will_output_hatch_mv"
+  }
+}

@@ -1,0 +1,83 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+issueTrackerURL="https://github.com/phrostt/gt-extras/issues"
+
+[[mods]]
+modId="gtextras"
+version="${file.jarVersion}"
+displayName="GT Extras"
+authors="Phrost"
+description='''
+GregTech add-ons for Minecraft Forge 1.20.1: heating coil and research info on GregTech's EMI/JEI recipe pages, Blood Magic ritual and meteor tabs, and Botania mana, Ars Nouveau source and Create rotation and Blood Magic life essence hatches.
+'''
+
+[[dependencies.gtextras]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="emi"
+    mandatory=false
+    versionRange="[1.1,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="gtceu"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="jei"
+    mandatory=false
+    versionRange="[15,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="botania"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="ars_nouveau"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="create"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="kubejs"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="bloodmagic"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
