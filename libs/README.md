@@ -14,5 +14,6 @@ Needed:
 - `ars_nouveau-1.20.1-4.12.7-all.jar`
 - `create-1.20.1-6.0.8.jar`
 - `BloodMagic-1.18-1.20.1-3.3.8-50.jar` (needed for the Will hatches)
+- `ponder-*.jar` and `flywheel-*.jar` (Create needs both to compile)
 
 Only the classes the hatch code touches must resolve, so extra jars do no harm.

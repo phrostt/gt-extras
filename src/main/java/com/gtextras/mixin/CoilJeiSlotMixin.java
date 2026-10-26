@@ -51,6 +51,19 @@ public abstract class CoilJeiSlotMixin {
             for (int i = 0; i < badges.size(); i++) {
                 com.gtextras.ExtraBadges.Badge badge = badges.get(i);
                 List<Component> lines = badge.tooltip();
+                net.minecraft.world.level.material.Fluid fluid =
+                        badge.icon().getItem() instanceof net.minecraft.world.item.BucketItem bucket
+                                ? bucket.getFluid() : net.minecraft.world.level.material.Fluids.EMPTY;
+                if (fluid != net.minecraft.world.level.material.Fluids.EMPTY
+                       ) {
+                    RecipeIngredientRole role = com.gtextras.ExtraBadges.isInput(badge) ? RecipeIngredientRole.INPUT
+                            : RecipeIngredientRole.OUTPUT;
+                    builder.addSlot(role, com.gtextras.ExtraBadges.cellX(layout, i) + 1,
+                                    com.gtextras.ExtraBadges.cellY(layout, i) + 1)
+                            .addFluidStack(fluid, 1L)
+                            .addRichTooltipCallback((view, tooltip) -> lines.forEach(tooltip::add));
+                    continue;
+                }
                 builder.addSlot(RecipeIngredientRole.RENDER_ONLY, com.gtextras.ExtraBadges.cellX(layout, i) + 1,
                                 com.gtextras.ExtraBadges.cellY(layout, i) + 1)
                         .addItemStack(badge.icon())

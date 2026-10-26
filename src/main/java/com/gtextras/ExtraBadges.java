@@ -25,6 +25,10 @@ public final class ExtraBadges {
 
     public record Badge(ItemStack icon, List<Component> tooltip, String text, int color) {}
 
+    public static boolean isInput(Badge badge) {
+        return badge.color() == IN_COLOR;
+    }
+
     public static int cellX(CoilInfo.Layout layout, int index) {
         return layout.gridX() + (index % COLUMNS) * CELL_W;
     }
