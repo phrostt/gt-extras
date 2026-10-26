@@ -29,23 +29,34 @@ public class DamageItemCondition extends RecipeCondition<DamageItemCondition> {
             .isReverse(instance)
             .and(Codec.STRING.fieldOf("item").forGetter(DamageItemCondition::getItemId))
             .and(Codec.INT.fieldOf("amount").forGetter(DamageItemCondition::getAmount))
+            .and(Codec.BOOL.optionalFieldOf("label", false).forGetter(DamageItemCondition::isLabel))
             .apply(instance, DamageItemCondition::new));
 
     private String itemId;
     private int amount;
+    private boolean label;
 
     public DamageItemCondition() {
-        this(false, "minecraft:air", 1);
+        this(false, "minecraft:air", 1, false);
     }
 
     public DamageItemCondition(String itemId, int amount) {
-        this(false, itemId, amount);
+        this(false, itemId, amount, false);
     }
 
-    public DamageItemCondition(boolean isReverse, String itemId, int amount) {
+    public DamageItemCondition(String itemId, int amount, boolean label) {
+        this(false, itemId, amount, label);
+    }
+
+    public DamageItemCondition(boolean isReverse, String itemId, int amount, boolean label) {
         super(isReverse);
         this.itemId = itemId;
         this.amount = Math.max(1, amount);
+        this.label = label;
+    }
+
+    public boolean isLabel() {
+        return label;
     }
 
     public String getItemId() {
@@ -84,10 +95,12 @@ public class DamageItemCondition extends RecipeCondition<DamageItemCondition> {
 
     @Override
     public Component getTooltips() {
-        return Component.translatable(getTranslationKey(), amount, displayName());
+        if (label) return displayName();
+        return Component.translatable(getTranslationKey(), amount);
     }
 
     public boolean hasUsable(RecipeLogic logic) {
+        if (label) return true;
         for (IRecipeHandler<?> handler : logic.machine.getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP)) {
             if (handler instanceof IItemHandlerModifiable items) {
                 for (int i = 0; i < items.getSlots(); i++) {
@@ -102,6 +115,7 @@ public class DamageItemCondition extends RecipeCondition<DamageItemCondition> {
     }
 
     public void consume(RecipeLogic logic) {
+        if (label) return;
         for (IRecipeHandler<?> handler : logic.machine.getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP)) {
             if (handler instanceof IItemHandlerModifiable items) {
                 for (int i = 0; i < items.getSlots(); i++) {

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.19.1
+
+### Added
+* `GTX.damageItemLabel(item)`: a display-only condition that shows the item or tag name on its own row under the durability text, so long tag names no longer run off the recipe viewer.
+
+### Changed
+* The durability condition text is now "Uses N durability of:" with the name on the label row.
+
 ## 0.19.0
 
 ### Added

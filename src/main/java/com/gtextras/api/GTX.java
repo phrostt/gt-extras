@@ -44,4 +44,8 @@ public final class GTX {
     public static RecipeCondition<?> damageItem(String item, int amount) {
         return new com.gtextras.gt.durability.DamageItemCondition(item, amount);
     }
+
+    public static RecipeCondition<?> damageItemLabel(String item) {
+        return new com.gtextras.gt.durability.DamageItemCondition(item, 1, true);
+    }
 }
