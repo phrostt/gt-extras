@@ -1,3 +1,8 @@
 {
+<<<<<<< HEAD
   "parent": "gtextras:block/rotation_motor_item"
 }
+=======
+  "parent": "gtextras:block/rotation_motor"
+}
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4

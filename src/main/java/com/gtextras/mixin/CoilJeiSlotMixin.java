@@ -48,6 +48,7 @@ public abstract class CoilJeiSlotMixin {
             }
             CoilInfo.Layout layout = CoilInfo.layout(config, category.getWidth(), category.getHeight());
 
+<<<<<<< HEAD
             for (int i = 0; i < badges.size(); i++) {
                 com.gtextras.ExtraBadges.Badge badge = badges.get(i);
                 List<Component> lines = badge.tooltip();
@@ -68,6 +69,15 @@ public abstract class CoilJeiSlotMixin {
                                 com.gtextras.ExtraBadges.cellY(layout, i) + 1)
                         .addItemStack(badge.icon())
                         .addRichTooltipCallback((view, tooltip) -> lines.forEach(tooltip::add));
+=======
+            int badgeX = com.gtextras.ExtraBadges.firstX(layout, info);
+            for (com.gtextras.ExtraBadges.Badge badge : badges) {
+                List<Component> lines = badge.tooltip();
+                builder.addSlot(RecipeIngredientRole.RENDER_ONLY, badgeX + 1, layout.iconY() + 1)
+                        .addItemStack(badge.icon())
+                        .addRichTooltipCallback((view, tooltip) -> lines.forEach(tooltip::add));
+                badgeX -= com.gtextras.ExtraBadges.STEP;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
             }
             if (info == null) {
                 CoilInfo.markSlotted(recipe);

@@ -30,6 +30,7 @@ public class CoilDecorator implements EmiRecipeDecorator {
         if (info == null && badges.isEmpty()) {
             return;
         }
+<<<<<<< HEAD
         java.util.List<ExtraBadges.TextLine> text = ExtraBadges.snapshotText();
         CoilInfo.Layout layout = CoilInfo.layout(config, recipe.getDisplayWidth(), recipe.getDisplayHeight());
 
@@ -46,6 +47,17 @@ public class CoilDecorator implements EmiRecipeDecorator {
         if (!badges.isEmpty()) {
             widgets.addDrawable(layout.gridX(), layout.gridY() + ExtraBadges.TEXT_TOP, 170,
                     ExtraBadges.MAX_TEXT_LINES * ExtraBadges.LINE_H, (g, mx, my, delta) -> ExtraBadges.drawText(g, layout, text));
+=======
+        CoilInfo.Layout layout = CoilInfo.layout(config, recipe.getDisplayWidth(), recipe.getDisplayHeight());
+
+        int badgeX = ExtraBadges.firstX(layout, info);
+        for (ExtraBadges.Badge badge : badges) {
+            var slot = widgets.addSlot(EmiStack.of(badge.icon()), badgeX, layout.iconY()).catalyst(true);
+            for (Component line : badge.tooltip()) {
+                slot.appendTooltip(line);
+            }
+            badgeX -= ExtraBadges.STEP;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         }
         if (info == null) {
             return;
@@ -84,6 +96,16 @@ public class CoilDecorator implements EmiRecipeDecorator {
                             .withStyle(ChatFormatting.GOLD))
                     .appendTooltip(Component.translatable("gtextras.tooltip." + info.mode(), info.required())
                             .withStyle(ChatFormatting.GRAY));
+<<<<<<< HEAD
+=======
+            if (config.showText) {
+                Component tempLine = Component.translatable("gtextras.text." + info.mode(),
+                        String.format("%,d", info.required()));
+                Component coilLine = Component.translatable("gtextras.text.coil", coil.name().getString());
+                widgets.addText(tempLine, layout.textX(), layout.textY1(), 0xFFFFFF, true);
+                widgets.addText(coilLine, layout.textX(), layout.textY2(), 0xFFFFFF, true);
+            }
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         }
     }
 }

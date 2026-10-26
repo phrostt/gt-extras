@@ -1,9 +1,12 @@
 Test multiblock: extras_test_multiblock (recipe type extras_test)
 Generator multiblock: extras_test_generator (recipe type extras_gen)
 Fluid tank test: put a tank next to a hatch. Input hatches take every fluid in config/gtextras-fluids.toml. Output hatches push the fluid picked by sneak-right-click with a screwdriver.
+<<<<<<< HEAD
 
 Rotation (needs Create)
 1. Put two Rotation Interfaces in the multiblock (the pattern allows 2), each touching a Create gearbox. Open each one and set its type: one Output, one Input.
 2. Output: run a cobble_to_rotation_* recipe. The gearbox on the Output interface should spin at 32, 64 or 128 RPM.
 3. Input: with the network spinning at 32 RPM or more, run rotation_sand (gravel to sand). Below 32 RPM the recipe pauses and the interface shows "Paused".
 4. Wrong type: an outputRpm recipe with only an Input interface (or the reverse) fails with "Set interface to Output/Input".
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4

@@ -45,8 +45,12 @@ public final class CoilInfo {
     private CoilInfo() {
     }
 
+<<<<<<< HEAD
     public record Layout(int textX, int textY1, int textY2, int iconX, int iconY, int dataX, int arrowX, int arrowY,
                          int gridX, int gridY) {
+=======
+    public record Layout(int textX, int textY1, int textY2, int iconX, int iconY, int dataX, int arrowX, int arrowY) {
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     /** What a recipe needs. Either part may be absent. */
@@ -64,7 +68,11 @@ public final class CoilInfo {
         }
     }
 
+<<<<<<< HEAD
     public static final int JEI_EXTRA_HEIGHT = ExtraBadges.TEXT_TOP + ExtraBadges.MAX_TEXT_LINES * ExtraBadges.LINE_H + 25;
+=======
+    public static final int JEI_EXTRA_HEIGHT = 42;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     public static final int RIGHT_MARGIN = 12;
 
     private static boolean jei() {
@@ -73,7 +81,11 @@ public final class CoilInfo {
 
     public static Layout layout(CoilConfig config, int displayWidth, int displayHeight) {
         boolean jei = jei();
+<<<<<<< HEAD
         int padTop = displayHeight - JEI_EXTRA_HEIGHT;
+=======
+        int padTop = displayHeight - (jei ? JEI_EXTRA_HEIGHT : EXTRA_HEIGHT);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         int textX = (jei ? 7 : 4) + config.textX;
         int textY1 = padTop + (jei ? 18 : 2) + config.textY;
         int textY2 = textY1 + 9;
@@ -82,7 +94,11 @@ public final class CoilInfo {
                 : textX + 110 + config.offsetX;
         int iconY = padTop + (EXTRA_HEIGHT - SLOT_SIZE) / 2 + config.offsetY;
         int dataX = iconX - 40;
+<<<<<<< HEAD
         return new Layout(textX, textY1, textY2, iconX, iconY, dataX, dataX + 20, iconY + 4, textX, padTop + 1);
+=======
+        return new Layout(textX, textY1, textY2, iconX, iconY, dataX, dataX + 20, iconY + 4);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     /**

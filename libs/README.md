@@ -13,7 +13,10 @@ Needed:
 - `Botania-1.20.1-456-FORGE.jar`
 - `ars_nouveau-1.20.1-4.12.7-all.jar`
 - `create-1.20.1-6.0.8.jar`
+<<<<<<< HEAD
 - `BloodMagic-1.18-1.20.1-3.3.8-50.jar` (needed for the Will hatches)
 - `ponder-*.jar` and `flywheel-*.jar` (Create needs both to compile)
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
 Only the classes the hatch code touches must resolve, so extra jars do no harm.

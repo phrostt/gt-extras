@@ -16,7 +16,11 @@ import vazkii.botania.api.BotaniaForgeCapabilities;
 import vazkii.botania.api.mana.ManaPool;
 import vazkii.botania.api.mana.ManaReceiver;
 
+<<<<<<< HEAD
 public class ManaContainer extends AmountContainer implements ManaReceiver, com.gtextras.gt.trait.Linkable {
+=======
+public class ManaContainer extends AmountContainer implements ManaReceiver {
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
     public static final int INTERVAL = 10;
 
@@ -31,7 +35,10 @@ public class ManaContainer extends AmountContainer implements ManaReceiver, com.
     public ManaContainer(MetaMachine machine, IO io, int tier) {
         super(machine, io, ExtrasCapabilities.MANA, capacityFor(tier), transferFor(tier), INTERVAL,
                 "gtextras_mana");
+<<<<<<< HEAD
         configureCost("mana", tier);
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     @Override
@@ -39,6 +46,7 @@ public class ManaContainer extends AmountContainer implements ManaReceiver, com.
         Level level = machine.getLevel();
         if (level == null) return;
         BlockPos pos = machine.getPos();
+<<<<<<< HEAD
         int budget = transferPerOperation;
         if (handlerIO == IO.IN) {
             int moved = com.gtextras.gt.trait.ExtrasFluids.pull(level, pos, com.gtextras.gt.trait.ExtrasFluids.mana(),
@@ -174,6 +182,48 @@ public class ManaContainer extends AmountContainer implements ManaReceiver, com.
                 budget -= given;
                 links.advance();
                 com.gtextras.gt.trait.TransferFx.orb(level, pos, target, com.gtextras.gt.trait.TransferFx.MANA);
+=======
+        if (handlerIO == IO.IN) {
+            int moved = com.gtextras.gt.trait.ExtrasFluids.pull(level, pos, com.gtextras.gt.trait.ExtrasFluids.mana(),
+                    Math.min(getSpace(), transferPerOperation));
+            if (moved > 0) setStored(stored + moved);
+        } else {
+            int moved = com.gtextras.gt.trait.ExtrasFluids.push(level, pos, com.gtextras.gt.trait.ExtrasFluids.mana(),
+                    Math.min(stored, transferPerOperation), fluidIndex);
+            if (moved > 0) setStored(stored - moved);
+        }
+        int budget = transferPerOperation;
+        for (Direction dir : Direction.values()) {
+            if (budget <= 0) break;
+            BlockEntity be = level.getBlockEntity(pos.relative(dir));
+            if (be == null || be instanceof com.gregtechceu.gtceu.api.machine.IMachineBlockEntity) continue;
+            ManaReceiver other = be.getCapability(BotaniaForgeCapabilities.MANA_RECEIVER, dir.getOpposite())
+                    .resolve().orElse(null);
+            if (other == null || other == this) continue;
+
+            if (handlerIO == IO.IN) {
+                if (!(other instanceof ManaPool)) continue;
+                int move = Math.min(Math.min(other.getCurrentMana(), getSpace()), budget);
+                if (move <= 0) continue;
+                int before = other.getCurrentMana();
+                other.receiveMana(-move);
+                int taken = before - other.getCurrentMana();
+                if (taken > 0) {
+                    setStored(stored + taken);
+                    budget -= taken;
+                }
+            } else {
+                if (other.isFull()) continue;
+                int move = Math.min(stored, budget);
+                if (move <= 0) continue;
+                int before = other.getCurrentMana();
+                other.receiveMana(move);
+                int given = other.getCurrentMana() - before;
+                if (given > 0) {
+                    setStored(stored - given);
+                    budget -= given;
+                }
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
             }
         }
     }
@@ -209,11 +259,14 @@ public class ManaContainer extends AmountContainer implements ManaReceiver, com.
     }
 
     @Override
+<<<<<<< HEAD
     protected boolean hasNative() {
         return false;
     }
 
     @Override
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     protected java.util.List<com.gtextras.gt.trait.ExtrasFluids.Entry> fluidList() {
         return com.gtextras.gt.trait.ExtrasFluids.mana();
     }

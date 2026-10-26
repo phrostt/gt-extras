@@ -13,6 +13,7 @@ public final class HatchConfig {
 
     public static final int MIN_TIER = GTValues.LV;
     public static final int MAX_TIER = GTValues.UV;
+<<<<<<< HEAD
     private static final String[] RESOURCES = { "mana", "source", "blood", "will" };
 
     private static final Map<String, ForgeConfigSpec.IntValue> STORAGE = new HashMap<>();
@@ -26,6 +27,17 @@ public final class HatchConfig {
         builder.comment("Per tier hatch sizes. storage is the internal buffer. rate is the most the hatch moves per tick (an older world config file keeps old values, delete it to pick up new defaults) with neighbouring pools, jars and tanks.");
         PARTICLES = builder.comment("Spawn Ars Nouveau style orbs when a mana or source hatch moves resources to or from a neighbouring block.")
                 .define("transferParticles", true);
+=======
+    private static final String[] RESOURCES = { "mana", "source", "blood" };
+
+    private static final Map<String, ForgeConfigSpec.IntValue> STORAGE = new HashMap<>();
+    private static final Map<String, ForgeConfigSpec.IntValue> RATE = new HashMap<>();
+    public static final ForgeConfigSpec SPEC;
+
+    static {
+        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        builder.comment("Per tier hatch sizes. storage is the internal buffer. rate is the most the hatch moves per tick with neighbouring pools, jars and tanks.");
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         for (String resource : RESOURCES) {
             builder.push(resource);
             for (int tier = MIN_TIER; tier <= MAX_TIER; tier++) {
@@ -34,8 +46,11 @@ public final class HatchConfig {
                         Integer.MAX_VALUE));
                 RATE.put(key(resource, tier), builder.defineInRange("rate", defaultRate(resource, tier), 1,
                         Integer.MAX_VALUE / 20));
+<<<<<<< HEAD
                 COST.put(key(resource, tier), builder.comment("EU drawn each time the hatch moves something on its own. 0 means free. Paid from the energy hatches of the multiblock the hatch is part of. With no formed multiblock or no energy there, nothing moves.")
                         .defineInRange("euPerOperation", 0, 0, Integer.MAX_VALUE));
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
                 builder.pop();
             }
             builder.pop();
@@ -46,7 +61,11 @@ public final class HatchConfig {
     private HatchConfig() {}
 
     public static void register() {
+<<<<<<< HEAD
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SPEC, "gtextras-hatches.toml");
+=======
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SPEC, "gtextras-hatches.toml");
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     private static String key(String resource, int tier) {
@@ -65,12 +84,18 @@ public final class HatchConfig {
     private static int defaultRate(String resource, int tier) {
         int storage = defaultStorage(resource, tier);
         return switch (resource) {
+<<<<<<< HEAD
             case "mana" -> Math.max(1, storage / 1000);
             case "source" -> Math.max(1, storage / 250);
+=======
+            case "mana" -> Math.max(1, storage / 200);
+            case "source" -> Math.max(1, storage / 50);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
             default -> Math.max(1, storage / 100);
         };
     }
 
+<<<<<<< HEAD
     public static boolean particles() {
         try {
             return PARTICLES.get();
@@ -79,6 +104,8 @@ public final class HatchConfig {
         }
     }
 
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     public static int storage(String resource, int tier) {
         try {
             return STORAGE.get(key(resource, tier)).get();
@@ -87,6 +114,7 @@ public final class HatchConfig {
         }
     }
 
+<<<<<<< HEAD
     public static int cost(String resource, int tier) {
         try {
             return COST.get(key(resource, tier)).get();
@@ -95,6 +123,8 @@ public final class HatchConfig {
         }
     }
 
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     public static int rate(String resource, int tier) {
         try {
             return RATE.get(key(resource, tier)).get();

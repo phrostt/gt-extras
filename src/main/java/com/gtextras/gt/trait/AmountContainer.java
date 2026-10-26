@@ -16,13 +16,18 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
 
     protected final IO handlerIO;
     protected final RecipeCapability<Integer> capability;
+<<<<<<< HEAD
     protected final int baseCapacity;
     protected int capacity;
+=======
+    protected final int capacity;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     protected final int transferPerOperation;
     protected final int operationInterval;
     protected final String nbtKey;
 
     protected int stored;
+<<<<<<< HEAD
     private int lastSeen;
     private boolean grouped;
     protected int fluidIndex;
@@ -57,13 +62,20 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         return controller instanceof com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine logic
                 && (logic.getRecipeLogic().isWorking() || logic.getRecipeLogic().isWaiting());
     }
+=======
+    protected int fluidIndex;
+    private TickableSubscription tickSubscription;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
     protected AmountContainer(MetaMachine machine, IO handlerIO, RecipeCapability<Integer> capability, int capacity,
                               int transferPerOperation, int operationInterval, String nbtKey) {
         super(machine);
         this.handlerIO = handlerIO;
         this.capability = capability;
+<<<<<<< HEAD
         this.baseCapacity = capacity;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         this.capacity = capacity;
         this.transferPerOperation = transferPerOperation;
         this.operationInterval = operationInterval;
@@ -74,6 +86,7 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
 
     protected abstract List<ExtrasFluids.Entry> fluidList();
 
+<<<<<<< HEAD
     protected boolean hasNative() {
         return false;
     }
@@ -89,12 +102,21 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
             return net.minecraft.network.chat.Component.translatable("gtextras.hatch.output_fluid_none");
         }
         fluidIndex = (Math.floorMod(fluidIndex, total) + 1) % total;
+=======
+    public net.minecraft.network.chat.Component cycleFluid() {
+        List<ExtrasFluids.Entry> list = fluidList();
+        if (list.isEmpty()) {
+            return net.minecraft.network.chat.Component.translatable("gtextras.hatch.output_fluid_none");
+        }
+        fluidIndex = (Math.floorMod(fluidIndex, list.size()) + 1) % list.size();
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         machine.markDirty();
         return currentFluidName();
     }
 
     public net.minecraft.network.chat.Component currentFluidName() {
         List<ExtrasFluids.Entry> list = fluidList();
+<<<<<<< HEAD
         if (list.isEmpty() && !hasNative()) {
             return net.minecraft.network.chat.Component.translatable("gtextras.hatch.output_fluid_none");
         }
@@ -102,11 +124,17 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
             return net.minecraft.network.chat.Component.translatable("gtextras.hatch.output_native",
                     capability.getName());
         }
+=======
+        if (list.isEmpty()) {
+            return net.minecraft.network.chat.Component.translatable("gtextras.hatch.output_fluid_none");
+        }
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         ExtrasFluids.Entry entry = list.get(Math.floorMod(fluidIndex, list.size()));
         return net.minecraft.network.chat.Component.translatable("gtextras.hatch.output_fluid",
                 entry.fluid().getFluidType().getDescription(), String.format("%s", entry.ratio()));
     }
 
+<<<<<<< HEAD
     public int maxPerTick() {
         return Math.max(1, transferPerOperation / Math.max(1, operationInterval));
     }
@@ -142,6 +170,8 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         return handlerIO;
     }
 
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     public int getStored() {
         return stored;
     }
@@ -154,10 +184,13 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         return capacity - stored;
     }
 
+<<<<<<< HEAD
     public void markLinksDirty() {
         machine.markDirty();
     }
 
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     public void setStored(int value) {
         int clamped = Math.max(0, Math.min(capacity, value));
         if (clamped != stored) {
@@ -184,6 +217,7 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         }
     }
 
+<<<<<<< HEAD
     private String costResource;
     private int costTier;
 
@@ -334,12 +368,21 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         int before = stored;
         transferWithNeighbours();
         if (stored != before) spendPower(cost);
+=======
+    private void tick() {
+        if (machine.getOffsetTimer() % operationInterval == 0) {
+            transferWithNeighbours();
+        }
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     @Override
     public List<Integer> handleRecipeInner(IO io, GTRecipe recipe, List<Integer> left, boolean simulate) {
         if (io != handlerIO) return left;
+<<<<<<< HEAD
         sync();
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         long wanted = 0;
         for (Integer value : left) {
             if (value != null) wanted += value;
@@ -357,7 +400,10 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
 
         long remaining = wanted - moved;
         if (remaining <= 0) return null;
+<<<<<<< HEAD
         if (machine.getLevel() != null) demandUntil = machine.getLevel().getGameTime() + 40;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         reportShortfall(recipe, io, wanted, io == IO.IN ? stored : capacity - stored);
         List<Integer> result = new ArrayList<>(1);
         result.add((int) Math.min(remaining, Integer.MAX_VALUE));
@@ -403,19 +449,29 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
     @Override
     public void saveCustomPersistedData(CompoundTag tag, boolean forDrop) {
         super.saveCustomPersistedData(tag, forDrop);
+<<<<<<< HEAD
         if (grouped) sync();
         tag.putInt(nbtKey, grouped ? 0 : stored);
         tag.putInt(nbtKey + "_fluid", fluidIndex);
         tag.putBoolean(nbtKey + "_passive", passive);
+=======
+        tag.putInt(nbtKey, stored);
+        tag.putInt(nbtKey + "_fluid", fluidIndex);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     @Override
     public void loadCustomPersistedData(CompoundTag tag) {
         super.loadCustomPersistedData(tag);
+<<<<<<< HEAD
         stored = Math.max(0, Math.min(baseCapacity, tag.getInt(nbtKey)));
         lastSeen = 0;
         grouped = false;
         fluidIndex = Math.max(0, tag.getInt(nbtKey + "_fluid"));
         passive = !tag.contains(nbtKey + "_passive") || tag.getBoolean(nbtKey + "_passive");
+=======
+        stored = Math.max(0, Math.min(capacity, tag.getInt(nbtKey)));
+        fluidIndex = Math.max(0, tag.getInt(nbtKey + "_fluid"));
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 }

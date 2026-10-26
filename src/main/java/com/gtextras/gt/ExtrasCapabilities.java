@@ -10,6 +10,7 @@ public final class ExtrasCapabilities {
     public static final AmountRecipeCapability BLOOD = new AmountRecipeCapability("blood", 0xFFB01010, 22,
             "gtextras.recipe.blood");
 
+<<<<<<< HEAD
     public static final String[] WILL_NAMES = { "raw", "corrosive", "destructive", "vengeful", "steadfast" };
     private static final int[] WILL_COLORS = { 0xFFE8E8E8, 0xFF8BD83A, 0xFFE8892B, 0xFFE04A4A, 0xFF4FA3E8 };
 
@@ -22,5 +23,7 @@ public final class ExtrasCapabilities {
         }
     }
 
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     private ExtrasCapabilities() {}
 }

@@ -2,6 +2,10 @@ package com.gtextras.gt.rotation;
 
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiController;
+<<<<<<< HEAD
+=======
+import com.gregtechceu.gtceu.api.machine.feature.multiblock.IMultiPart;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
@@ -58,6 +62,7 @@ public class MinRpmCondition extends RecipeCondition<MinRpmCondition> {
     @Override
     protected boolean testCondition(GTRecipe recipe, RecipeLogic recipeLogic) {
         MetaMachine machine = recipeLogic.getMachine();
+<<<<<<< HEAD
         float best = 0.0f;
         boolean inputs = false;
         boolean outputs = false;
@@ -78,10 +83,22 @@ public class MinRpmCondition extends RecipeCondition<MinRpmCondition> {
                                 if (!ri.isOverStressed()) best = Math.max(best, Math.abs(ri.getSpeed()));
                             }
                         }
+=======
+        boolean hasReader = false;
+        float best = 0.0f;
+        if (machine instanceof IMultiController controller) {
+            for (IMultiPart part : controller.getParts()) {
+                if (part instanceof RotationReaderMachine reader) {
+                    hasReader = true;
+                    best = Math.max(best, Math.abs(reader.getRpm()));
+                    if (reader.getRpm() >= rpm) {
+                        return true;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
                     }
                 }
             }
         }
+<<<<<<< HEAD
         if (inputs && best >= rpm) return true;
         Component reason;
         if (inputs) {
@@ -91,6 +108,11 @@ public class MinRpmCondition extends RecipeCondition<MinRpmCondition> {
         } else {
             reason = Component.translatable("gtextras.recipe.rotation_no_reader", rpm);
         }
+=======
+        Component reason = hasReader
+                ? Component.translatable("gtextras.recipe.rotation_too_slow", rpm, String.format("%.0f", best))
+                : Component.translatable("gtextras.recipe.rotation_no_reader", rpm);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         RecipeLogic.putFailureReason(recipeLogic, recipe, reason);
         return false;
     }

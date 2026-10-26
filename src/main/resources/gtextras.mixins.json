@@ -7,8 +7,12 @@
   "client": [
     "CoilRecipeSizeMixin",
     "LdlibJeiTooltipMixin",
+<<<<<<< HEAD
     "CoilJeiSlotMixin",
     "EmiLookupMixin"
+=======
+    "CoilJeiSlotMixin"
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
   ],
   "injectors": {
     "defaultRequire": 1

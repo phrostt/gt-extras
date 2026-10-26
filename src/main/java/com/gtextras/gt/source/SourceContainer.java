@@ -15,7 +15,11 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
+<<<<<<< HEAD
 public class SourceContainer extends AmountContainer implements com.gtextras.gt.trait.Linkable {
+=======
+public class SourceContainer extends AmountContainer {
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
     public static int transferFor(int tier) {
         return Math.max(1, HatchConfig.rate("source", tier) * INTERVAL);
@@ -30,13 +34,17 @@ public class SourceContainer extends AmountContainer implements com.gtextras.gt.
 
     public SourceContainer(MetaMachine machine, IO io, int tier) {
         super(machine, io, ExtrasCapabilities.SOURCE, capacityFor(tier), transferFor(tier), INTERVAL, "gtextras_source");
+<<<<<<< HEAD
         configureCost("source", tier);
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     @Override
     protected void transferWithNeighbours() {
         Level level = machine.getLevel();
         if (level == null) return;
+<<<<<<< HEAD
         int budget = transferPerOperation;
         if (handlerIO == IO.IN) {
             int moved = com.gtextras.gt.trait.ExtrasFluids.pull(level, machine.getPos(),
@@ -85,10 +93,58 @@ public class SourceContainer extends AmountContainer implements com.gtextras.gt.
                 budget -= taken;
                 links.advance();
                 com.gtextras.gt.trait.TransferFx.orb(level, target, pos, com.gtextras.gt.trait.TransferFx.SOURCE);
+=======
+        if (handlerIO == IO.IN) {
+            int moved = com.gtextras.gt.trait.ExtrasFluids.pull(level, machine.getPos(),
+                    com.gtextras.gt.trait.ExtrasFluids.source(), Math.min(getSpace(), transferPerOperation));
+            if (moved > 0) setStored(stored + moved);
+        } else {
+            int moved = com.gtextras.gt.trait.ExtrasFluids.push(level, machine.getPos(),
+                    com.gtextras.gt.trait.ExtrasFluids.source(), Math.min(stored, transferPerOperation), fluidIndex);
+            if (moved > 0) setStored(stored - moved);
+        }
+        int budget = transferPerOperation;
+
+        if (handlerIO == IO.IN) {
+            if (getSpace() <= 0) return;
+            List<ISpecialSourceProvider> providers = SourceUtil.canTakeSource(machine.getPos(), level, RANGE);
+            for (ISpecialSourceProvider provider : providers) {
+                if (budget <= 0 || getSpace() <= 0) break;
+                ISourceTile tile = provider.getSource();
+                if (tile == null) continue;
+                int want = Math.min(Math.min(tile.getSource(), getSpace()), budget);
+                if (want <= 0) continue;
+                int before = tile.getSource();
+                tile.removeSource(want);
+                int taken = before - tile.getSource();
+                if (taken > 0) {
+                    setStored(stored + taken);
+                    budget -= taken;
+                }
+            }
+        } else {
+            if (stored <= 0) return;
+            List<ISpecialSourceProvider> providers = SourceUtil.canGiveSource(machine.getPos(), level, RANGE);
+            for (ISpecialSourceProvider provider : providers) {
+                if (budget <= 0 || stored <= 0) break;
+                ISourceTile tile = provider.getSource();
+                if (tile == null) continue;
+                int space = tile.getMaxSource() - tile.getSource();
+                int give = Math.min(Math.min(space, stored), budget);
+                if (give <= 0) continue;
+                int before = tile.getSource();
+                tile.addSource(give);
+                int given = tile.getSource() - before;
+                if (given > 0) {
+                    setStored(stored - given);
+                    budget -= given;
+                }
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
             }
         }
     }
 
+<<<<<<< HEAD
     private final com.gtextras.gt.trait.LinkSet links = new com.gtextras.gt.trait.LinkSet();
 
     @Override
@@ -179,6 +235,8 @@ public class SourceContainer extends AmountContainer implements com.gtextras.gt.
         return false;
     }
 
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     @Override
     protected java.util.List<com.gtextras.gt.trait.ExtrasFluids.Entry> fluidList() {
         return com.gtextras.gt.trait.ExtrasFluids.source();

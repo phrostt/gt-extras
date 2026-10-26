@@ -14,6 +14,7 @@ public final class NeedsReader {
 
     public record Needs(long manaIn, long manaInTick, long manaOut, long manaOutTick,
                         long sourceIn, long sourceInTick, long sourceOut, long sourceOutTick,
+<<<<<<< HEAD
                         long bloodIn, long bloodInTick, long bloodOut, long bloodOutTick, int rpm, int outRpm, long[][] will) {
         public boolean hasWill(int index) {
             long[] w = will[index];
@@ -27,6 +28,9 @@ public final class NeedsReader {
             return false;
         }
 
+=======
+                        long bloodIn, long bloodInTick, long bloodOut, long bloodOutTick, int rpm) {
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         public boolean hasMana() {
             return manaIn + manaInTick + manaOut + manaOutTick > 0;
         }
@@ -42,10 +46,13 @@ public final class NeedsReader {
         public boolean hasRpm() {
             return rpm > 0;
         }
+<<<<<<< HEAD
 
         public boolean hasOutRpm() {
             return outRpm > 0;
         }
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     private NeedsReader() {}
@@ -55,11 +62,15 @@ public final class NeedsReader {
             return null;
         }
         int rpm = 0;
+<<<<<<< HEAD
         int outRpm = 0;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         for (RecipeCondition<?> condition : recipe.conditions) {
             if (condition instanceof MinRpmCondition min) {
                 rpm = Math.max(rpm, min.getRpm());
             }
+<<<<<<< HEAD
             if (condition instanceof com.gtextras.gt.rotation.OutputRpmCondition out) {
                 outRpm = Math.max(outRpm, out.getRpm());
             }
@@ -69,6 +80,8 @@ public final class NeedsReader {
             will[i] = new long[] { sum(recipe.inputs, ExtrasCapabilities.WILL[i]),
                     sum(recipe.tickInputs, ExtrasCapabilities.WILL[i]), sum(recipe.outputs, ExtrasCapabilities.WILL[i]),
                     sum(recipe.tickOutputs, ExtrasCapabilities.WILL[i]) };
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         }
         Needs needs = new Needs(
                 sum(recipe.inputs, ExtrasCapabilities.MANA), sum(recipe.tickInputs, ExtrasCapabilities.MANA),
@@ -77,9 +90,14 @@ public final class NeedsReader {
                 sum(recipe.outputs, ExtrasCapabilities.SOURCE), sum(recipe.tickOutputs, ExtrasCapabilities.SOURCE),
                 sum(recipe.inputs, ExtrasCapabilities.BLOOD), sum(recipe.tickInputs, ExtrasCapabilities.BLOOD),
                 sum(recipe.outputs, ExtrasCapabilities.BLOOD), sum(recipe.tickOutputs, ExtrasCapabilities.BLOOD),
+<<<<<<< HEAD
                 rpm, outRpm, will);
         return needs.hasMana() || needs.hasSource() || needs.hasBlood() || needs.hasRpm() || needs.hasOutRpm() || needs.hasAnyWill()
                 ? needs : null;
+=======
+                rpm);
+        return needs.hasMana() || needs.hasSource() || needs.hasBlood() || needs.hasRpm() ? needs : null;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     private static long sum(Map<RecipeCapability<?>, List<Content>> map, RecipeCapability<?> capability) {

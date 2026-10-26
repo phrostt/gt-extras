@@ -1,10 +1,14 @@
 package com.gtextras.gt;
 
+<<<<<<< HEAD
 import com.gregtechceu.gtceu.api.capability.recipe.IO;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeCapabilityHolder;
 import com.gregtechceu.gtceu.api.capability.recipe.IRecipeHandler;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gtextras.gt.trait.AmountContainer;
+=======
+import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -18,7 +22,10 @@ import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Map;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
 public class AmountRecipeCapability extends RecipeCapability<Integer> {
 
@@ -42,6 +49,7 @@ public class AmountRecipeCapability extends RecipeCapability<Integer> {
     @Override
     public void addXEIInfo(WidgetGroup group, int xOffset, GTRecipe recipe, List<Content> contents, boolean perTick,
                            boolean isInput, MutableInt yOffset) {
+<<<<<<< HEAD
     }
 
     private long perParallel(Map<RecipeCapability<?>, List<Content>> side) {
@@ -83,5 +91,21 @@ public class AmountRecipeCapability extends RecipeCapability<Integer> {
             }
         }
         return (int) Math.max(1L, Math.min(multiplier, space / per));
+=======
+        long total = 0;
+        for (Content content : contents) {
+            total += of(content.getContent());
+        }
+        if (total <= 0) return;
+        String key = langKey + (isInput ? ".in" : ".out") + (perTick ? "_tick" : "");
+        int below = 0;
+        for (RecipeCondition<?> condition : recipe.conditions) {
+            if (condition.getTooltips() != null) {
+                below++;
+            }
+        }
+        group.addWidget(new LabelWidget(3 - xOffset, yOffset.addAndGet(10) + below * 10,
+                LocalizationUtils.format(key, String.format("%,d", total))));
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 }

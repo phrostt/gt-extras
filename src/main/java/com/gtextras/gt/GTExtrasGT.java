@@ -9,7 +9,10 @@ import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
 import com.gtextras.GTExtras;
 import com.gtextras.gt.mana.ManaCaps;
 import com.gtextras.gt.rotation.MinRpmCondition;
+<<<<<<< HEAD
 import com.gtextras.gt.rotation.OutputRpmCondition;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
@@ -47,6 +50,7 @@ public final class GTExtrasGT {
                     (GTCEuAPI.RegisterEvent<?, RecipeConditionType> event) -> registerConditions());
         }
         if (create) {
+<<<<<<< HEAD
             com.gtextras.gt.rotation.RotationRegistry.init(modBus);
         }
         com.gtextras.gt.tool.ExtrasItems.init(modBus);
@@ -59,6 +63,16 @@ public final class GTExtrasGT {
         if (blood) {
             com.gtextras.gt.trait.HatchStorageCaps.init();
         }
+=======
+            com.gtextras.gt.rotation.coupler.CouplerRegistry.init(modBus);
+            if (net.minecraftforge.fml.loading.FMLEnvironment.dist == net.minecraftforge.api.distmarker.Dist.CLIENT) {
+                modBus.addListener(com.gtextras.gt.rotation.coupler.client.MotorClient::register);
+            }
+        }
+        if (botania) {
+            com.gtextras.gt.mana.ManaCaps.init();
+        }
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         GTExtras.LOGGER.info("[{}] GregTech hatches enabled (botania={}, ars_nouveau={}, create={})",
                 GTExtras.MOD_ID, botania, ars, create);
     }
@@ -68,13 +82,20 @@ public final class GTExtrasGT {
         if (botania) ExtrasMachines.initMana();
         if (ars) ExtrasMachines.initSource();
         if (blood) ExtrasMachines.initBlood();
+<<<<<<< HEAD
         if (blood) ExtrasMachines.initWill();
+=======
+        if (create) ExtrasMachines.initRotation();
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     private static void registerConditions() {
         ExtrasConditions.MIN_RPM = GTRegistries.RECIPE_CONDITIONS.register("gtextras_min_rpm",
                 new RecipeConditionType<>(MinRpmCondition::new, MinRpmCondition.CODEC));
+<<<<<<< HEAD
         ExtrasConditions.OUTPUT_RPM = GTRegistries.RECIPE_CONDITIONS.register("gtextras_output_rpm",
                 new RecipeConditionType<>(OutputRpmCondition::new, OutputRpmCondition.CODEC));
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 }

@@ -34,9 +34,12 @@ public class ExtrasAddon implements IGTAddon {
         GTRegistries.RECIPE_CAPABILITIES.register(ExtrasCapabilities.MANA.name, ExtrasCapabilities.MANA);
         GTRegistries.RECIPE_CAPABILITIES.register(ExtrasCapabilities.SOURCE.name, ExtrasCapabilities.SOURCE);
         GTRegistries.RECIPE_CAPABILITIES.register(ExtrasCapabilities.BLOOD.name, ExtrasCapabilities.BLOOD);
+<<<<<<< HEAD
         for (AmountRecipeCapability will : ExtrasCapabilities.WILL) {
             GTRegistries.RECIPE_CAPABILITIES.register(will.name, will);
         }
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     @Override
@@ -44,9 +47,12 @@ public class ExtrasAddon implements IGTAddon {
         register(event, ExtrasCapabilities.MANA);
         register(event, ExtrasCapabilities.SOURCE);
         register(event, ExtrasCapabilities.BLOOD);
+<<<<<<< HEAD
         for (AmountRecipeCapability will : ExtrasCapabilities.WILL) {
             register(event, will);
         }
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     private static void register(KJSRecipeKeyEvent event, AmountRecipeCapability capability) {

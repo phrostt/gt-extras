@@ -4,14 +4,21 @@ import com.gtextras.gt.rotation.coupler.RotationMotorBlockEntity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+<<<<<<< HEAD
+=======
+import com.simibubi.create.AllBlocks;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+<<<<<<< HEAD
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraftforge.client.model.data.ModelData;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.Direction;
@@ -27,6 +34,7 @@ public class RotationMotorRenderer implements BlockEntityRenderer<RotationMotorB
         BlockState own = be.getBlockState();
         if (!own.hasProperty(RotatedPillarKineticBlock.AXIS)) return;
         Direction.Axis axis = own.getValue(RotatedPillarKineticBlock.AXIS);
+<<<<<<< HEAD
 
         drawCasing(be, own, axis, poseStack, buffer, packedLight);
 
@@ -126,6 +134,21 @@ public class RotationMotorRenderer implements BlockEntityRenderer<RotationMotorB
                 consumer.putBulkData(poseStack.last(), quad, 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY);
             }
         }
+=======
+        BlockState shaft = AllBlocks.SHAFT.getDefaultState().setValue(RotatedPillarKineticBlock.AXIS, axis);
+
+        float time = be.getLevel().getGameTime() + partialTick;
+        float degrees = (time * be.getSpeed() * 3.0f / 10.0f) % 360.0f;
+        Direction positive = Direction.get(Direction.AxisDirection.POSITIVE, axis);
+        Vector3f direction = new Vector3f(positive.getStepX(), positive.getStepY(), positive.getStepZ());
+
+        poseStack.pushPose();
+        poseStack.translate(0.5, 0.5, 0.5);
+        poseStack.mulPose(Axis.of(direction).rotationDegrees(degrees));
+        poseStack.translate(-0.5, -0.5, -0.5);
+        Minecraft.getInstance().getBlockRenderer().renderSingleBlock(shaft, poseStack, buffer, packedLight,
+                OverlayTexture.NO_OVERLAY);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         poseStack.popPose();
     }
 }

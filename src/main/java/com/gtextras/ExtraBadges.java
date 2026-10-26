@@ -2,7 +2,10 @@ package com.gtextras;
 
 import com.gtextras.gt.NeedsReader;
 
+<<<<<<< HEAD
 import com.gtextras.gt.ExtrasCapabilities;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -15,6 +18,7 @@ import java.util.List;
 
 public final class ExtraBadges {
 
+<<<<<<< HEAD
     public static final int COLUMNS = 6;
     public static final int MAX_CELLS = 6;
     public static final int MAX_TEXT_LINES = 16;
@@ -162,6 +166,11 @@ public final class ExtraBadges {
     }
 
     private static int currentDuration;
+=======
+    public static final int STEP = 20;
+
+    public record Badge(ItemStack icon, List<Component> tooltip) {}
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
     private ExtraBadges() {}
 
@@ -171,6 +180,7 @@ public final class ExtraBadges {
         }
         try {
             NeedsReader.Needs needs = NeedsReader.read(recipe);
+<<<<<<< HEAD
             currentDuration = recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe gt ? gt.duration : 0;
             currentText = needs == null ? List.of() : buildText(needs, currentDuration);
             if (needs != null && recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe gtRecipe
@@ -187,11 +197,14 @@ public final class ExtraBadges {
                 }
                 currentText = withLoad;
             }
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
             if (needs == null) {
                 return List.of();
             }
             List<Badge> badges = new ArrayList<>(3);
             if (needs.hasMana()) {
+<<<<<<< HEAD
                 add(badges, fluidIcon(com.gtextras.gt.trait.ExtrasFluids.mana(), "botania:mana_pool"), "mana", needs.manaIn(), needs.manaInTick(), needs.manaOut(),
                         needs.manaOutTick());
             }
@@ -209,6 +222,19 @@ public final class ExtraBadges {
                     add(badges, willIcon(i), "will", w[0], w[1], w[2], w[3], ExtrasCapabilities.WILL_NAMES[i]);
                 }
             }
+=======
+                add(badges, "botania:mana_pool", "mana", needs.manaIn(), needs.manaInTick(), needs.manaOut(),
+                        needs.manaOutTick());
+            }
+            if (needs.hasSource()) {
+                add(badges, "ars_nouveau:source_gem", "source", needs.sourceIn(), needs.sourceInTick(),
+                        needs.sourceOut(), needs.sourceOutTick());
+            }
+            if (needs.hasBlood()) {
+                add(badges, "bloodmagic:bloodaltar", "blood", needs.bloodIn(), needs.bloodInTick(), needs.bloodOut(),
+                        needs.bloodOutTick());
+            }
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
             if (needs.hasRpm()) {
                 ItemStack icon = stack("create:speedometer");
                 if (!icon.isEmpty()) {
@@ -216,6 +242,7 @@ public final class ExtraBadges {
                     lines.add(Component.translatable("gtextras.tooltip.badge.rpm").withStyle(ChatFormatting.GOLD));
                     lines.add(Component.translatable("gtextras.tooltip.badge.rpm_req", needs.rpm())
                             .withStyle(ChatFormatting.GRAY));
+<<<<<<< HEAD
                     badges.add(new Badge(icon, lines, Integer.toString(needs.rpm()), NEUTRAL_COLOR));
                 }
             }
@@ -232,11 +259,18 @@ public final class ExtraBadges {
             }
             badges.sort(java.util.Comparator.comparingInt(b -> b.color() == NEUTRAL_COLOR ? 0 : 1));
             return badges.size() > MAX_CELLS ? new ArrayList<>(badges.subList(0, MAX_CELLS)) : badges;
+=======
+                    badges.add(new Badge(icon, lines));
+                }
+            }
+            return badges;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         } catch (Throwable t) {
             return List.of();
         }
     }
 
+<<<<<<< HEAD
     private static ItemStack willIcon(int index) {
         ItemStack icon = fluidIcon(com.gtextras.gt.trait.ExtrasFluids.will(index), "bloodmagic:soulgemlesser");
         return icon;
@@ -254,10 +288,28 @@ public final class ExtraBadges {
 
     private static void addInternal(List<Badge> badges, ItemStack icon, String kind, long in, long inTick, long out,
                             long outTick, String variant) {
+=======
+    public static int firstX(CoilInfo.Layout layout, CoilInfo.Result info) {
+        int leftmost;
+        if (info == null) {
+            leftmost = layout.iconX() + STEP;
+        } else if (info.hasTarget()) {
+            leftmost = layout.dataX();
+        } else {
+            leftmost = layout.iconX();
+        }
+        return leftmost - STEP;
+    }
+
+    private static void add(List<Badge> badges, String itemId, String kind, long in, long inTick, long out,
+                            long outTick) {
+        ItemStack icon = stack(itemId);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         if (icon.isEmpty()) {
             return;
         }
         List<Component> lines = new ArrayList<>();
+<<<<<<< HEAD
         lines.add(variant == null
                 ? Component.translatable("gtextras.tooltip.badge." + kind).withStyle(ChatFormatting.GOLD)
                 : Component.literal(Character.toUpperCase(variant.charAt(0)) + variant.substring(1) + " ")
@@ -289,6 +341,14 @@ public final class ExtraBadges {
                     String.format("%,d", perTick * currentDuration), String.format("%,d", currentDuration),
                     String.format("%.1f", currentDuration / 20.0)).withStyle(ChatFormatting.DARK_GRAY));
         }
+=======
+        lines.add(Component.translatable("gtextras.tooltip.badge." + kind).withStyle(ChatFormatting.GOLD));
+        line(lines, "consumes", in);
+        line(lines, "consumes_tick", inTick);
+        line(lines, "produces", out);
+        line(lines, "produces_tick", outTick);
+        badges.add(new Badge(icon, lines));
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     private static void line(List<Component> lines, String key, long amount) {

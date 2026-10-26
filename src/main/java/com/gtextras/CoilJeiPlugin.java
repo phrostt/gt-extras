@@ -286,7 +286,11 @@ public class CoilJeiPlugin implements IModPlugin {
                          GuiGraphics guiGraphics, double mouseX, double mouseY) {
             CoilConfig config = CoilConfig.get();
             CoilInfo.Result info = resolve(recipe);
+<<<<<<< HEAD
             List<ExtraBadges.Badge> badges = ExtraBadges.of(config, recipe);
+=======
+            List<ExtraBadges.Badge> badges = CoilInfo.isSlotted(recipe) ? List.of() : ExtraBadges.of(config, recipe);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
             if (info == null && badges.isEmpty()) {
                 return;
             }
@@ -295,6 +299,7 @@ public class CoilJeiPlugin implements IModPlugin {
             CoilInfo.Layout layout = CoilInfo.layout(config, cardWidth, cardHeight);
             Minecraft mc = Minecraft.getInstance();
 
+<<<<<<< HEAD
             boolean gridSlotted = CoilInfo.isSlotted(recipe);
             for (int i = 0; i < badges.size(); i++) {
                 int cx = ExtraBadges.cellX(layout, i);
@@ -305,6 +310,12 @@ public class CoilJeiPlugin implements IModPlugin {
             }
             if (!badges.isEmpty()) {
                 ExtraBadges.drawText(guiGraphics, layout);
+=======
+            int badgeX = ExtraBadges.firstX(layout, info);
+            for (ExtraBadges.Badge badge : badges) {
+                guiGraphics.renderItem(badge.icon(), badgeX + 1, layout.iconY() + 1);
+                badgeX -= ExtraBadges.STEP;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
             }
             if (info == null) {
                 return;
@@ -327,6 +338,17 @@ public class CoilJeiPlugin implements IModPlugin {
             } else if (!slotted) {
                 guiGraphics.renderItem(info.research(), layout.iconX() + 1, layout.iconY() + 1);
             }
+<<<<<<< HEAD
+=======
+
+            if (info.hasCoil() && config.showText) {
+                Component tempLine = Component.translatable("gtextras.text." + info.mode(),
+                        String.format("%,d", info.required()));
+                Component coilLine = Component.translatable("gtextras.text.coil", info.coil().name().getString());
+                guiGraphics.drawString(mc.font, tempLine, layout.textX(), layout.textY1(), 0xFFFFFF, true);
+                guiGraphics.drawString(mc.font, coilLine, layout.textX(), layout.textY2(), 0xFFFFFF, true);
+            }
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         }
 
         @Override

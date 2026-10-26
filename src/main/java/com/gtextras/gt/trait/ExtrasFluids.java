@@ -23,11 +23,14 @@ public final class ExtrasFluids {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLOOD;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> MANA;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOURCE;
+<<<<<<< HEAD
     private static final java.util.List<ForgeConfigSpec.ConfigValue<List<? extends String>>> WILL = new ArrayList<>();
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> WILL_ITEMS;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> MANA_ITEMS;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLOOD_ITEMS;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOURCE_ITEMS;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     public static final ForgeConfigSpec SPEC;
 
     static {
@@ -39,6 +42,7 @@ public final class ExtrasFluids {
                 o -> o instanceof String);
         MANA = builder.defineListAllowEmpty("manaFluids", List.of("gtceu:mana_essence", "#forge:mana"), o -> o instanceof String);
         SOURCE = builder.defineListAllowEmpty("sourceFluids", List.of("gtceu:source", "#forge:source"), o -> o instanceof String);
+<<<<<<< HEAD
         for (String type : com.gtextras.gt.ExtrasCapabilities.WILL_NAMES) {
             String material = type.equals("raw") ? "demon" : type;
             List<String> defaults = new ArrayList<>(List.of("gtceu:" + material, "#forge:" + material,
@@ -66,18 +70,25 @@ public final class ExtrasFluids {
                 o -> o instanceof String);
         SOURCE_ITEMS = builder.defineListAllowEmpty("sourceItems", List.of("ars_nouveau:source_gem=1000"),
                 o -> o instanceof String);
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         SPEC = builder.build();
     }
 
     private ExtrasFluids() {}
 
     public static void register() {
+<<<<<<< HEAD
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, SPEC, "gtextras-fluids.toml");
+=======
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SPEC, "gtextras-fluids.toml");
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     public record Entry(Fluid fluid, double ratio) {}
 
     public static List<Entry> blood() {
+<<<<<<< HEAD
         return resolve(read(BLOOD));
     }
 
@@ -230,6 +241,17 @@ public final class ExtrasFluids {
         } catch (RuntimeException e) {
             return value.getDefault();
         }
+=======
+        return resolve(BLOOD.get());
+    }
+
+    public static List<Entry> mana() {
+        return resolve(MANA.get());
+    }
+
+    public static List<Entry> source() {
+        return resolve(SOURCE.get());
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     private static List<Entry> resolve(List<? extends String> entries) {
@@ -277,6 +299,7 @@ public final class ExtrasFluids {
         return be.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite()).resolve().orElse(null);
     }
 
+<<<<<<< HEAD
     public static boolean hasTank(Level level, BlockPos pos) {
         for (Direction dir : Direction.values()) {
             if (neighbour(level, pos, dir) != null) return true;
@@ -284,6 +307,8 @@ public final class ExtrasFluids {
         return false;
     }
 
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     public static int pull(Level level, BlockPos pos, List<Entry> fluids, int maxUnits) {
         int units = 0;
         if (fluids.isEmpty() || maxUnits <= 0) return 0;

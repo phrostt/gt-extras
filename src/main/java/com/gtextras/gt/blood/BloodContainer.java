@@ -26,7 +26,10 @@ public class BloodContainer extends AmountContainer {
     public BloodContainer(MetaMachine machine, IO io, int tier) {
         super(machine, io, ExtrasCapabilities.BLOOD, capacityFor(tier), transferFor(tier), INTERVAL,
                 "gtextras_blood");
+<<<<<<< HEAD
         configureCost("blood", tier);
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     @Override
@@ -35,6 +38,7 @@ public class BloodContainer extends AmountContainer {
         if (level == null) return;
         BlockPos pos = machine.getPos();
         if (handlerIO == IO.IN) {
+<<<<<<< HEAD
             int budget = transferPerOperation;
             int moved = ExtrasFluids.pull(level, pos, ExtrasFluids.blood(), Math.min(getSpace(), budget));
             if (moved > 0) {
@@ -46,6 +50,11 @@ public class BloodContainer extends AmountContainer {
                         Math.min(getSpace(), budget));
                 if (eaten > 0) setStored(stored + eaten);
             }
+=======
+            int moved = ExtrasFluids.pull(level, pos, ExtrasFluids.blood(),
+                    Math.min(getSpace(), transferPerOperation));
+            if (moved > 0) setStored(stored + moved);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         } else {
             int moved = ExtrasFluids.push(level, pos, ExtrasFluids.blood(), Math.min(stored, transferPerOperation), fluidIndex);
             if (moved > 0) setStored(stored - moved);

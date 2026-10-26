@@ -7,7 +7,10 @@ import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gtextras.gt.ExtrasAbilities;
 import com.gtextras.gt.ExtrasCapabilities;
 import com.gtextras.gt.rotation.MinRpmCondition;
+<<<<<<< HEAD
 import com.gtextras.gt.rotation.OutputRpmCondition;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
 public final class GTX {
 
@@ -15,6 +18,7 @@ public final class GTX {
     public static final RecipeCapability<Integer> SOURCE = ExtrasCapabilities.SOURCE;
     public static final RecipeCapability<Integer> BLOOD = ExtrasCapabilities.BLOOD;
 
+<<<<<<< HEAD
     public static final RecipeCapability<Integer> WILL_RAW = ExtrasCapabilities.WILL[0];
     public static final RecipeCapability<Integer> WILL_CORROSIVE = ExtrasCapabilities.WILL[1];
     public static final RecipeCapability<Integer> WILL_DESTRUCTIVE = ExtrasCapabilities.WILL[2];
@@ -24,20 +28,29 @@ public final class GTX {
     public static final PartAbility WILL_INPUT = ExtrasAbilities.WILL_INPUT;
     public static final PartAbility WILL_OUTPUT = ExtrasAbilities.WILL_OUTPUT;
 
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     public static final PartAbility MANA_INPUT = ExtrasAbilities.MANA_INPUT;
     public static final PartAbility MANA_OUTPUT = ExtrasAbilities.MANA_OUTPUT;
     public static final PartAbility SOURCE_INPUT = ExtrasAbilities.SOURCE_INPUT;
     public static final PartAbility SOURCE_OUTPUT = ExtrasAbilities.SOURCE_OUTPUT;
     public static final PartAbility BLOOD_INPUT = ExtrasAbilities.BLOOD_INPUT;
     public static final PartAbility BLOOD_OUTPUT = ExtrasAbilities.BLOOD_OUTPUT;
+<<<<<<< HEAD
+=======
+    public static final PartAbility ROTATION_READER = ExtrasAbilities.ROTATION_READER;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
     private GTX() {}
 
     public static RecipeCondition<?> minRpm(int rpm) {
         return new MinRpmCondition(rpm);
     }
+<<<<<<< HEAD
 
     public static RecipeCondition<?> outputRpm(int rpm) {
         return new OutputRpmCondition(rpm);
     }
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 }

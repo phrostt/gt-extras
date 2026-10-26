@@ -1,10 +1,14 @@
 package com.gtextras.gt.rotation.coupler;
 
+<<<<<<< HEAD
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
+=======
+import com.gregtechceu.gtceu.api.machine.MetaMachine;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
 import com.gtextras.gt.rotation.RotationReaderMachine;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
@@ -18,11 +22,18 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class RotationCouplerBlockEntity extends KineticBlockEntity {
 
+<<<<<<< HEAD
     public static final float MIN_IMPACT = 1.0f;
     private static final int INTERVAL = 10;
 
     private boolean loaded;
     private float impact;
+=======
+    public static final float IMPACT = 16.0f;
+    private static final int INTERVAL = 10;
+
+    private boolean loaded;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
     public RotationCouplerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -30,9 +41,15 @@ public class RotationCouplerBlockEntity extends KineticBlockEntity {
 
     @Override
     public float calculateStressApplied() {
+<<<<<<< HEAD
         float applied = loaded ? impact : 0.0f;
         this.lastStressApplied = applied;
         return applied;
+=======
+        float impact = loaded ? IMPACT : 0.0f;
+        this.lastStressApplied = impact;
+        return impact;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     @Override
@@ -48,6 +65,7 @@ public class RotationCouplerBlockEntity extends KineticBlockEntity {
         if (level == null || level.isClientSide || level.getGameTime() % INTERVAL != 0) {
             return;
         }
+<<<<<<< HEAD
         IRecipeLogicMachine source = null;
         for (Direction dir : Direction.values()) {
             BlockEntity be = level.getBlockEntity(getBlockPos().relative(dir));
@@ -73,6 +91,26 @@ public class RotationCouplerBlockEntity extends KineticBlockEntity {
         if (working != loaded || (working && newImpact != impact)) {
             loaded = working;
             impact = newImpact;
+=======
+        boolean working = false;
+        for (Direction dir : Direction.values()) {
+            BlockEntity be = level.getBlockEntity(getBlockPos().relative(dir));
+            if (be instanceof com.gregtechceu.gtceu.api.machine.IMachineBlockEntity holder) {
+                MetaMachine machine = holder.getMetaMachine();
+                if (machine instanceof RotationReaderMachine reader && reader.isControllerWorking()) {
+                    working = true;
+                    break;
+                }
+                if (machine instanceof com.gregtechceu.gtceu.api.machine.feature.IRecipeLogicMachine recipeMachine
+                        && recipeMachine.getRecipeLogic().isWorking()) {
+                    working = true;
+                    break;
+                }
+            }
+        }
+        if (working != loaded) {
+            loaded = working;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
             if (hasNetwork()) {
                 getOrCreateNetwork().updateStressFor(this, calculateStressApplied());
             }

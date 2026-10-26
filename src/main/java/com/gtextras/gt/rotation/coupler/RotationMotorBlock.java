@@ -9,8 +9,12 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 
+<<<<<<< HEAD
 public class RotationMotorBlock extends RotatedPillarKineticBlock implements IBE<RotationMotorBlockEntity>,
         com.lowdragmc.lowdraglib.client.model.custommodel.ICTMPredicate {
+=======
+public class RotationMotorBlock extends RotatedPillarKineticBlock implements IBE<RotationMotorBlockEntity> {
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
     public RotationMotorBlock(Properties properties) {
         super(properties);
@@ -35,6 +39,7 @@ public class RotationMotorBlock extends RotatedPillarKineticBlock implements IBE
     public BlockEntityType<? extends RotationMotorBlockEntity> getBlockEntityType() {
         return CouplerRegistry.MOTOR_TYPE.get();
     }
+<<<<<<< HEAD
 
     @Override
     public boolean isConnected(net.minecraft.world.level.BlockAndTintGetter level, BlockState state, BlockPos pos,
@@ -54,4 +59,6 @@ public class RotationMotorBlock extends RotatedPillarKineticBlock implements IBE
         String path = key.getPath();
         return path.endsWith("_casing") || path.contains("casing");
     }
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 }

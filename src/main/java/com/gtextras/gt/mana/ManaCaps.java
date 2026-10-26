@@ -22,6 +22,7 @@ public final class ManaCaps {
 
     private ManaCaps() {}
 
+<<<<<<< HEAD
     private static final String BIND_TAG = "gtextras_hatch";
 
     public static void init() {
@@ -64,6 +65,10 @@ public final class ManaCaps {
         player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
                 result > 0 ? "gtextras.hatch.mana_bind_ok" : result == 0 ? "gtextras.hatch.mana_bind_removed"
                         : "gtextras.hatch.mana_bind_full", hatch.container().links().size()), true);
+=======
+    public static void init() {
+        MinecraftForge.EVENT_BUS.addGenericListener(BlockEntity.class, ManaCaps::attach);
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
     }
 
     private static void attach(AttachCapabilitiesEvent<BlockEntity> event) {
@@ -75,7 +80,10 @@ public final class ManaCaps {
     private static final class Provider implements ICapabilityProvider {
 
         private final MetaMachineBlockEntity be;
+<<<<<<< HEAD
         private LazyOptional<vazkii.botania.api.mana.ManaReceiver> busCached;
+=======
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
         private Provider(MetaMachineBlockEntity be) {
             this.be = be;
@@ -83,6 +91,7 @@ public final class ManaCaps {
 
         @Override
         public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+<<<<<<< HEAD
             if (cap == BotaniaForgeCapabilities.WANDABLE) {
                 MetaMachine machine = be.getMetaMachine();
                 if (machine instanceof ManaHatchMachine hatch) {
@@ -114,6 +123,11 @@ public final class ManaCaps {
                         }
                         return busCached.cast();
                     }
+=======
+            if (cap == BotaniaForgeCapabilities.MANA_RECEIVER) {
+                MetaMachine machine = be.getMetaMachine();
+                if (machine instanceof ManaHatchMachine hatch) {
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
                     return LazyOptional.of(hatch::container).cast();
                 }
             }

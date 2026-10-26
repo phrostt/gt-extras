@@ -14,6 +14,10 @@ import com.gtextras.gt.blood.BloodContainer;
 import com.gtextras.gt.blood.BloodHatchMachine;
 import com.gtextras.gt.mana.ManaContainer;
 import com.gtextras.gt.mana.ManaHatchMachine;
+<<<<<<< HEAD
+=======
+import com.gtextras.gt.rotation.RotationReaderMachine;
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 import com.gtextras.gt.source.SourceContainer;
 import com.gtextras.gt.source.SourceHatchMachine;
 
@@ -33,8 +37,12 @@ public final class ExtrasMachines {
     public static final MachineDefinition[] SOURCE_OUTPUT_HATCH = new MachineDefinition[GTValues.TIER_COUNT];
     public static final MachineDefinition[] BLOOD_INPUT_HATCH = new MachineDefinition[GTValues.TIER_COUNT];
     public static final MachineDefinition[] BLOOD_OUTPUT_HATCH = new MachineDefinition[GTValues.TIER_COUNT];
+<<<<<<< HEAD
     public static final MachineDefinition[] WILL_INPUT_HATCH = new MachineDefinition[GTValues.TIER_COUNT];
     public static final MachineDefinition[] WILL_OUTPUT_HATCH = new MachineDefinition[GTValues.TIER_COUNT];
+=======
+    public static final MachineDefinition[] ROTATION_READER_HATCH = new MachineDefinition[GTValues.TIER_COUNT];
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
 
     private ExtrasMachines() {}
 
@@ -77,6 +85,7 @@ public final class ExtrasMachines {
         }
     }
 
+<<<<<<< HEAD
     public static void initWill() {
         for (int tier = MIN_TIER; tier <= MAX_TIER; tier++) {
             final int fixedTier = tier;
@@ -87,6 +96,13 @@ public final class ExtrasMachines {
             WILL_OUTPUT_HATCH[tier] = hatch("will_output_hatch", "Will Output Hatch", tier,
                     (holder, t) -> new com.gtextras.gt.will.WillHatchMachine(holder, IO.OUT, t), ExtrasAbilities.WILL_OUTPUT,
                     () -> tips.apply(true));
+=======
+    public static void initRotation() {
+        for (int tier = MIN_TIER; tier <= MAX_TIER; tier++) {
+            ROTATION_READER_HATCH[tier] = hatch("rotation_reader_hatch", "Rotation Reader Hatch", tier,
+                    RotationReaderMachine::new, ExtrasAbilities.ROTATION_READER,
+                    () -> java.util.List.of(Component.translatable("gtextras.tooltip.rotation_reader")));
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         }
     }
 

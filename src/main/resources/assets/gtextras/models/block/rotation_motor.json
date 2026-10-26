@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "textures": {
     "all": "gtceu:block/casings/solid/machine_casing_solid_steel",
     "end": "gtceu:block/casings/solid/machine_casing_solid_steel",
@@ -6,31 +7,69 @@
     "particle": "gtceu:block/casings/solid/machine_casing_solid_steel",
     "shaft": "create:block/axis",
     "shaft_end": "create:block/axis_top"
+=======
+  "parent": "minecraft:block/block",
+  "textures": {
+    "all": "gtceu:block/casings/solid/machine_casing_solid_steel",
+    "particle": "gtceu:block/casings/solid/machine_casing_solid_steel"
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
   },
   "elements": [
     {
       "from": [
         0,
+<<<<<<< HEAD
         16,
+=======
+        0,
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         0
       ],
       "to": [
         16,
         16,
+<<<<<<< HEAD
         4
       ],
       "faces": {
         "up": {
           "texture": "#end",
           "cullface": "up"
+=======
+        5
+      ],
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         }
       }
     },
     {
       "from": [
         0,
+<<<<<<< HEAD
         16,
         12
+=======
+        0,
+        11
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
       ],
       "to": [
         16,
@@ -38,6 +77,7 @@
         16
       ],
       "faces": {
+<<<<<<< HEAD
         "up": {
           "texture": "#end",
           "cullface": "up"
@@ -333,11 +373,31 @@
             9,
             9
           ]
+=======
+        "down": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         }
       }
     },
     {
       "from": [
+<<<<<<< HEAD
         4,
         0,
         12
@@ -379,6 +439,67 @@
             9,
             9
           ]
+=======
+        0,
+        0,
+        5
+      ],
+      "to": [
+        5,
+        16,
+        11
+      ],
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        0,
+        5
+      ],
+      "to": [
+        16,
+        16,
+        11
+      ],
+      "faces": {
+        "down": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+>>>>>>> a4459919e05790fa03cf1c067bf6f2c7c0aa0ca4
         }
       }
     }
