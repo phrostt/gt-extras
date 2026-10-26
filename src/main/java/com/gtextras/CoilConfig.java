@@ -73,6 +73,8 @@ public class CoilConfig {
     /** Show mana, source and minimum RPM requirements as extra badges (needs the GregTech hatches). */
     public boolean showExtraBadges = true;
 
+    public Set<String> stressRecipeTypes = new LinkedHashSet<>(List.of("gtceu:extras_test"));
+
     /** Draw the same info in JEI when EMI is not installed. */
     public boolean jeiEnabled = true;
 

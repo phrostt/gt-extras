@@ -35,7 +35,7 @@ Every other mod is optional. A feature turns on when the mod it needs is install
 
 ## Hatches
 
-All hatches come in **LV to UV**, for example `gtextras:mana_input_hatch_hv`. Storage and transfer rate per tier are in `gtextras-hatches.toml`, and the tooltip shows the numbers. An empty hand right click shows the contents in the action bar.
+All hatches come in **LV to UV**, for example `gtextras:mana_input_hatch_hv`. Storage and transfer rate per tier are in `gtextras-hatches.toml`, and the tooltip shows the numbers. An empty hand right click shows the contents in the action bar. Hatches only work while they are part of a formed multiblock. On their own they do nothing, and a multiblock that is not formed stops them too.
 
 ### Mana Input / Output Hatch
 *Needs Botania.*
@@ -43,8 +43,9 @@ All hatches come in **LV to UV**, for example `gtextras:mana_input_hatch_hv`. St
 | | |
 |---|---|
 | Input | Pulls from adjacent Mana Pools, accepts spreader bursts, and takes mana fluid from adjacent tanks. |
-| Output | Pushes into pools, sparks and tanks. |
-| Screwdriver | Sneak right click on the output cycles every fluid on the mana list, then a last entry that outputs straight into Botania pools and sparks. |
+| Output | Pushes fluid into an adjacent tank. With no tank next to it, it pushes into pools, sparks and spreaders instead. |
+| Screwdriver | Sneak right click on the output cycles the fluids on the mana list. |
+| Wand of the Forest | Use the wand on the output hatch, then on a Mana Pool or Spreader within 6 blocks, to link them like a generating flower. A linked hatch pushes only into that target and ignores adjacent tanks, pools and spreaders. Sneak with the wand on the hatch to unlink. |
 | Capability | `GTX.MANA` |
 | Ability | `GTX.MANA_INPUT`, `GTX.MANA_OUTPUT` |
 
@@ -54,8 +55,8 @@ All hatches come in **LV to UV**, for example `gtextras:mana_input_hatch_hv`. St
 | | |
 |---|---|
 | Input | Pulls from Source Jars within 6 blocks, and from adjacent tanks. |
-| Output | Fills Source Jars and adjacent tanks. |
-| Screwdriver | Sneak right click on the output cycles the fluids on the Source list, then a last entry for Ars jars only. |
+| Output | Pushes fluid into an adjacent tank. With no tank next to it, it fills Source Jars within 6 blocks. |
+| Screwdriver | Sneak right click on the output cycles the fluids on the Source list. |
 | Capability | `GTX.SOURCE` |
 | Ability | `GTX.SOURCE_INPUT`, `GTX.SOURCE_OUTPUT` |
 
@@ -77,7 +78,7 @@ All hatches come in **LV to UV**, for example `gtextras:mana_input_hatch_hv`. St
 |---|---|
 | Input | Drains tartaric gems, Demon Will items, demon crystals and the extra gem items from the `willItems` config in adjacent inventories, plus will fluids from adjacent tanks. |
 | Output | Pushes will fluid into adjacent tanks, or fills tartaric gems in adjacent inventories. |
-| Screwdriver | Sneak right click on the output switches between fluid mode and gem mode. |
+| Screwdriver | Right click on the output cycles which kind of will it outputs. Next to a tank it pushes the fluid, next to an inventory it fills tartaric gems, and drops will gems worth 144 only when the inventory has no tartaric gem at all. |
 | Capabilities | `GTX.WILL_RAW`, `GTX.WILL_CORROSIVE`, `GTX.WILL_DESTRUCTIVE`, `GTX.WILL_VENGEFUL`, `GTX.WILL_STEADFAST` |
 | Ability | `GTX.WILL_INPUT`, `GTX.WILL_OUTPUT` |
 
@@ -153,7 +154,7 @@ Working examples are in `examples/test_multiblock/`.
 | File | Type | Content |
 |---|---|---|
 | `gtextras-fluids.toml` | server | Fluid lists for blood, mana, Source and the five will types, and the `willItems` list. Entries are fluid ids or `#tags`, optionally `=ratio`. |
-| `gtextras-hatches.toml` | server | Storage and rate per resource and tier. |
+| `gtextras-hatches.toml` | server | Storage and rate per resource and tier, `euPerOperation` (EU drawn from the multiblock's energy hatches each time the hatch moves something on its own, default 0), and `transferParticles` to turn the Ars style orbs on mana and source hatches off. |
 | `config/gtextras.json` | client | Coil and research badge settings. |
 
 Server configs are per world and sync to players. Put copies in `defaultconfigs/` to set them for new worlds. Fluids that are not installed are skipped.

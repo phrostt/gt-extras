@@ -17,11 +17,15 @@ public final class HatchConfig {
 
     private static final Map<String, ForgeConfigSpec.IntValue> STORAGE = new HashMap<>();
     private static final Map<String, ForgeConfigSpec.IntValue> RATE = new HashMap<>();
+    private static final Map<String, ForgeConfigSpec.IntValue> COST = new HashMap<>();
     public static final ForgeConfigSpec SPEC;
+    private static final ForgeConfigSpec.BooleanValue PARTICLES;
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
         builder.comment("Per tier hatch sizes. storage is the internal buffer. rate is the most the hatch moves per tick with neighbouring pools, jars and tanks.");
+        PARTICLES = builder.comment("Spawn Ars Nouveau style orbs when a mana or source hatch moves resources to or from a neighbouring block.")
+                .define("transferParticles", true);
         for (String resource : RESOURCES) {
             builder.push(resource);
             for (int tier = MIN_TIER; tier <= MAX_TIER; tier++) {
@@ -30,6 +34,8 @@ public final class HatchConfig {
                         Integer.MAX_VALUE));
                 RATE.put(key(resource, tier), builder.defineInRange("rate", defaultRate(resource, tier), 1,
                         Integer.MAX_VALUE / 20));
+                COST.put(key(resource, tier), builder.comment("EU drawn each time the hatch moves something on its own. 0 means free. Paid from the energy hatches of the multiblock the hatch is part of. With no formed multiblock or no energy there, nothing moves.")
+                        .defineInRange("euPerOperation", 0, 0, Integer.MAX_VALUE));
                 builder.pop();
             }
             builder.pop();
@@ -65,11 +71,27 @@ public final class HatchConfig {
         };
     }
 
+    public static boolean particles() {
+        try {
+            return PARTICLES.get();
+        } catch (RuntimeException e) {
+            return true;
+        }
+    }
+
     public static int storage(String resource, int tier) {
         try {
             return STORAGE.get(key(resource, tier)).get();
         } catch (RuntimeException e) {
             return defaultStorage(resource, tier);
+        }
+    }
+
+    public static int cost(String resource, int tier) {
+        try {
+            return COST.get(key(resource, tier)).get();
+        } catch (RuntimeException e) {
+            return 0;
         }
     }
 

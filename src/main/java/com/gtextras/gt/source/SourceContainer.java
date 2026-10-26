@@ -30,6 +30,7 @@ public class SourceContainer extends AmountContainer {
 
     public SourceContainer(MetaMachine machine, IO io, int tier) {
         super(machine, io, ExtrasCapabilities.SOURCE, capacityFor(tier), transferFor(tier), INTERVAL, "gtextras_source");
+        configureCost("source", tier);
     }
 
     @Override
@@ -40,10 +41,16 @@ public class SourceContainer extends AmountContainer {
             int moved = com.gtextras.gt.trait.ExtrasFluids.pull(level, machine.getPos(),
                     com.gtextras.gt.trait.ExtrasFluids.source(), Math.min(getSpace(), transferPerOperation));
             if (moved > 0) setStored(stored + moved);
-        } else if (!nativeMode()) {
+            int eaten = com.gtextras.gt.trait.ExtrasFluids.eat(level, machine.getPos(),
+                    com.gtextras.gt.trait.ExtrasFluids.source(), com.gtextras.gt.trait.ExtrasFluids.sourceItems(),
+                    Math.min(getSpace(), transferPerOperation));
+            if (eaten > 0) setStored(stored + eaten);
+        } else if (com.gtextras.gt.trait.ExtrasFluids.hasTank(level, machine.getPos())) {
             int moved = com.gtextras.gt.trait.ExtrasFluids.push(level, machine.getPos(),
-                    com.gtextras.gt.trait.ExtrasFluids.source(), Math.min(stored, transferPerOperation), fluidIndex);
+                    com.gtextras.gt.trait.ExtrasFluids.source(), Math.min(stored, transferPerOperation),
+                    Math.min(fluidIndex, Math.max(0, fluidList().size() - 1)));
             if (moved > 0) setStored(stored - moved);
+            return;
         }
         int budget = transferPerOperation;
 
@@ -62,9 +69,11 @@ public class SourceContainer extends AmountContainer {
                 if (taken > 0) {
                     setStored(stored + taken);
                     budget -= taken;
+                    com.gtextras.gt.trait.TransferFx.orb(level, provider.getCurrentPos(), machine.getPos(),
+                            com.gtextras.gt.trait.TransferFx.SOURCE);
                 }
             }
-        } else if (nativeMode()) {
+        } else {
             if (stored <= 0) return;
             List<ISpecialSourceProvider> providers = SourceUtil.canGiveSource(machine.getPos(), level, RANGE);
             for (ISpecialSourceProvider provider : providers) {
@@ -80,6 +89,8 @@ public class SourceContainer extends AmountContainer {
                 if (given > 0) {
                     setStored(stored - given);
                     budget -= given;
+                    com.gtextras.gt.trait.TransferFx.orb(level, machine.getPos(), provider.getCurrentPos(),
+                            com.gtextras.gt.trait.TransferFx.SOURCE);
                 }
             }
         }
@@ -87,7 +98,7 @@ public class SourceContainer extends AmountContainer {
 
     @Override
     protected boolean hasNative() {
-        return true;
+        return false;
     }
 
     @Override

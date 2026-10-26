@@ -22,8 +22,45 @@ public final class ManaCaps {
 
     private ManaCaps() {}
 
+    private static final String BIND_TAG = "gtextras_hatch";
+
     public static void init() {
         MinecraftForge.EVENT_BUS.addGenericListener(BlockEntity.class, ManaCaps::attach);
+        MinecraftForge.EVENT_BUS.addListener(ManaCaps::onRightClick);
+    }
+
+    private static void onRightClick(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock event) {
+        net.minecraft.world.entity.player.Player player = event.getEntity();
+        net.minecraft.world.level.Level level = event.getLevel();
+        if (level.isClientSide || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND) return;
+        net.minecraft.world.item.ItemStack stack = event.getItemStack();
+        if (!(stack.getItem() instanceof vazkii.botania.common.item.WandOfTheForestItem)) return;
+        net.minecraft.nbt.CompoundTag tag = stack.getTag();
+        if (tag == null || !tag.contains(BIND_TAG)) return;
+        net.minecraft.core.BlockPos clicked = event.getPos();
+        net.minecraft.core.BlockPos hatchPos = net.minecraft.core.BlockPos.of(tag.getLong(BIND_TAG));
+        if (clicked.equals(hatchPos)) return;
+        BlockEntity target = level.getBlockEntity(clicked);
+        BlockEntity hatchBe = level.getBlockEntity(hatchPos);
+        tag.remove(BIND_TAG);
+        if (stack.getTag() != null && stack.getTag().isEmpty()) stack.setTag(null);
+        event.setCanceled(true);
+        event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+        if (!(hatchBe instanceof MetaMachineBlockEntity holder) || !(holder.getMetaMachine() instanceof ManaHatchMachine hatch)) {
+            return;
+        }
+        vazkii.botania.api.mana.ManaReceiver receiver = target == null ? null
+                : target.getCapability(BotaniaForgeCapabilities.MANA_RECEIVER).resolve().orElse(null);
+        if (receiver == null) {
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gtextras.hatch.mana_bind_fail"), true);
+            return;
+        }
+        if (clicked.distSqr(hatchPos) > ManaContainer.BIND_RANGE * ManaContainer.BIND_RANGE) {
+            player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gtextras.hatch.mana_bind_far"), true);
+            return;
+        }
+        hatch.container().bindPool(clicked);
+        player.displayClientMessage(net.minecraft.network.chat.Component.translatable("gtextras.hatch.mana_bind_ok"), true);
     }
 
     private static void attach(AttachCapabilitiesEvent<BlockEntity> event) {
@@ -42,6 +79,27 @@ public final class ManaCaps {
 
         @Override
         public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
+            if (cap == BotaniaForgeCapabilities.WANDABLE) {
+                MetaMachine machine = be.getMetaMachine();
+                if (machine instanceof ManaHatchMachine hatch && hatch.container().io()
+                        == com.gregtechceu.gtceu.api.capability.recipe.IO.OUT) {
+                    vazkii.botania.api.block.Wandable wandable = (player, stack, face) -> {
+                        if (player == null || player.level().isClientSide) return true;
+                        if (player.isShiftKeyDown()) {
+                            hatch.container().bindPool(null);
+                            player.displayClientMessage(net.minecraft.network.chat.Component
+                                    .translatable("gtextras.hatch.mana_bind_clear"), true);
+                            return true;
+                        }
+                        stack.getOrCreateTag().putLong(BIND_TAG, be.getBlockPos().asLong());
+                        player.displayClientMessage(net.minecraft.network.chat.Component
+                                .translatable("gtextras.hatch.mana_bind_pick"), true);
+                        return true;
+                    };
+                    return LazyOptional.of(() -> wandable).cast();
+                }
+                return LazyOptional.empty();
+            }
             if (cap == BotaniaForgeCapabilities.MANA_RECEIVER) {
                 MetaMachine machine = be.getMetaMachine();
                 if (machine instanceof ManaHatchMachine hatch) {

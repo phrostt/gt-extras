@@ -31,6 +31,7 @@ public class ManaContainer extends AmountContainer implements ManaReceiver {
     public ManaContainer(MetaMachine machine, IO io, int tier) {
         super(machine, io, ExtrasCapabilities.MANA, capacityFor(tier), transferFor(tier), INTERVAL,
                 "gtextras_mana");
+        configureCost("mana", tier);
     }
 
     @Override
@@ -42,12 +43,23 @@ public class ManaContainer extends AmountContainer implements ManaReceiver {
             int moved = com.gtextras.gt.trait.ExtrasFluids.pull(level, pos, com.gtextras.gt.trait.ExtrasFluids.mana(),
                     Math.min(getSpace(), transferPerOperation));
             if (moved > 0) setStored(stored + moved);
-        } else if (!nativeMode()) {
+            int eaten = com.gtextras.gt.trait.ExtrasFluids.eat(level, pos,
+                    com.gtextras.gt.trait.ExtrasFluids.mana(), com.gtextras.gt.trait.ExtrasFluids.manaItems(),
+                    Math.min(getSpace(), transferPerOperation));
+            if (eaten > 0) setStored(stored + eaten);
+        } else if (boundPool == null && com.gtextras.gt.trait.ExtrasFluids.hasTank(level, pos)) {
             int moved = com.gtextras.gt.trait.ExtrasFluids.push(level, pos, com.gtextras.gt.trait.ExtrasFluids.mana(),
-                    Math.min(stored, transferPerOperation), fluidIndex);
+                    Math.min(stored, transferPerOperation), Math.min(fluidIndex, Math.max(0, fluidList().size() - 1)));
             if (moved > 0) setStored(stored - moved);
+            return;
         }
         int budget = transferPerOperation;
+        if (handlerIO == IO.OUT) {
+            if (boundPool != null) {
+                pushBound(level, pos, budget);
+                return;
+            }
+        }
         for (Direction dir : Direction.values()) {
             if (budget <= 0) break;
             BlockEntity be = level.getBlockEntity(pos.relative(dir));
@@ -66,9 +78,11 @@ public class ManaContainer extends AmountContainer implements ManaReceiver {
                 if (taken > 0) {
                     setStored(stored + taken);
                     budget -= taken;
+                    com.gtextras.gt.trait.TransferFx.orb(level, be.getBlockPos(), pos,
+                            com.gtextras.gt.trait.TransferFx.MANA);
                 }
             } else {
-                if (!nativeMode() || other.isFull()) continue;
+                if (other.isFull()) continue;
                 int move = Math.min(stored, budget);
                 if (move <= 0) continue;
                 int before = other.getCurrentMana();
@@ -77,9 +91,54 @@ public class ManaContainer extends AmountContainer implements ManaReceiver {
                 if (given > 0) {
                     setStored(stored - given);
                     budget -= given;
+                    com.gtextras.gt.trait.TransferFx.orb(level, pos, be.getBlockPos(),
+                            com.gtextras.gt.trait.TransferFx.MANA);
                 }
             }
         }
+    }
+
+    public static final int BIND_RANGE = 6;
+    private BlockPos boundPool;
+
+    public BlockPos boundPool() {
+        return boundPool;
+    }
+
+    public void bindPool(BlockPos pos) {
+        boundPool = pos;
+        machine.markDirty();
+    }
+
+    @Override
+    public void saveCustomPersistedData(net.minecraft.nbt.CompoundTag tag, boolean forDrop) {
+        super.saveCustomPersistedData(tag, forDrop);
+        if (boundPool != null) tag.putLong(nbtKey + "_pool", boundPool.asLong());
+    }
+
+    @Override
+    public void loadCustomPersistedData(net.minecraft.nbt.CompoundTag tag) {
+        super.loadCustomPersistedData(tag);
+        boundPool = tag.contains(nbtKey + "_pool") ? BlockPos.of(tag.getLong(nbtKey + "_pool")) : null;
+    }
+
+    private int pushBound(Level level, BlockPos pos, int budget) {
+        if (boundPool == null || stored <= 0 || budget <= 0) return budget;
+        if (boundPool.distSqr(pos) > BIND_RANGE * BIND_RANGE || !level.isLoaded(boundPool)) return budget;
+        BlockEntity be = level.getBlockEntity(boundPool);
+        if (be == null) return budget;
+        ManaReceiver target = be.getCapability(BotaniaForgeCapabilities.MANA_RECEIVER).resolve().orElse(null);
+        if (target == null || target.isFull()) return budget;
+        int move = Math.min(stored, budget);
+        int before = target.getCurrentMana();
+        target.receiveMana(move);
+        int given = target.getCurrentMana() - before;
+        if (given > 0) {
+            setStored(stored - given);
+            budget -= given;
+            com.gtextras.gt.trait.TransferFx.orb(level, pos, boundPool, com.gtextras.gt.trait.TransferFx.MANA);
+        }
+        return budget;
     }
 
     @Override
@@ -114,7 +173,7 @@ public class ManaContainer extends AmountContainer implements ManaReceiver {
 
     @Override
     protected boolean hasNative() {
-        return true;
+        return false;
     }
 
     @Override

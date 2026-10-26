@@ -25,6 +25,9 @@ public final class ExtrasFluids {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOURCE;
     private static final java.util.List<ForgeConfigSpec.ConfigValue<List<? extends String>>> WILL = new ArrayList<>();
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> WILL_ITEMS;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> MANA_ITEMS;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> BLOOD_ITEMS;
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOURCE_ITEMS;
     public static final ForgeConfigSpec SPEC;
 
     static {
@@ -57,6 +60,12 @@ public final class ExtrasFluids {
         }
         builder.comment("Extra items the Will Input Hatch can consume for will. Format: item_id_or_#tag=amount:type, where type is raw, corrosive, destructive, vengeful or steadfast.");
         WILL_ITEMS = builder.defineListAllowEmpty("willItems", items, o -> o instanceof String);
+        builder.comment("Items the input hatches eat from adjacent inventories on top of GregTech items made of the material of a listed fluid. Format: item_id_or_#tag=amount.");
+        MANA_ITEMS = builder.defineListAllowEmpty("manaItems", List.of(), o -> o instanceof String);
+        BLOOD_ITEMS = builder.defineListAllowEmpty("bloodItems", List.of("evilcraft:condensed_blood=500"),
+                o -> o instanceof String);
+        SOURCE_ITEMS = builder.defineListAllowEmpty("sourceItems", List.of("ars_nouveau:source_gem=1000"),
+                o -> o instanceof String);
         SPEC = builder.build();
     }
 
@@ -130,6 +139,91 @@ public final class ExtrasFluids {
         return list;
     }
 
+    public record ItemValue(String key, boolean tag, int amount) {}
+
+    public static List<ItemValue> manaItems() {
+        return items(MANA_ITEMS);
+    }
+
+    public static List<ItemValue> bloodItems() {
+        return items(BLOOD_ITEMS);
+    }
+
+    public static List<ItemValue> sourceItems() {
+        return items(SOURCE_ITEMS);
+    }
+
+    private static List<ItemValue> items(ForgeConfigSpec.ConfigValue<List<? extends String>> value) {
+        List<ItemValue> out = new ArrayList<>();
+        for (String line : read(value)) {
+            try {
+                int eq = line.lastIndexOf('=');
+                String key = line.substring(0, eq).trim();
+                int amount = Integer.parseInt(line.substring(eq + 1).trim());
+                if (amount > 0 && !key.isEmpty()) {
+                    boolean tag = key.startsWith("#");
+                    out.add(new ItemValue(tag ? key.substring(1) : key, tag, amount));
+                }
+            } catch (RuntimeException ignored) {
+            }
+        }
+        return out;
+    }
+
+    private static int itemWorth(net.minecraft.world.item.ItemStack stack, List<Entry> fluids, List<ItemValue> extras) {
+        for (ItemValue entry : extras) {
+            ResourceLocation id = ResourceLocation.tryParse(entry.key());
+            if (id == null) continue;
+            if (entry.tag()) {
+                if (stack.is(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM, id))) {
+                    return entry.amount();
+                }
+            } else if (id.equals(ForgeRegistries.ITEMS.getKey(stack.getItem()))) {
+                return entry.amount();
+            }
+        }
+        try {
+            var info = com.gregtechceu.gtceu.api.data.chemical.ChemicalHelper.getMaterialStack(stack);
+            if (info == null || info.material() == null || info.amount() <= 0) return 0;
+            Fluid fluid = info.material().getFluid();
+            if (fluid == null || fluid == Fluids.EMPTY) return 0;
+            for (Entry entry : fluids) {
+                if (entry.fluid() == fluid) {
+                    double mb = info.amount() * 144.0
+                            / com.gregtechceu.gtceu.api.GTValues.M;
+                    return (int) Math.min(Integer.MAX_VALUE, Math.floor(mb * entry.ratio()));
+                }
+            }
+        } catch (Throwable ignored) {
+        }
+        return 0;
+    }
+
+    public static int eat(Level level, BlockPos pos, List<Entry> fluids, List<ItemValue> extras, int maxUnits) {
+        int units = 0;
+        if (maxUnits <= 0) return 0;
+        for (Direction dir : Direction.values()) {
+            if (units >= maxUnits) break;
+            BlockEntity be = level.getBlockEntity(pos.relative(dir));
+            if (be == null || be instanceof com.gregtechceu.gtceu.api.machine.IMachineBlockEntity) continue;
+            var items = be.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite()).resolve().orElse(null);
+            if (items == null) continue;
+            for (int slot = 0; slot < items.getSlots() && units < maxUnits; slot++) {
+                net.minecraft.world.item.ItemStack stack = items.getStackInSlot(slot);
+                if (stack.isEmpty()) continue;
+                int worth = itemWorth(stack, fluids, extras);
+                if (worth <= 0) continue;
+                int count = stack.getCount();
+                while (count > 0 && units + worth <= maxUnits) {
+                    if (items.extractItem(slot, 1, false).isEmpty()) break;
+                    units += worth;
+                    count--;
+                }
+            }
+        }
+        return units;
+    }
+
     private static List<? extends String> read(ForgeConfigSpec.ConfigValue<List<? extends String>> value) {
         try {
             return value.get();
@@ -181,6 +275,13 @@ public final class ExtrasFluids {
         BlockEntity be = level.getBlockEntity(pos.relative(dir));
         if (be == null || be instanceof com.gregtechceu.gtceu.api.machine.IMachineBlockEntity) return null;
         return be.getCapability(ForgeCapabilities.FLUID_HANDLER, dir.getOpposite()).resolve().orElse(null);
+    }
+
+    public static boolean hasTank(Level level, BlockPos pos) {
+        for (Direction dir : Direction.values()) {
+            if (neighbour(level, pos, dir) != null) return true;
+        }
+        return false;
     }
 
     public static int pull(Level level, BlockPos pos, List<Entry> fluids, int maxUnits) {

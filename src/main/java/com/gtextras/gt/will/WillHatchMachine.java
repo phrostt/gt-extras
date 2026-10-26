@@ -27,6 +27,23 @@ public class WillHatchMachine extends TieredPartMachine implements IInteractedMa
         for (int i = 0; i < containers.length; i++) {
             containers[i] = new WillContainer(this, io, tier, i);
         }
+        for (int i = 1; i < containers.length; i++) {
+            containers[i].setRawSource(containers[0]);
+        }
+    }
+
+    private void cycleOutput(Player player) {
+        int current = 0;
+        for (WillContainer container : containers) {
+            if (container.outputActive()) current = container.typeIndex();
+        }
+        int next = (current + 1) % containers.length;
+        for (WillContainer container : containers) {
+            container.setOutputActive(container.typeIndex() == next);
+        }
+        String name = ExtrasCapabilities.WILL_NAMES[next];
+        player.displayClientMessage(Component.translatable("gtextras.hatch.will_output_type",
+                Character.toUpperCase(name.charAt(0)) + name.substring(1)), true);
     }
 
     @Override
@@ -57,15 +74,8 @@ public class WillHatchMachine extends TieredPartMachine implements IInteractedMa
     @Override
     protected InteractionResult onScrewdriverClick(Player player, InteractionHand hand,
                                                    net.minecraft.core.Direction gridSide, BlockHitResult hit) {
-        if (io == IO.OUT && player.isShiftKeyDown()) {
-            if (!isRemote()) {
-                boolean gems = !containers[0].gemMode();
-                for (WillContainer container : containers) {
-                    container.setGemMode(gems);
-                }
-                player.displayClientMessage(Component.translatable(
-                        gems ? "gtextras.hatch.will_mode_gems" : "gtextras.hatch.will_mode_fluid"), true);
-            }
+        if (io == IO.OUT) {
+            if (!isRemote()) cycleOutput(player);
             return InteractionResult.sidedSuccess(isRemote());
         }
         return super.onScrewdriverClick(player, hand, gridSide, hit);

@@ -17,9 +17,9 @@ public final class ExtraBadges {
 
     public static final int COLUMNS = 6;
     public static final int MAX_CELLS = 6;
-    public static final int MAX_TEXT_LINES = 7;
+    public static final int MAX_TEXT_LINES = 16;
     public static final int LINE_H = 9;
-    public static final int TEXT_TOP = 22;
+    public static final int TEXT_TOP = 2;
     private static final int TOTAL_IN_COLOR = 0xFFC09090;
     private static final int TOTAL_OUT_COLOR = 0xFF90C090;
     private static final int RPM_COLOR = 0xFFFFD27F;
@@ -61,26 +61,29 @@ public final class ExtraBadges {
         }
     }
 
+    private static void resourceLine(List<TextLine> out, String verb, String name, long amount, boolean perTick,
+                                     int duration, int color, int totalColor) {
+        if (amount <= 0) return;
+        String head = verb + " " + String.format("%,d", amount) + " " + name + (perTick ? "/t" : "");
+        if (perTick && duration > 0) {
+            String total = String.format("%,d", amount * duration) + " total";
+            if (head.length() + total.length() + 3 <= 34) {
+                out.add(new TextLine(head + " (" + total + ")", color));
+            } else {
+                out.add(new TextLine(head, color));
+                out.add(new TextLine("  " + total, totalColor));
+            }
+        } else {
+            out.add(new TextLine(head, color));
+        }
+    }
+
     private static void resourceText(List<TextLine> out, String name, long in, long inTick, long o, long oTick,
                                      int duration) {
-        if (in <= 0 && inTick <= 0 && o <= 0 && oTick <= 0) {
-            return;
-        }
-        out.add(new TextLine(name, NEUTRAL_COLOR));
-        if (in > 0) out.add(new TextLine("  Consumes " + String.format("%,d", in), IN_COLOR));
-        if (inTick > 0) {
-            out.add(new TextLine("  Per tick consumption: " + String.format("%,d", inTick), IN_COLOR));
-            if (duration > 0) {
-                out.add(new TextLine("  Total: " + String.format("%,d", inTick * duration), TOTAL_IN_COLOR));
-            }
-        }
-        if (o > 0) out.add(new TextLine("  Produces " + String.format("%,d", o), OUT_COLOR));
-        if (oTick > 0) {
-            out.add(new TextLine("  Per tick production: " + String.format("%,d", oTick), OUT_COLOR));
-            if (duration > 0) {
-                out.add(new TextLine("  Total: " + String.format("%,d", oTick * duration), TOTAL_OUT_COLOR));
-            }
-        }
+        resourceLine(out, "Uses", name, in, false, duration, IN_COLOR, TOTAL_IN_COLOR);
+        resourceLine(out, "Uses", name, inTick, true, duration, IN_COLOR, TOTAL_IN_COLOR);
+        resourceLine(out, "Makes", name, o, false, duration, OUT_COLOR, TOTAL_OUT_COLOR);
+        resourceLine(out, "Makes", name, oTick, true, duration, OUT_COLOR, TOTAL_OUT_COLOR);
     }
 
     private static List<TextLine> buildText(NeedsReader.Needs needs, int duration) {
@@ -88,7 +91,7 @@ public final class ExtraBadges {
         resourceText(out, "Mana", needs.manaIn(), needs.manaInTick(), needs.manaOut(), needs.manaOutTick(), duration);
         resourceText(out, "Source", needs.sourceIn(), needs.sourceInTick(), needs.sourceOut(), needs.sourceOutTick(),
                 duration);
-        resourceText(out, "Life Essence", needs.bloodIn(), needs.bloodInTick(), needs.bloodOut(), needs.bloodOutTick(),
+        resourceText(out, "Blood", needs.bloodIn(), needs.bloodInTick(), needs.bloodOut(), needs.bloodOutTick(),
                 duration);
         for (int i = 0; i < needs.will().length; i++) {
             if (needs.hasWill(i)) {
@@ -165,6 +168,14 @@ public final class ExtraBadges {
             NeedsReader.Needs needs = NeedsReader.read(recipe);
             currentDuration = recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe gt ? gt.duration : 0;
             currentText = needs == null ? List.of() : buildText(needs, currentDuration);
+            if (needs != null && recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe gtRecipe
+                    && (needs.hasRpm() || config.stressRecipeTypes.contains(String.valueOf(gtRecipe.recipeType.registryName)))) {
+                long load = Math.max(1L, Math.abs(com.gregtechceu.gtceu.api.recipe.RecipeHelper.getRealEUt(gtRecipe).getTotalEU()));
+                List<TextLine> withLoad = new ArrayList<>(currentText);
+                withLoad.add(new TextLine("Rotation load: " + String.format("%,d", load) + " su per RPM", RPM_COLOR));
+                withLoad.add(new TextLine("  " + String.format("%,d", load * 64) + " su at 64 RPM", TOTAL_IN_COLOR));
+                currentText = withLoad;
+            }
             if (needs == null) {
                 return List.of();
             }

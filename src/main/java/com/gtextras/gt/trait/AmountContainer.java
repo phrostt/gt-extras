@@ -73,6 +73,10 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
                 entry.fluid().getFluidType().getDescription(), String.format("%s", entry.ratio()));
     }
 
+    public IO io() {
+        return handlerIO;
+    }
+
     public int getStored() {
         return stored;
     }
@@ -111,10 +115,75 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         }
     }
 
-    private void tick() {
-        if (machine.getOffsetTimer() % operationInterval == 0) {
-            transferWithNeighbours();
+    private String costResource;
+    private int costTier;
+
+    public void configureCost(String resource, int tier) {
+        costResource = resource;
+        costTier = tier;
+    }
+    private java.util.List<com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer> controllerEnergy() {
+        java.util.List<com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer> out = new ArrayList<>();
+        if (!(machine instanceof com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine part)) {
+            return out;
         }
+        for (var controller : part.getControllers()) {
+            if (!controller.isFormed()) continue;
+            for (var other : controller.getParts()) {
+                if (!(other instanceof MetaMachine meta)) continue;
+                for (var trait : meta.getTraits()) {
+                    if (trait instanceof com.gregtechceu.gtceu.api.machine.trait.NotifiableEnergyContainer found
+                            && found.getHandlerIO() == IO.IN && !out.contains(found)) {
+                        out.add(found);
+                    }
+                }
+            }
+        }
+        return out;
+    }
+
+    private boolean inFormedMultiblock() {
+        if (!(machine instanceof com.gregtechceu.gtceu.api.machine.multiblock.part.MultiblockPartMachine part)) {
+            return false;
+        }
+        for (var controller : part.getControllers()) {
+            if (controller.isFormed()) return true;
+        }
+        return false;
+    }
+
+    private boolean hasPower(long cost) {
+        long total = 0;
+        for (var container : controllerEnergy()) {
+            total += container.getEnergyStored();
+        }
+        return total >= cost;
+    }
+
+    private void spendPower(long cost) {
+        long left = cost;
+        for (var container : controllerEnergy()) {
+            if (left <= 0) break;
+            long take = Math.min(left, container.getEnergyStored());
+            if (take > 0) {
+                container.changeEnergy(-take);
+                left -= take;
+            }
+        }
+    }
+
+    private void tick() {
+        if (machine.getOffsetTimer() % operationInterval != 0) return;
+        if (!inFormedMultiblock()) return;
+        long cost = costResource == null ? 0 : HatchConfig.cost(costResource, costTier);
+        if (cost <= 0) {
+            transferWithNeighbours();
+            return;
+        }
+        if (!hasPower(cost)) return;
+        int before = stored;
+        transferWithNeighbours();
+        if (stored != before) spendPower(cost);
     }
 
     @Override
