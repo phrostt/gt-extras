@@ -96,4 +96,27 @@ ServerEvents.recipes(event => {
         .perTick(true)
         .duration(100)
         .EUt(LV);
+
+    event.recipes.gtceu.extras_test('gtextras:test_everything')
+        .itemInputs('minecraft:diamond')
+        .itemOutputs('minecraft:emerald')
+        .addCondition(GTX.minRpm(48))
+        .input(GTX.MANA, 2000)
+        .input(GTX.MANA, 40)
+        .perTick(true)
+        .output(GTX.MANA, 500)
+        .input(GTX.SOURCE, 8)
+        .perTick(true)
+        .input(GTX.BLOOD, 30)
+        .perTick(true)
+        .input(GTX.WILL_RAW, 6)
+        .perTick(true)
+        .input(GTX.WILL_CORROSIVE, 300)
+        .output(GTX.WILL_VENGEFUL, 5)
+        .perTick(true)
+        .output(GTX.WILL_STEADFAST, 120)
+        .output(GTX.BLOOD, 25)
+        .perTick(true)
+        .duration(200)
+        .EUt(MV);
 });

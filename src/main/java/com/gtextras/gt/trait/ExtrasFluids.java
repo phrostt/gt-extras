@@ -24,6 +24,7 @@ public final class ExtrasFluids {
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> MANA;
     private static final ForgeConfigSpec.ConfigValue<List<? extends String>> SOURCE;
     private static final java.util.List<ForgeConfigSpec.ConfigValue<List<? extends String>>> WILL = new ArrayList<>();
+    private static final ForgeConfigSpec.ConfigValue<List<? extends String>> WILL_ITEMS;
     public static final ForgeConfigSpec SPEC;
 
     static {
@@ -41,6 +42,21 @@ public final class ExtrasFluids {
                     "gtceu:" + type + "_will", "#forge:" + type + "_will", "#forge:will/" + type));
             WILL.add(builder.defineListAllowEmpty(type + "WillFluids", defaults, o -> o instanceof String));
         }
+        List<String> items = new ArrayList<>();
+        String[] grades = { "chipped", "flawed", "flawless", "exquisite" };
+        int[] values = { 36, 72, 288, 576 };
+        String[] crystals = { "default", "corrosive", "destructive", "vengeful", "steadfast" };
+        for (int t = 0; t < com.gtextras.gt.ExtrasCapabilities.WILL_NAMES.length; t++) {
+            String type = com.gtextras.gt.ExtrasCapabilities.WILL_NAMES[t];
+            String material = type.equals("raw") ? "demon" : type;
+            for (int g = 0; g < grades.length; g++) {
+                items.add("gtceu:" + grades[g] + "_" + material + "_gem=" + values[g] + ":" + type);
+            }
+            items.add("gtceu:" + material + "_gem=144:" + type);
+            items.add("bloodmagic:" + crystals[t] + "crystal=144:" + type);
+        }
+        builder.comment("Extra items the Will Input Hatch can consume for will. Format: item_id_or_#tag=amount:type, where type is raw, corrosive, destructive, vengeful or steadfast.");
+        WILL_ITEMS = builder.defineListAllowEmpty("willItems", items, o -> o instanceof String);
         SPEC = builder.build();
     }
 
@@ -62,6 +78,34 @@ public final class ExtrasFluids {
 
     public static List<Entry> source() {
         return resolve(read(SOURCE));
+    }
+
+    public record WillItem(String key, boolean tag, int amount, int type) {}
+
+    public static List<WillItem> willItems() {
+        List<? extends String> raw;
+        try {
+            raw = WILL_ITEMS.get();
+        } catch (RuntimeException e) {
+            raw = WILL_ITEMS.getDefault();
+        }
+        List<WillItem> out = new ArrayList<>();
+        List<String> names = java.util.Arrays.asList(com.gtextras.gt.ExtrasCapabilities.WILL_NAMES);
+        for (String line : raw) {
+            try {
+                int eq = line.lastIndexOf('=');
+                int colon = line.lastIndexOf(':');
+                String key = line.substring(0, eq).trim();
+                int amount = Integer.parseInt(line.substring(eq + 1, colon).trim());
+                int type = names.indexOf(line.substring(colon + 1).trim().toLowerCase(java.util.Locale.ROOT));
+                if (type >= 0 && amount > 0 && !key.isEmpty()) {
+                    boolean tag = key.startsWith("#");
+                    out.add(new WillItem(tag ? key.substring(1) : key, tag, amount, type));
+                }
+            } catch (RuntimeException ignored) {
+            }
+        }
+        return out;
     }
 
     public static List<Entry> will(int index) {

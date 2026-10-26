@@ -128,6 +128,15 @@ public class WillContainer extends AmountContainer {
                         budget -= worth;
                     }
                 }
+            } else if (matchExtra(stack) > 0) {
+                int worth = matchExtra(stack);
+                if (worth <= getSpace()) {
+                    ItemStack taken = items.extractItem(slot, 1, false);
+                    if (!taken.isEmpty()) {
+                        setStored(stored + worth);
+                        budget -= worth;
+                    }
+                }
             } else if (stack.getItem() instanceof IDiscreteDemonWill crystal && crystal.getType(stack) == type) {
                 int worth = (int) Math.floor(crystal.getDiscretization(stack));
                 if (worth > 0 && worth <= getSpace()) {
@@ -140,6 +149,22 @@ public class WillContainer extends AmountContainer {
             }
         }
         return budget;
+    }
+
+    private int matchExtra(ItemStack stack) {
+        for (ExtrasFluids.WillItem entry : ExtrasFluids.willItems()) {
+            if (entry.type() != typeIndex) continue;
+            net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(entry.key());
+            if (id == null) continue;
+            if (entry.tag()) {
+                if (stack.is(net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM, id))) {
+                    return entry.amount();
+                }
+            } else if (id.equals(net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(stack.getItem()))) {
+                return entry.amount();
+            }
+        }
+        return 0;
     }
 
     private int fillGems(IItemHandler items, int budget) {
