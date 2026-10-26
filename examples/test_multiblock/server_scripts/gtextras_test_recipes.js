@@ -119,4 +119,39 @@ ServerEvents.recipes(event => {
         .perTick(true)
         .duration(200)
         .EUt(MV);
+
+    event.recipes.gtceu.extras_test('gtextras:test_will_transfer')
+        .circuit(10)
+        .input(GTX.WILL_RAW, 576)
+        .output(GTX.WILL_RAW, 576)
+        .duration(40)
+        .EUt(LV);
+
+    event.recipes.gtceu.extras_test('gtextras:test_will_convert_corrosive')
+        .circuit(1)
+        .input(GTX.WILL_RAW, 144)
+        .output(GTX.WILL_CORROSIVE, 144)
+        .duration(40)
+        .EUt(MV);
+
+    event.recipes.gtceu.extras_test('gtextras:test_will_convert_destructive')
+        .circuit(2)
+        .input(GTX.WILL_RAW, 144)
+        .output(GTX.WILL_DESTRUCTIVE, 144)
+        .duration(40)
+        .EUt(MV);
+
+    event.recipes.gtceu.extras_test('gtextras:test_will_convert_vengeful')
+        .circuit(3)
+        .input(GTX.WILL_RAW, 144)
+        .output(GTX.WILL_VENGEFUL, 144)
+        .duration(40)
+        .EUt(MV);
+
+    event.recipes.gtceu.extras_test('gtextras:test_will_convert_steadfast')
+        .circuit(4)
+        .input(GTX.WILL_RAW, 144)
+        .output(GTX.WILL_STEADFAST, 144)
+        .duration(40)
+        .EUt(MV);
 });
