@@ -44,7 +44,7 @@ public class WillHatchMachine extends TieredPartMachine implements IInteractedMa
                     if (text.length() > 0) text.append("  ");
                     String name = ExtrasCapabilities.WILL_NAMES[container.typeIndex()];
                     text.append(Character.toUpperCase(name.charAt(0))).append(name, 1, 3).append(' ')
-                            .append(String.format("%,d", container.getStored()));
+                            .append(String.format("%,d/%,d", container.getStored(), container.getCapacity()));
                 }
                 player.displayClientMessage(Component.translatable("gtextras.hatch.will_status", text.toString()),
                         true);

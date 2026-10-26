@@ -49,6 +49,7 @@ public final class GTExtrasGT {
             com.gtextras.gt.rotation.coupler.CouplerRegistry.init(modBus);
             if (net.minecraftforge.fml.loading.FMLEnvironment.dist == net.minecraftforge.api.distmarker.Dist.CLIENT) {
                 modBus.addListener(com.gtextras.gt.rotation.coupler.client.MotorClient::register);
+                modBus.addListener(com.gtextras.gt.rotation.coupler.client.MotorClient::registerModels);
             }
         }
         if (botania) {

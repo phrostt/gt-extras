@@ -18,7 +18,7 @@ public class CoilRecipeSizeMixin {
             index = 1
     )
     private int gtextras$growHeight(int height) {
-        int extra = 42;
+        int extra = com.gtextras.CoilInfo.JEI_EXTRA_HEIGHT;
         return height + extra;
     }
 }

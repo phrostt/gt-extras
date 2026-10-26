@@ -186,5 +186,8 @@
   "gtextras.recipe.will_steadfast.in_tick": "Steadfast Will: %s/t",
   "gtextras.recipe.will_steadfast.out_tick": "Steadfast Will out: %s/t",
   "gtextras.hatch.will_mode_gems": "Output: fills tartaric gems in adjacent inventories",
-  "gtextras.hatch.will_mode_fluid": "Output: pushes will fluid into adjacent tanks"
+  "gtextras.hatch.will_mode_fluid": "Output: pushes will fluid into adjacent tanks",
+  "itemGroup.gtextras": "GT Extras",
+  "gtextras.tooltip.badge.total_consumes": "Total needed: %s over %s ticks (%ss)",
+  "gtextras.tooltip.badge.total_produces": "Total produced: %s over %s ticks (%ss)"
 }

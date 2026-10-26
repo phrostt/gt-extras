@@ -81,7 +81,7 @@ ServerEvents.recipes(event => {
         .EUt(MV);
 
     event.recipes.gtceu.extras_test('gtextras:test_will_in')
-        .itemInputs('minecraft:iron_ingot')
+        .itemInputs('minecraft:flint')
         .input(GTX.WILL_CORROSIVE, 5)
         .perTick(true)
         .itemOutputs('minecraft:gold_ingot')

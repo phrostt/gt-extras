@@ -1,8 +1,8 @@
 {
   "parent": "minecraft:block/block",
   "textures": {
-    "all": "gtceu:block/casings/solid/machine_casing_solid_steel",
-    "particle": "gtceu:block/casings/solid/machine_casing_solid_steel"
+    "all": "create:block/andesite_casing",
+    "particle": "create:block/andesite_casing"
   },
   "elements": [
     {
@@ -129,6 +129,38 @@
           "texture": "#all"
         },
         "west": {
+          "texture": "#all"
+        }
+      }
+    },
+    {
+      "from": [
+        6.7,
+        0,
+        6.7
+      ],
+      "to": [
+        9.3,
+        16,
+        9.3
+      ],
+      "faces": {
+        "north": {
+          "texture": "#all"
+        },
+        "south": {
+          "texture": "#all"
+        },
+        "east": {
+          "texture": "#all"
+        },
+        "west": {
+          "texture": "#all"
+        },
+        "up": {
+          "texture": "#all"
+        },
+        "down": {
           "texture": "#all"
         }
       }

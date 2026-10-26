@@ -109,7 +109,25 @@ public final class ExtrasFluids {
     }
 
     public static List<Entry> will(int index) {
-        return resolve(read(WILL.get(index)));
+        List<Entry> list = resolve(read(WILL.get(index)));
+        if (index != 0) {
+            return list;
+        }
+        java.util.Set<Fluid> known = new java.util.HashSet<>();
+        for (Entry entry : list) {
+            known.add(entry.fluid());
+        }
+        for (int i = 1; i < WILL.size(); i++) {
+            for (Entry entry : resolve(read(WILL.get(i)))) {
+                known.add(entry.fluid());
+            }
+        }
+        for (Entry entry : resolve(java.util.List.of("#forge:will"))) {
+            if (known.add(entry.fluid())) {
+                list.add(entry);
+            }
+        }
+        return list;
     }
 
     private static List<? extends String> read(ForgeConfigSpec.ConfigValue<List<? extends String>> value) {

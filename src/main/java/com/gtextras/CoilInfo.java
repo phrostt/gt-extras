@@ -64,7 +64,7 @@ public final class CoilInfo {
         }
     }
 
-    public static final int JEI_EXTRA_HEIGHT = 42;
+    public static final int JEI_EXTRA_HEIGHT = ExtraBadges.TEXT_TOP + ExtraBadges.MAX_TEXT_LINES * ExtraBadges.LINE_H + 25;
     public static final int RIGHT_MARGIN = 12;
 
     private static boolean jei() {

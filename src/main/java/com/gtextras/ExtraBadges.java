@@ -15,15 +15,94 @@ import java.util.List;
 
 public final class ExtraBadges {
 
-    public static final int COLUMNS = 3;
+    public static final int COLUMNS = 6;
     public static final int MAX_CELLS = 6;
-    public static final int CELL_W = 26;
-    public static final int CELL_H = 20;
+    public static final int MAX_TEXT_LINES = 7;
+    public static final int LINE_H = 9;
+    public static final int TEXT_TOP = 22;
+    private static final int TOTAL_IN_COLOR = 0xFFC09090;
+    private static final int TOTAL_OUT_COLOR = 0xFF90C090;
+    private static final int RPM_COLOR = 0xFFFFD27F;
+    public static final int CELL_W = 20;
+    public static final int CELL_H = 18;
     private static final int IN_COLOR = 0xFFFF8080;
     private static final int OUT_COLOR = 0xFF80FF80;
     private static final int NEUTRAL_COLOR = 0xFFFFFFFF;
 
     public record Badge(ItemStack icon, List<Component> tooltip, String text, int color) {}
+
+    public record TextLine(String text, int color) {}
+
+    private static List<TextLine> currentText = List.of();
+
+    public static int lineCount() {
+        return Math.min(currentText.size(), MAX_TEXT_LINES);
+    }
+
+    public static List<TextLine> snapshotText() {
+        return currentText;
+    }
+
+    public static void drawText(net.minecraft.client.gui.GuiGraphics g, CoilInfo.Layout layout) {
+        drawText(g, layout, currentText);
+    }
+
+    public static void drawText(net.minecraft.client.gui.GuiGraphics g, CoilInfo.Layout layout, List<TextLine> all) {
+        net.minecraft.client.gui.Font font = net.minecraft.client.Minecraft.getInstance().font;
+        int shown = Math.min(all.size(), MAX_TEXT_LINES);
+        for (int i = 0; i < shown; i++) {
+            String text = all.get(i).text();
+            int color = all.get(i).color();
+            if (i == shown - 1 && all.size() > MAX_TEXT_LINES) {
+                text = "+" + (all.size() - shown + 1) + " more, hover the icons";
+                color = 0xFF9A9A9A;
+            }
+            g.drawString(font, text, layout.gridX(), layout.gridY() + TEXT_TOP + i * LINE_H, color, true);
+        }
+    }
+
+    private static void resourceText(List<TextLine> out, String name, long in, long inTick, long o, long oTick,
+                                     int duration) {
+        if (in <= 0 && inTick <= 0 && o <= 0 && oTick <= 0) {
+            return;
+        }
+        out.add(new TextLine(name, NEUTRAL_COLOR));
+        if (in > 0) out.add(new TextLine("  Consumes " + String.format("%,d", in), IN_COLOR));
+        if (inTick > 0) {
+            out.add(new TextLine("  Per tick consumption: " + String.format("%,d", inTick), IN_COLOR));
+            if (duration > 0) {
+                out.add(new TextLine("  Total: " + String.format("%,d", inTick * duration), TOTAL_IN_COLOR));
+            }
+        }
+        if (o > 0) out.add(new TextLine("  Produces " + String.format("%,d", o), OUT_COLOR));
+        if (oTick > 0) {
+            out.add(new TextLine("  Per tick production: " + String.format("%,d", oTick), OUT_COLOR));
+            if (duration > 0) {
+                out.add(new TextLine("  Total: " + String.format("%,d", oTick * duration), TOTAL_OUT_COLOR));
+            }
+        }
+    }
+
+    private static List<TextLine> buildText(NeedsReader.Needs needs, int duration) {
+        List<TextLine> out = new ArrayList<>();
+        resourceText(out, "Mana", needs.manaIn(), needs.manaInTick(), needs.manaOut(), needs.manaOutTick(), duration);
+        resourceText(out, "Source", needs.sourceIn(), needs.sourceInTick(), needs.sourceOut(), needs.sourceOutTick(),
+                duration);
+        resourceText(out, "Life Essence", needs.bloodIn(), needs.bloodInTick(), needs.bloodOut(), needs.bloodOutTick(),
+                duration);
+        for (int i = 0; i < needs.will().length; i++) {
+            if (needs.hasWill(i)) {
+                long[] w = needs.will()[i];
+                String name = ExtrasCapabilities.WILL_NAMES[i];
+                resourceText(out, Character.toUpperCase(name.charAt(0)) + name.substring(1) + " Will", w[0], w[1],
+                        w[2], w[3], duration);
+            }
+        }
+        if (needs.hasRpm()) {
+            out.add(new TextLine("Needs " + needs.rpm() + " RPM or more", RPM_COLOR));
+        }
+        return out;
+    }
 
     public static boolean isInput(Badge badge) {
         return badge.color() == IN_COLOR;
@@ -34,7 +113,7 @@ public final class ExtraBadges {
     }
 
     public static int cellY(CoilInfo.Layout layout, int index) {
-        return layout.gridY() + (index / COLUMNS) * CELL_H;
+        return layout.gridY() + TEXT_TOP + lineCount() * LINE_H + 3 + (index / COLUMNS) * CELL_H;
     }
 
     public static String compact(long amount, boolean perTick) {
@@ -50,11 +129,14 @@ public final class ExtraBadges {
     }
 
     public static void drawAmount(net.minecraft.client.gui.GuiGraphics g, Badge badge, int x, int y) {
+        if (badge != null) {
+            return;
+        }
         net.minecraft.client.gui.Font font = net.minecraft.client.Minecraft.getInstance().font;
         int width = font.width(badge.text());
         g.pose().pushPose();
         g.pose().translate(0, 0, 300);
-        g.drawString(font, badge.text(), x + 18 - width, y + 10, badge.color(), true);
+        g.drawString(font, badge.text(), x + 19, y + 5, badge.color(), true);
         g.pose().popPose();
     }
 
@@ -71,6 +153,8 @@ public final class ExtraBadges {
         return stack(fallback);
     }
 
+    private static int currentDuration;
+
     private ExtraBadges() {}
 
     public static List<Badge> of(CoilConfig config, Object recipe) {
@@ -79,6 +163,8 @@ public final class ExtraBadges {
         }
         try {
             NeedsReader.Needs needs = NeedsReader.read(recipe);
+            currentDuration = recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe gt ? gt.duration : 0;
+            currentText = needs == null ? List.of() : buildText(needs, currentDuration);
             if (needs == null) {
                 return List.of();
             }
@@ -146,18 +232,29 @@ public final class ExtraBadges {
                         .withStyle(ChatFormatting.GOLD));
         line(lines, "consumes", in);
         line(lines, "consumes_tick", inTick);
+        total(lines, "total_consumes", inTick);
         line(lines, "produces", out);
         line(lines, "produces_tick", outTick);
-        addCell(badges, icon, lines, in, false, IN_COLOR);
-        addCell(badges, icon, lines, inTick, true, IN_COLOR);
-        addCell(badges, icon, lines, out, false, OUT_COLOR);
-        addCell(badges, icon, lines, outTick, true, OUT_COLOR);
+        total(lines, "total_produces", outTick);
+        if (in > 0 || inTick > 0) {
+            badges.add(new Badge(icon, lines, "", IN_COLOR));
+        } else if (out > 0 || outTick > 0) {
+            badges.add(new Badge(icon, lines, "", OUT_COLOR));
+        }
     }
 
     private static void addCell(List<Badge> badges, ItemStack icon, List<Component> lines, long amount,
                                 boolean perTick, int color) {
         if (amount > 0) {
             badges.add(new Badge(icon, lines, compact(amount, perTick), color));
+        }
+    }
+
+    private static void total(List<Component> lines, String key, long perTick) {
+        if (perTick > 0 && currentDuration > 0) {
+            lines.add(Component.translatable("gtextras.tooltip.badge." + key,
+                    String.format("%,d", perTick * currentDuration), String.format("%,d", currentDuration),
+                    String.format("%.1f", currentDuration / 20.0)).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 

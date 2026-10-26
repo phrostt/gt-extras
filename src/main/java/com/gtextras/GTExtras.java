@@ -16,6 +16,7 @@ public class GTExtras {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public GTExtras() {
+        ExtrasTab.register(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus());
         if (net.minecraftforge.fml.ModList.get().isLoaded("gtceu")) {
             com.gtextras.gt.GTExtrasGT.init(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus());
         }

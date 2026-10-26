@@ -302,7 +302,9 @@ public class CoilJeiPlugin implements IModPlugin {
                 if (!gridSlotted) {
                     guiGraphics.renderItem(badges.get(i).icon(), cx + 1, cy + 1);
                 }
-                ExtraBadges.drawAmount(guiGraphics, badges.get(i), cx + 1, cy + 1);
+            }
+            if (!badges.isEmpty()) {
+                ExtraBadges.drawText(guiGraphics, layout);
             }
             if (info == null) {
                 return;

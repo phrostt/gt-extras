@@ -30,6 +30,7 @@ public class CoilDecorator implements EmiRecipeDecorator {
         if (info == null && badges.isEmpty()) {
             return;
         }
+        java.util.List<ExtraBadges.TextLine> text = ExtraBadges.snapshotText();
         CoilInfo.Layout layout = CoilInfo.layout(config, recipe.getDisplayWidth(), recipe.getDisplayHeight());
 
         for (int i = 0; i < badges.size(); i++) {
@@ -41,6 +42,10 @@ public class CoilDecorator implements EmiRecipeDecorator {
                 slot.appendTooltip(line);
             }
             widgets.addDrawable(cx, cy, 18, 18, (g, mx, my, delta) -> ExtraBadges.drawAmount(g, badge, cx, cy));
+        }
+        if (!badges.isEmpty()) {
+            widgets.addDrawable(layout.gridX(), layout.gridY() + ExtraBadges.TEXT_TOP, 170,
+                    ExtraBadges.MAX_TEXT_LINES * ExtraBadges.LINE_H, (g, mx, my, delta) -> ExtraBadges.drawText(g, layout, text));
         }
         if (info == null) {
             return;

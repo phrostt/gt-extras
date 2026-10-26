@@ -4,7 +4,6 @@ import com.gtextras.gt.rotation.coupler.RotationMotorBlockEntity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 
 import net.minecraft.client.Minecraft;
@@ -28,7 +27,6 @@ public class RotationMotorRenderer implements BlockEntityRenderer<RotationMotorB
         BlockState own = be.getBlockState();
         if (!own.hasProperty(RotatedPillarKineticBlock.AXIS)) return;
         Direction.Axis axis = own.getValue(RotatedPillarKineticBlock.AXIS);
-        BlockState shaft = AllBlocks.SHAFT.getDefaultState().setValue(RotatedPillarKineticBlock.AXIS, axis);
 
         drawCasing(be, own, axis, poseStack, buffer, packedLight);
 
@@ -37,13 +35,18 @@ public class RotationMotorRenderer implements BlockEntityRenderer<RotationMotorB
         Direction positive = Direction.get(Direction.AxisDirection.POSITIVE, axis);
         Vector3f direction = new Vector3f(positive.getStepX(), positive.getStepY(), positive.getStepZ());
 
+        BakedModel model = Minecraft.getInstance().getModelManager().getModel(MotorClient.SHAFT_MODEL);
+        BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
         poseStack.pushPose();
         poseStack.translate(0.5, 0.5, 0.5);
         poseStack.mulPose(Axis.of(direction).rotationDegrees(degrees));
+        if (axis == Direction.Axis.X) {
+            poseStack.mulPose(Axis.ZP.rotationDegrees(90.0f));
+        } else if (axis == Direction.Axis.Z) {
+            poseStack.mulPose(Axis.XP.rotationDegrees(90.0f));
+        }
         poseStack.translate(-0.5, -0.5, -0.5);
-        BlockRenderDispatcher dispatcher = Minecraft.getInstance().getBlockRenderer();
-        BakedModel model = dispatcher.getBlockModel(shaft);
-        dispatcher.getModelRenderer().renderModel(poseStack.last(), buffer.getBuffer(RenderType.cutout()), shaft, model,
+        dispatcher.getModelRenderer().renderModel(poseStack.last(), buffer.getBuffer(RenderType.cutout()), own, model,
                 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, RenderType.cutout());
         poseStack.popPose();
     }
