@@ -140,6 +140,9 @@ The Wand of the Forest (mana) and the Dominion Wand (source) link hatches the sa
 | ZPM | 1,280,000 | 12,800 | 256,000 |
 | UV | 2,560,000 | 25,600 | 512,000 |
 
+### Fluid recipes on resource hatches
+Mana, Source, Blood and Will hatches also act as fluid tanks for recipes. A recipe fluid input or output that matches a fluid in the hatch's fluid list (see `gtextras-fluids.toml`) is paid from or added to the hatch buffer at the configured ratio, so a multiblock needs no separate fluid hatch for them. For example `.inputFluids('#forge:blood 500')` takes 500 blood from a Blood Input Hatch, and `.inputFluids('#forge:demon 400')` takes 400 raw will from a Will Input Hatch.
+
 ### Will Input / Output Hatch
 *Needs Blood Magic.* Five separate buffers, one per type: raw, corrosive, destructive, vengeful, steadfast. 1 will is 1 unit.
 
@@ -183,7 +186,7 @@ One block that connects a GregTech multiblock to a Create kinetic network. Each 
 | Recipe has | Interface does |
 |---|---|
 | `GTX.minRpm(n)` | Input only: loads the Create network with a stress that grows with the recipe EU/t. The recipe runs only while the network spins at n RPM or more, and pauses below that. |
-| `GTX.damageItem(item, n)` | Works on any GT machine or multiblock: the recipe needs that item (or `#tag`) with at least n durability left in an input slot, and takes n durability from it when the recipe finishes. A broken item is removed. Pair it with `.notConsumable(item)` so JEI shows the tool, and with `GTX.damageItemLabel(item)` to put the item name on its own row under the condition text. |
+| `GTX.damageItem(item, n)` | Works on any GT machine or multiblock: the recipe needs that item (or `#tag`) with at least n durability left in an input slot, and takes n durability from it as soon as the recipe starts. After that the item can be taken out and the recipe keeps running. A broken item is removed. Pair it with `.notConsumable(item)` so JEI shows the tool, and with `GTX.damageItemLabel(item)` to put the item name on its own row under the condition text. |
 | `GTX.outputRpm(n)` | Output only: drives the network at n RPM (maximum 256), with a stress capacity that grows with the recipe EU/t. |
 | the other kind of recipe | The interface stays idle. |
 | Network already driven | If the network is already spinning from another source when a generating recipe starts, the Output does not start and the screen shows Blocked. Create destroys a generator whose rotation conflicts with the network. |
@@ -209,7 +212,7 @@ const GTX = Java.loadClass('com.gtextras.api.GTX')
 | `.input(GTX.MANA, n).perTick(true)` | Draws `n` every tick while running |
 | `.output(GTX.MANA, n).perTick(true)` | Produces `n` every tick while running |
 | `.addCondition(GTX.minRpm(n))` | Consumes rotation: needs an **Input** Rotation Interface in the multiblock and a network spinning at `n` RPM or more; the recipe pauses below that |
-| `.addCondition(GTX.damageItem('modid:tool', 1))` | Uses 1 durability of the item (or `'#modid:tag'`) from any input slot when the recipe completes; the recipe will not start without a usable one. Add `.notConsumable('modid:tool')` too so the item shows in JEI and is not consumed, and `.addCondition(GTX.damageItemLabel('modid:tool'))` to show its name on a second row |
+| `.addCondition(GTX.damageItem('modid:tool', 1))` | Uses 1 durability of the item (or `'#modid:tag'`) from any input slot as soon as the recipe starts, after which the item can be removed; the recipe will not start without a usable one. Add `.notConsumable('modid:tool')` too so the item shows in JEI and is not consumed, and `.addCondition(GTX.damageItemLabel('modid:tool'))` to show its name on a second row |
 | `.addCondition(GTX.outputRpm(n))` | Generates rotation: needs an **Output** Rotation Interface, which drives the network at `n` RPM (maximum 256) with stress from the recipe's real EU/t |
 
 `perTick(true)` applies to the input or output written just before it. Capabilities: `GTX.MANA`, `GTX.SOURCE`, `GTX.BLOOD`, `GTX.WILL_RAW`, `GTX.WILL_CORROSIVE`, `GTX.WILL_DESTRUCTIVE`, `GTX.WILL_VENGEFUL`, `GTX.WILL_STEADFAST`.

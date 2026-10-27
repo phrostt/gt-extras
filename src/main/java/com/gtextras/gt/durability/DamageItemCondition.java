@@ -23,6 +23,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+
 public class DamageItemCondition extends RecipeCondition<DamageItemCondition> {
 
     public static final Codec<DamageItemCondition> CODEC = RecordCodecBuilder.create(instance -> RecipeCondition
@@ -31,6 +35,8 @@ public class DamageItemCondition extends RecipeCondition<DamageItemCondition> {
             .and(Codec.INT.fieldOf("amount").forGetter(DamageItemCondition::getAmount))
             .and(Codec.BOOL.optionalFieldOf("label", false).forGetter(DamageItemCondition::isLabel))
             .apply(instance, DamageItemCondition::new));
+
+    private static final Map<RecipeLogic, GTRecipe> PAID = Collections.synchronizedMap(new WeakHashMap<>());
 
     private String itemId;
     private int amount;
@@ -114,8 +120,17 @@ public class DamageItemCondition extends RecipeCondition<DamageItemCondition> {
         return false;
     }
 
-    public void consume(RecipeLogic logic) {
+    public static void clearPaid(RecipeLogic logic) {
+        PAID.remove(logic);
+    }
+
+    public void consume(RecipeLogic logic, GTRecipe recipe) {
         if (label) return;
+        PAID.put(logic, recipe);
+        takeDurability(logic);
+    }
+
+    private void takeDurability(RecipeLogic logic) {
         for (IRecipeHandler<?> handler : logic.machine.getCapabilitiesFlat(IO.IN, ItemRecipeCapability.CAP)) {
             if (handler instanceof IItemHandlerModifiable items) {
                 for (int i = 0; i < items.getSlots(); i++) {
@@ -137,6 +152,9 @@ public class DamageItemCondition extends RecipeCondition<DamageItemCondition> {
 
     @Override
     protected boolean testCondition(GTRecipe recipe, RecipeLogic recipeLogic) {
+        if (!label && PAID.get(recipeLogic) == recipe && recipeLogic.getStatus() == RecipeLogic.Status.WORKING) {
+            return true;
+        }
         if (hasUsable(recipeLogic)) {
             return true;
         }

@@ -68,6 +68,7 @@ public abstract class AmountContainer extends NotifiableRecipeHandlerTrait<Integ
         this.transferPerOperation = transferPerOperation;
         this.operationInterval = operationInterval;
         this.nbtKey = nbtKey;
+        new AmountFluidHandler(machine, this);
     }
 
     protected abstract void transferWithNeighbours();

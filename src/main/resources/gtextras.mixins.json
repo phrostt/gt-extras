@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "gtextras.refmap.json",
   "mixins": [
-    "RecipeFinishDamageMixin"
+    "RecipeStartDamageMixin"
   ],
   "client": [
     "CoilRecipeSizeMixin",

@@ -1,22 +1,29 @@
 # Changelog
 
+## 0.19.2
+
+### Added
+* Mana, Source, Blood and Will hatches now also work as fluid tanks for recipes. A fluid input or output that matches a fluid in the hatch's fluid list is paid from or added to the hatch buffer at the configured ratio. Multiblocks no longer need a separate fluid hatch for these.
+
 ## 0.19.1
 
 ### Added
 * `GTX.damageItemLabel(item)`: a display-only condition that shows the item or tag name on its own row under the durability text, so long tag names no longer run off the recipe viewer.
 
 ### Changed
+* Once the durability has been taken, removing the item no longer stops the recipe. The item is only required again when the next run starts.
+* Durability is now taken when the recipe starts instead of when it finishes. The mixin moved from `RecipeLogic.onRecipeFinish` to `RecipeLogic.setupRecipe`.
 * The durability condition text is now "Uses N durability of:" with the name on the label row.
 
 ## 0.19.0
 
 ### Added
-* `GTX.damageItem(item, amount)` recipe condition. Works on every GT machine and multiblock. The item may be an id or a `#tag`. The recipe needs a matching item with enough durability in an input slot, and takes the durability when the recipe finishes. Items that run out of durability are removed. Enchantments such as Unbreaking apply.
-* New mixin on `RecipeLogic.onRecipeFinish` to apply the damage.
+* `GTX.damageItem(item, amount)` recipe condition. Works on every GT machine and multiblock. The item may be an id or a `#tag`. The recipe needs a matching item with enough durability in an input slot, and takes the durability when the recipe starts. Items that run out of durability are removed. Enchantments such as Unbreaking apply.
+* New mixin on `RecipeLogic` to apply the damage.
 * Sanguine Synthesizer: new Alchemical Reaction Chamber mode (`sanguine_arc`), and tools in Alchemy Table recipes now lose durability instead of being consumed.
 
 ### Known limits
-* Damage is applied once per finished recipe, not once per parallel.
+* Damage is applied once per started recipe, not once per parallel.
 
 ## 0.18.0
 
