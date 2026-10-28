@@ -69,7 +69,13 @@ public class LinkToolItem extends Item {
         }
 
         CompoundTag tag = stack.getTag();
-        if (tag == null || !tag.contains(TAG)) return InteractionResult.PASS;
+        if (tag == null || !tag.contains(TAG)) {
+            if (level.getBlockEntity(clicked) instanceof wayoftime.bloodmagic.altar.IBloodAltar) {
+                if (!level.isClientSide) say(player, "gtextras.tool.select_first");
+                return InteractionResult.SUCCESS;
+            }
+            return InteractionResult.PASS;
+        }
         if (level.isClientSide) return InteractionResult.SUCCESS;
 
         BlockPos hatchPos = BlockPos.of(tag.getLong(TAG));

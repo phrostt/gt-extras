@@ -42,10 +42,8 @@ public class BloodHatchMachine extends TieredPartMachine implements IUIMachine {
                 names.add(key == null ? "?" : key.getPath().replace('_', ' ') + "  (" + key.getNamespace() + ")");
             }
             HatchUI.scrollChoices(panel, "Output fluid", 60, names, container::fluidIndex, container::selectFluid);
-            HatchUI.note(panel, "Pushes into the tank in front of the hatch.");
-        } else {
-            HatchUI.note(panel, "Pulls from tanks next to the hatch.");
         }
+        HatchUI.links(panel, container, "Link Tool", "Linked altars");
         return HatchUI.finish(this, player, panel);
     }
 

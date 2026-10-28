@@ -12,6 +12,7 @@ public final class TransferFx {
 
     public static final int[] MANA = { 70, 170, 255 };
     public static final int[] SOURCE = { 255, 40, 190 };
+    public static final int[] BLOOD = { 190, 20, 30 };
     public static final int[] REMOVED = { 255, 60, 60 };
 
     private static Boolean ars;

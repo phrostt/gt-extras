@@ -26,7 +26,7 @@ public class RotationInterfaceBlock extends RotatedPillarKineticBlock implements
 
     @Override
     public boolean hasShaftTowards(LevelReader world, BlockPos pos, BlockState state, Direction face) {
-        return face.getAxis() == state.getValue(AXIS);
+        return true;
     }
 
     @Override

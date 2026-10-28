@@ -4,7 +4,7 @@
 
 **Mana, Source, Blood and Demonic Will for GregTech CEu Modern, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
 
-Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.18.0
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.19.4
 
 </div>
 
@@ -59,13 +59,13 @@ Every hatch opens a screen with the buffer bar and amount, the maximum transfer 
 
 ### Link Tool
 
-Mana and source hatches only use targets you link. Nothing nearby is used automatically.
+Mana, source and blood hatches only use targets you link. Nothing nearby is used automatically.
 
 | | |
 |---|---|
 | Recipe | Ender pearl, stick, lapis lazuli (shaped). |
 | Select | Right click a mana or source hatch. |
-| Link | Right click a target within 6 blocks of the hatch: a Mana Pool, Spreader or other mana receiver, or an Ars Source Jar, ME Source Jar or other source tile. Right click it again to remove the link. |
+| Link | Right click a target within 6 blocks of the hatch: a Mana Pool, Spreader or other mana receiver, an Ars Source Jar, ME Source Jar or other source tile, or a Blood Altar (blood hatches, within 10 blocks). Right click it again to remove the link. |
 | Clear | Sneak right click on the hatch clears its links. Sneak right click in the air deselects. |
 | Feedback | While you hold the tool, lines are drawn between each hatch you select and its targets. Linked hatches also show orbs while they transfer, unless `transferParticles` is off. |
 
@@ -122,8 +122,9 @@ The Wand of the Forest (mana) and the Dominion Wand (source) link hatches the sa
 
 | | |
 |---|---|
-| Input | Takes the blood fluids on the list from adjacent tanks, and eats blood items such as condensed blood from adjacent inventories. |
-| Output | Pushes the fluid picked on the screen into adjacent tanks. |
+| Input | Takes the blood fluids on the list from adjacent tanks and from linked Blood Altars, and eats blood items such as condensed blood from adjacent inventories. |
+| Output | Pushes the fluid picked on the screen into adjacent tanks and into linked Blood Altars. |
+| Linking | Link Tool, right click a Blood Altar within 10 blocks of the hatch. Up to 10 altars, with In order or Round robin distribution. |
 | Pipes and buses | The hatch exposes a fluid handler, so pipes and fluid buses can fill an input hatch and drain an output hatch. Input hatches also accept the listed blood items. An item that does not fit completely is not taken. |
 | Screwdriver | Sneak right click on the output cycles the blood fluid. |
 | Capability | `GTX.BLOOD` |
@@ -179,7 +180,7 @@ One block that connects a GregTech multiblock to a Create kinetic network. Each 
 | Pattern | `Predicates.blocks('gtextras:rotation_interface')` and `Predicates.blocks('create:gearbox', 'create:vertical_gearbox')` |
 | Breaking | Wrench or pickaxe. It drops itself. |
 | Setting the type | Right click the interface (not with a Create wrench) to open its screen, then press the type button. |
-| Orientation | The interface is a pillar block with a shaft on the two faces along its axis. A Create gearbox has shafts on its four sides but not on the two faces along its own axis. The interface only connects when its shaft end touches a shaft face of the gearbox. Rotate either block with a Create wrench, or use a vertical gearbox, until they connect. |
+| Orientation | The interface has a shaft on all six faces, so it does not matter which way it faces. It connects to any Create shaft or gearbox side that touches it. A Create gearbox has shafts on its four sides but not on the two faces along its own axis, so the interface must touch one of those four sides (or a vertical gearbox's sides). |
 
 **Screen.** The type, the status, the controller machine, the recipe progress and EU/t, the target or required RPM, the network speed, the su provided or consumed, and the network stress with an OVERSTRESSED warning. When a recipe is paused it also shows the reason in short text.
 
@@ -307,8 +308,7 @@ If a category has no entry, `autoDetectKeys` is tried in order. `showResearchIco
 
 ## Known issues
 
-* The Rotation Interface can be finicky next to a regular Create gearbox. If it reads no speed, rotate the gearbox or use a vertical gearbox so a shaft face touches the interface.
-* A multiblock controller's own screen can say it is running normally while a recipe is paused for lack of rotation. The interface screen shows the true state.
+* The Rotation Interface and the controller status fix in 0.19.4 have not been tested in game by the author.
 * If another EMI addon also adds a Blood Magic meteor tab, you will see two tabs. Turn one off.
 
 ---
