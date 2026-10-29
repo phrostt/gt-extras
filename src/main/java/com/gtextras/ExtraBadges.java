@@ -43,6 +43,10 @@ public final class ExtraBadges {
         return currentText;
     }
 
+    public static void restoreText(List<TextLine> text) {
+        currentText = text;
+    }
+
     public static void addCoilText(CoilInfo.Result info, boolean replace) {
         List<TextLine> coil = List.of();
         if (info != null && info.hasCoil()) {

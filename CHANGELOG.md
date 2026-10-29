@@ -1,12 +1,19 @@
 # Changelog
 
-## 0.19.5
+## 0.19.7
 
 ### Fixed
-* Recipes that need a coil show the "Temperature: N K" and "Coil: name" lines again, in JEI and EMI. They went missing when the resource badge grid was added, leaving only the coil icon. The lines sit at the top of the text area, with the resource lines and badge cells below them. `showText` in `config/gtextras.json` turns them off.
+* The recipe id copy (shift + left click, or the copy key) no longer writes to the log on every click and key press.
+* Measuring a recipe type's card height no longer overwrites the text lines of the card being drawn at that moment.
 
-### Changed
-* The extra height added to a GregTech recipe card is now worked out per recipe type from what that type actually shows (text lines, badge rows, the coil or research icon) instead of a fixed 171 pixels on every type. Recipe types with nothing to show are no longer stretched at all. JEI sets a card's height once per recipe type, so it is sized for the biggest recipe of that type. A datapack reload in the same session keeps the old heights until the game is restarted.
+### Added
+* The log now says which version's card sizing is running and prints one line per recipe type, `[gtextras] card extra: <type> = <height>`, with the extra card height measured for that type. A type with nothing to show reads 0. If a card is stretched and its type reads 0, or the line is missing, the stretch is not coming from this build.
+
+## 0.19.6
+
+### Fixed
+* On recipe types where GregTech already prints the "Temp" and "Coil" lines itself (for example Electric Blast Furnace style types), the coil icon now sits on the same row as GregTech's "Coil:" line instead of at the bottom of the card, and the mod no longer prints a second copy of those two lines. These types also get no extra card height.
+* The extra card height is now added every time a viewer asks for the card size, instead of being baked into GregTech's cached size. A size first requested before the world had loaded can no longer leave every card stretched for the rest of the session. Until the recipes are available a type gets no extra height.
 
 ## 0.19.4
 

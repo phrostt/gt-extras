@@ -30,11 +30,10 @@ public class CoilDecorator implements EmiRecipeDecorator {
         if (info == null && badges.isEmpty()) {
             return;
         }
-        if (config.showText) {
-            ExtraBadges.addCoilText(info, badges.isEmpty());
-        }
+        boolean nativeCoil = info != null && info.hasCoil() && NativeLines.showsCoilText(backing);
+        ExtraBadges.addCoilText(config.showText && !nativeCoil ? info : null, badges.isEmpty());
         java.util.List<ExtraBadges.TextLine> text = ExtraBadges.snapshotText();
-        CoilInfo.Layout layout = CoilInfo.layout(config, category, recipe.getDisplayWidth(), recipe.getDisplayHeight());
+        CoilInfo.Layout layout = CoilInfo.layout(config, category, backing, recipe.getDisplayWidth(), recipe.getDisplayHeight());
 
         for (int i = 0; i < badges.size(); i++) {
             ExtraBadges.Badge badge = badges.get(i);

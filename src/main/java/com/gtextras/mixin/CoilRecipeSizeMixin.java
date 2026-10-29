@@ -2,23 +2,17 @@ package com.gtextras.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(targets = "com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI", remap = false)
 public class CoilRecipeSizeMixin {
 
-    @ModifyArg(
-            method = "getJEISize",
-            remap = false,
-            at = @At(
-                    value = "INVOKE",
-                    remap = false,
-                    target = "Lcom/lowdragmc/lowdraglib/utils/Size;<init>(II)V"
-            ),
-            index = 1
-    )
-    private int gtextras$growHeight(int height) {
-        int extra = com.gtextras.CardSize.extraFor(this);
-        return height + extra;
+    @Inject(method = "getJEISize", at = @At("RETURN"), remap = false, cancellable = true)
+    private void gtextras$growHeight(CallbackInfoReturnable cir) {
+        Object grown = com.gtextras.CardSize.grow(this, cir.getReturnValue());
+        if (grown != null) {
+            cir.setReturnValue(grown);
+        }
     }
 }

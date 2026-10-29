@@ -10,6 +10,7 @@
   ],
   "client": [
     "CoilRecipeSizeMixin",
+    "GtRecipeWidgetMixin",
     "LdlibJeiTooltipMixin",
     "CoilJeiSlotMixin",
     "EmiLookupMixin"

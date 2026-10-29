@@ -46,7 +46,7 @@ public abstract class CoilJeiSlotMixin {
             if (info == null && badges.isEmpty()) {
                 return;
             }
-            CoilInfo.Layout layout = CoilInfo.layout(config, category.getRecipeType().getUid(), category.getWidth(), category.getHeight());
+            CoilInfo.Layout layout = CoilInfo.layout(config, category.getRecipeType().getUid(), recipe, category.getWidth(), category.getHeight());
 
             for (int i = 0; i < badges.size(); i++) {
                 com.gtextras.ExtraBadges.Badge badge = badges.get(i);

@@ -87,7 +87,7 @@ public final class CoilInfo {
         return height;
     }
 
-    public static Layout layout(CoilConfig config, ResourceLocation category, int displayWidth, int displayHeight) {
+    public static Layout layout(CoilConfig config, ResourceLocation category, Object recipe, int displayWidth, int displayHeight) {
         boolean jei = jei();
         int padTop = displayHeight - CardSize.cached(category);
         int textX = (jei ? 7 : 4) + config.textX;
@@ -97,6 +97,9 @@ public final class CoilInfo {
                 ? displayWidth - SLOT_SIZE - RIGHT_MARGIN + config.offsetX
                 : textX + 110 + config.offsetX;
         int iconY = padTop + (EXTRA_HEIGHT - SLOT_SIZE) / 2 + config.offsetY;
+        if (recipe != null && NativeLines.showsCoilText(recipe)) {
+            iconY = NativeLines.coilLineY(recipe, displayHeight) - 4 + config.offsetY;
+        }
         int dataX = iconX - 40;
         return new Layout(textX, textY1, textY2, iconX, iconY, dataX, dataX + 20, iconY + 4, textX, padTop + 1);
     }

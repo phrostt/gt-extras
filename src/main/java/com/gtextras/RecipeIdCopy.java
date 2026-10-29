@@ -49,7 +49,6 @@ public final class RecipeIdCopy {
             return;
         }
         if (id == null || id.isEmpty()) {
-            GTExtras.LOGGER.info("[{}] copy key pressed, but the mouse is not over a recipe", GTExtras.MOD_ID);
             return;
         }
         mc.keyboardHandler.setClipboard(id);
@@ -64,7 +63,6 @@ public final class RecipeIdCopy {
                 ScreenEvent.KeyPressed.Pre.class, RecipeIdCopy::onKey);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, true,
                 ScreenEvent.MouseButtonPressed.Pre.class, RecipeIdCopy::onClick);
-        GTExtras.LOGGER.info("[{}] shift-click recipe id copy registered", GTExtras.MOD_ID);
     }
 
     static void onClick(ScreenEvent.MouseButtonPressed.Pre event) {
@@ -72,16 +70,13 @@ public final class RecipeIdCopy {
             return;
         }
         if (!CoilConfig.get().copyRecipeId) {
-            GTExtras.LOGGER.info("[{}] shift-click ignored, copyRecipeId is off in the config", GTExtras.MOD_ID);
             return;
         }
         Screen screen = event.getScreen();
-        GTExtras.LOGGER.info("[{}] shift-click on screen {}", GTExtras.MOD_ID, screen.getClass().getName());
         if (!JEI_RECIPES_GUI.equals(screen.getClass().getName())) {
             return;
         }
         String id;
-        GTExtras.LOGGER.info("[{}] shift-click on JEI recipe screen at {}, {}", GTExtras.MOD_ID, event.getMouseX(), event.getMouseY());
         try {
             id = JeiRecipeIdLookup.find(screen, event.getMouseX(), event.getMouseY());
         } catch (Throwable t) {
@@ -89,7 +84,6 @@ public final class RecipeIdCopy {
             return;
         }
         if (id == null || id.isEmpty()) {
-            GTExtras.LOGGER.info("[{}] no output slot with a recipe id under the mouse", GTExtras.MOD_ID);
             return;
         }
         Minecraft mc = Minecraft.getInstance();
