@@ -43,6 +43,23 @@ public final class ExtraBadges {
         return currentText;
     }
 
+    public static void addCoilText(CoilInfo.Result info, boolean replace) {
+        List<TextLine> coil = List.of();
+        if (info != null && info.hasCoil()) {
+            String temp = Component.translatable("gtextras.text." + info.mode(),
+                    String.format("%,d", info.required())).getString();
+            String name = Component.translatable("gtextras.text.coil", info.coil().name().getString()).getString();
+            coil = List.of(new TextLine(temp, NEUTRAL_COLOR), new TextLine(name, NEUTRAL_COLOR));
+        }
+        if (replace) {
+            currentText = coil;
+        } else if (!coil.isEmpty()) {
+            List<TextLine> merged = new ArrayList<>(coil);
+            merged.addAll(currentText);
+            currentText = merged;
+        }
+    }
+
     public static void drawText(net.minecraft.client.gui.GuiGraphics g, CoilInfo.Layout layout) {
         drawText(g, layout, currentText);
     }

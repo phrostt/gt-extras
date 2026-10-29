@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.19.5
+
+### Fixed
+* Recipes that need a coil show the "Temperature: N K" and "Coil: name" lines again, in JEI and EMI. They went missing when the resource badge grid was added, leaving only the coil icon. The lines sit at the top of the text area, with the resource lines and badge cells below them. `showText` in `config/gtextras.json` turns them off.
+
+### Changed
+* The extra height added to a GregTech recipe card is now worked out per recipe type from what that type actually shows (text lines, badge rows, the coil or research icon) instead of a fixed 171 pixels on every type. Recipe types with nothing to show are no longer stretched at all. JEI sets a card's height once per recipe type, so it is sized for the biggest recipe of that type. A datapack reload in the same session keeps the old heights until the game is restarted.
+
 ## 0.19.4
 
 ### Fixed

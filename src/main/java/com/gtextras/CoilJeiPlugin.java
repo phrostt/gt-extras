@@ -290,9 +290,12 @@ public class CoilJeiPlugin implements IModPlugin {
             if (info == null && badges.isEmpty()) {
                 return;
             }
+            if (config.showText) {
+                ExtraBadges.addCoilText(info, badges.isEmpty());
+            }
             cardHeight = recipeCategory.getHeight();
             cardWidth = recipeCategory.getWidth();
-            CoilInfo.Layout layout = CoilInfo.layout(config, cardWidth, cardHeight);
+            CoilInfo.Layout layout = CoilInfo.layout(config, category, cardWidth, cardHeight);
             Minecraft mc = Minecraft.getInstance();
 
             boolean gridSlotted = CoilInfo.isSlotted(recipe);
@@ -303,7 +306,7 @@ public class CoilJeiPlugin implements IModPlugin {
                     guiGraphics.renderItem(badges.get(i).icon(), cx + 1, cy + 1);
                 }
             }
-            if (!badges.isEmpty()) {
+            if (!badges.isEmpty() || ExtraBadges.lineCount() > 0) {
                 ExtraBadges.drawText(guiGraphics, layout);
             }
             if (info == null) {
@@ -356,7 +359,7 @@ public class CoilJeiPlugin implements IModPlugin {
                 return List.of();
             }
             CoilConfig config = CoilConfig.get();
-            CoilInfo.Layout layout = CoilInfo.layout(config, cardWidth, cardHeight);
+            CoilInfo.Layout layout = CoilInfo.layout(config, category, cardWidth, cardHeight);
             if (mouseX < layout.iconX() || mouseX >= layout.iconX() + CoilInfo.SLOT_SIZE
                     || mouseY < layout.iconY() || mouseY >= layout.iconY() + CoilInfo.SLOT_SIZE) {
                 return List.of();

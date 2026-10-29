@@ -264,11 +264,16 @@ GregTech only shows coil and temperature requirements natively for the Electric 
 
 * **Coil requirement:** the coil list is read from the block registry at runtime, so coils added by KubeJS (`event.create('x_coil_block', 'gtceu:coil')`) show up automatically. The requirement is read from the recipe's own data tag, the value set with `.addData("RequiredTemp", 1000)`.
 * **Research requirement:** a recipe with a GregTech `ResearchCondition` (`.scannerResearch(...)` or `.stationResearch(...)`) shows the data item it demands (data stick, orb or module) next to the coil icon. Assembly Line recipes are skipped since GregTech already shows this.
+* **Coil text:** next to the coil icon the card prints "Temperature: N K" (or "Coil level" / "Coil tier" for those modes) and the name of the lowest coil that meets it. `showText` turns the two lines off.
 * **Resource grid:** mana, Source, blood, will and RPM requirements are drawn as a grid of cells, red for inputs and green for outputs, with `/t` for per tick amounts. Hover a cell for the full number. The cells also work as recipe lookups (R and U) on EMI and JEI.
 
 ### JEI
 
 When EMI is not installed the same info is drawn by a JEI category decorator. GregTech's recipe type ids are discovered by reflection; list any that are missed under `jeiRecipeTypes`. `jeiEnabled` turns the JEI side off.
+
+### Card height
+
+The extra room added to a GregTech recipe card is sized per recipe type: the most text lines, badge rows and icons any recipe of that type needs, and nothing at all for types that show none of these. It is worked out once, when the viewer first asks for the card size, and kept until the game restarts.
 
 ### Blood Magic meteor tab
 
@@ -287,6 +292,7 @@ Adds a "Blood Magic Meteor" tab to EMI (or JEI) for every `bloodmagic:meteor` re
   "categories": {
     "gtceu:electric_blast_furnace": { "dataKey": "ebf_temp", "mode": "temperature" }
   },
+  "showText": true,
   "showResearchIcon": true,
   "researchExcludedCategories": ["gtceu:assembly_line"],
   "offsetX": 0,
@@ -308,7 +314,7 @@ If a category has no entry, `autoDetectKeys` is tried in order. `showResearchIco
 
 ## Known issues
 
-* The Rotation Interface and the controller status fix in 0.19.4 have not been tested in game by the author.
+* The Rotation Interface, the controller status fix in 0.19.4 and the 0.19.5 coil text and card height changes have not been tested in game by the author.
 * If another EMI addon also adds a Blood Magic meteor tab, you will see two tabs. Turn one off.
 
 ---

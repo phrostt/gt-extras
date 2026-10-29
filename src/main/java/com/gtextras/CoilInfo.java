@@ -71,9 +71,25 @@ public final class CoilInfo {
         return !net.minecraftforge.fml.ModList.get().isLoaded("emi");
     }
 
-    public static Layout layout(CoilConfig config, int displayWidth, int displayHeight) {
+    public static int extraHeight(int lines, int badges, boolean icon) {
+        if (lines <= 0 && badges <= 0 && !icon) {
+            return 0;
+        }
+        int rows = (badges + ExtraBadges.COLUMNS - 1) / ExtraBadges.COLUMNS;
+        int height = 1 + ExtraBadges.TEXT_TOP + lines * ExtraBadges.LINE_H;
+        if (rows > 0) {
+            height += 3 + rows * ExtraBadges.CELL_H;
+        }
+        height += 4;
+        if (icon) {
+            height = Math.max(height, EXTRA_HEIGHT + 2);
+        }
+        return height;
+    }
+
+    public static Layout layout(CoilConfig config, ResourceLocation category, int displayWidth, int displayHeight) {
         boolean jei = jei();
-        int padTop = displayHeight - JEI_EXTRA_HEIGHT;
+        int padTop = displayHeight - CardSize.cached(category);
         int textX = (jei ? 7 : 4) + config.textX;
         int textY1 = padTop + (jei ? 18 : 2) + config.textY;
         int textY2 = textY1 + 9;
