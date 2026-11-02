@@ -12,6 +12,7 @@ import com.gtextras.GTExtras;
 import com.mojang.datafixers.util.Pair;
 
 import dev.latvian.mods.kubejs.recipe.component.NumberComponent;
+import dev.latvian.mods.kubejs.recipe.component.StringComponent;
 
 @GTAddon
 public class ExtrasAddon implements IGTAddon {
@@ -37,6 +38,8 @@ public class ExtrasAddon implements IGTAddon {
         for (AmountRecipeCapability will : ExtrasCapabilities.WILL) {
             GTRegistries.RECIPE_CAPABILITIES.register(will.name, will);
         }
+        GTRegistries.RECIPE_CAPABILITIES.register(com.gtextras.gt.bridge.BridgeCapability.CAP.name,
+                com.gtextras.gt.bridge.BridgeCapability.CAP);
     }
 
     @Override
@@ -47,6 +50,10 @@ public class ExtrasAddon implements IGTAddon {
         for (AmountRecipeCapability will : ExtrasCapabilities.WILL) {
             register(event, will);
         }
+        ContentJS<String> bridgeIn = new ContentJS<>(StringComponent.ANY, com.gtextras.gt.bridge.BridgeCapability.CAP, false);
+        ContentJS<String> bridgeOut = new ContentJS<>(StringComponent.ANY, com.gtextras.gt.bridge.BridgeCapability.CAP, true);
+        event.registerKey(com.gtextras.gt.bridge.BridgeCapability.CAP,
+                Pair.<ContentJS<?>, ContentJS<?>>of(bridgeIn, bridgeOut));
     }
 
     private static void register(KJSRecipeKeyEvent event, AmountRecipeCapability capability) {

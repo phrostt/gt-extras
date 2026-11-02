@@ -14,7 +14,12 @@ public final class NeedsReader {
 
     public record Needs(long manaIn, long manaInTick, long manaOut, long manaOutTick,
                         long sourceIn, long sourceInTick, long sourceOut, long sourceOutTick,
-                        long bloodIn, long bloodInTick, long bloodOut, long bloodOutTick, int rpm, int outRpm, long[][] will) {
+                        long bloodIn, long bloodInTick, long bloodOut, long bloodOutTick, int rpm, int outRpm, long[][] will,
+                        List<String> bridgeIn, List<String> bridgeOut) {
+        public boolean hasBridge() {
+            return !bridgeIn.isEmpty() || !bridgeOut.isEmpty();
+        }
+
         public boolean hasWill(int index) {
             long[] w = will[index];
             return w[0] + w[1] + w[2] + w[3] > 0;
@@ -77,9 +82,31 @@ public final class NeedsReader {
                 sum(recipe.outputs, ExtrasCapabilities.SOURCE), sum(recipe.tickOutputs, ExtrasCapabilities.SOURCE),
                 sum(recipe.inputs, ExtrasCapabilities.BLOOD), sum(recipe.tickInputs, ExtrasCapabilities.BLOOD),
                 sum(recipe.outputs, ExtrasCapabilities.BLOOD), sum(recipe.tickOutputs, ExtrasCapabilities.BLOOD),
-                rpm, outRpm, will);
-        return needs.hasMana() || needs.hasSource() || needs.hasBlood() || needs.hasRpm() || needs.hasOutRpm() || needs.hasAnyWill()
+                rpm, outRpm, will,
+                bridgeNames(recipe.inputs), bridgeNames(recipe.outputs));
+        return needs.hasMana() || needs.hasSource() || needs.hasBlood() || needs.hasRpm() || needs.hasOutRpm() || needs.hasAnyWill() || needs.hasBridge()
                 ? needs : null;
+    }
+
+    private static List<String> bridgeNames(Map<RecipeCapability<?>, List<Content>> map) {
+        List<String> names = new java.util.ArrayList<>();
+        if (map == null) return names;
+        List<Content> contents = map.get(com.gtextras.gt.bridge.BridgeCapability.CAP);
+        if (contents == null) return names;
+        for (Content content : contents) {
+            try {
+                com.gtextras.gt.bridge.BridgePacket p = com.gtextras.gt.bridge.BridgePacket.parse(
+                        String.valueOf(content.getContent()));
+                String name = p.kind().equals(com.gtextras.gt.bridge.BridgePacket.DATA)
+                        ? "data " + p.name() : p.name();
+                if (p.kind().equals(com.gtextras.gt.bridge.BridgePacket.TAG)) name = "#" + name;
+                if (name.length() > 34) name = name.substring(0, 33) + "~";
+                names.add(name);
+            } catch (IllegalArgumentException e) {
+                names.add(String.valueOf(content.getContent()));
+            }
+        }
+        return names;
     }
 
     private static long sum(Map<RecipeCapability<?>, List<Content>> map, RecipeCapability<?> capability) {

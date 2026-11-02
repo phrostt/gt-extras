@@ -2,9 +2,9 @@
 
 # GT Extras
 
-**Mana, Source, Blood and Demonic Will for GregTech CEu Modern, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
+**Mana, Source, Blood and Demonic Will for GregTech CEu Modern, configurable linked Bridge hatches, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
 
-Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.19.4
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.20.0
 
 </div>
 
@@ -13,7 +13,8 @@ Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.19.4
 ## What it adds
 
 * **Resource hatches** for Botania mana, Ars Nouveau Source, Blood Magic blood and the five types of Demonic Will, LV to UV, usable as multiblock parts and in KubeJS recipes.
-* **Link Tool** that links mana and source hatches to pools, spreaders and jars, with visual feedback.
+* **Bridge hatches**: pairs of linked hatches that send named packets (items, fluids, tags or plain data) between two multiblocks, with a resonance value that can speed up or boost a machine. Bridges are defined in a JSON file, so you can add as many as you like.
+* **Link Tool** that links mana and source hatches to pools, spreaders and jars, and bridge hatches to each other, with visual feedback.
 * **ME network support** for source (Ars Énergistique) and mana (Applied Botanics), and fluid and item exposure on blood and will hatches.
 * **Create Rotation Interface**: one block that is set to Input (consumes rotation) or Output (generates rotation) next to a Create gearbox.
 * **Recipe viewer extras** for EMI and JEI: coil and research badges, a requirement grid for the new resources, Blood Magic meteor and ritual tabs.
@@ -169,6 +170,65 @@ Mana, Source, Blood and Will hatches also act as fluid tanks for recipes. A reci
 
 A tartaric gem holds one type. An empty gem takes whichever type fills it first. Converting between types is done in a recipe: take one type in, give another out, and let the energy be the cost.
 
+### Bridge Hatches (Einstein-Rosen Bridge)
+
+A bridge is a named link between two multiblocks. One machine sends packets through an **output** hatch and another receives them in an **input** hatch. Nothing physical travels. A packet is only a kind, a name and an amount, and the recipes on both ends decide what goes in and what comes out. The first bridge, `einstein_rosen`, is built in. More are defined in a JSON file and each gets its own hatches, abilities and link channel.
+
+| | |
+|---|---|
+| Tiers | LV to UV, input and output |
+| Hatches | `gtextras:<bridge>_input_hatch_<tier>` and `gtextras:<bridge>_output_hatch_<tier>` |
+| Linking | Link Tool: select the **output** hatch, then right click an **input** hatch of the same bridge. Up to 10 inputs per output, in order or round robin, within the bridge's `range` (24 blocks by default). A link always runs from an output hatch to an input hatch, and a bridge needs one link per direction for a loop. |
+| Beams | A line of particles along every link while packets move. The colour comes from the bridge definition: `color` for the forward link and `returnColor` for the return link. The hatch screen has a **Beam colour** button to choose which one an output hatch uses. |
+| Buffer | Input hatches store received packets until a recipe uses them (10,000,000 per packet name). Output hatches hold packets produced by a recipe until they have been sent. |
+| Screen | Shows the stored packets, the links (output hatches), the resonance bar (input hatches) and an **Empty buffer** button that asks for a second click. |
+
+**Packets.** A packet is written as one string: `'<bridge> <kind> <name> <amount>'`.
+
+| Kind | Example | Meaning |
+|---|---|---|
+| `item` | `'einstein_rosen item minecraft:cobblestone 64'` | A count of one item id |
+| `fluid` | `'einstein_rosen fluid minecraft:water 1000'` | An amount of one fluid id |
+| `tag` | `'einstein_rosen tag forge:ingots/iron 8'` | As an **input**, accepts any `item` packet whose item is in the tag |
+| `data` | `'einstein_rosen data mass 640'` | A named number with no item behind it |
+
+Packets match on kind and name, so a recipe asking for `item minecraft:cobblestone` takes exactly that. A recipe can only take a packet that really arrived.
+
+**Resonance.** `data resonance` is special. An input hatch holds it as a level with a capacity of `resonanceCap` times the hatch tier (LV 1x up to UV 8x), and it drains at `resonanceDecayPerSecond`. Nothing consumes it automatically. A machine opts in by adding a modifier to its recipe modifiers, which read the highest resonance level among its input hatches:
+
+| Modifier | Effect |
+|---|---|
+| `GTX.bridgeYield('einstein_rosen', 'resonance', 0.5)` | Multiplies the recipe's outputs by up to 1.5 at a full resonance bar, scaling linearly |
+| `GTX.bridgeSpeed('einstein_rosen', 'resonance', 0.5)` | Shortens the recipe duration by up to 50% at a full resonance bar |
+
+Both leave a recipe unchanged at zero resonance. Any other `data` name can be used the same way.
+
+**Defining bridges.** Bridges are read at startup from `kubejs/config/gtextras_bridges.json`, or from `config/gtextras-bridges.json` if the first file is missing. A default file with `einstein_rosen` is written on first start. A restart is needed after changing it.
+
+```json
+{
+  "einstein_rosen": {
+    "displayName": "Einstein-Rosen Bridge",
+    "color": "6FD3FF",
+    "returnColor": "14141C",
+    "resonanceCap": 1000,
+    "resonanceDecayPerSecond": 5,
+    "range": 24
+  }
+}
+```
+
+| Field | Default | Meaning |
+|---|---|---|
+| `displayName` | the id, prettified | Name shown on the hatches |
+| `color` | `6FD3FF` | Beam colour of the forward link (hex RGB) |
+| `returnColor` | same as `color` | Beam colour of the return link |
+| `resonanceCap` | 1000 | Resonance capacity of an LV input hatch |
+| `resonanceDecayPerSecond` | 5 | Resonance lost per second |
+| `range` | 24 | Link range in blocks |
+
+A new bridge needs its hatch models and textures in a resource pack or the pack's `kubejs/assets/gtextras` folder: `models/block/machine/<bridge>_<input|output>_hatch_<tier>.json`, `blockstates/<same>.json`, `models/item/<same>.json`, `models/block/machine/part/<bridge>_<input|output>_hatch.json` and the two overlay textures it names. Copy the `einstein_rosen` files and rename them. The overlay colour is part of the texture, so recolour the PNGs to match the bridge. Beams use the `color` setting.
+
 ### Rotation Interface
 *Needs Create.*
 
@@ -212,6 +272,8 @@ const GTX = Java.loadClass('com.gtextras.api.GTX')
 | `.output(GTX.MANA, n)` | Gives `n` at the end of the recipe |
 | `.input(GTX.MANA, n).perTick(true)` | Draws `n` every tick while running |
 | `.output(GTX.MANA, n).perTick(true)` | Produces `n` every tick while running |
+| `.input(GTX.BRIDGE, '<bridge> <kind> <name> <amount>')` | Takes a packet from the machine's bridge input hatches |
+| `.output(GTX.BRIDGE, '<bridge> <kind> <name> <amount>')` | Sends a packet through the machine's bridge output hatches |
 | `.addCondition(GTX.minRpm(n))` | Consumes rotation: needs an **Input** Rotation Interface in the multiblock and a network spinning at `n` RPM or more; the recipe pauses below that |
 | `.addCondition(GTX.damageItem('modid:tool', 1))` | Uses 1 durability of the item (or `'#modid:tag'`) from any input slot as soon as the recipe starts, after which the item can be removed; the recipe will not start without a usable one. Add `.notConsumable('modid:tool')` too so the item shows in JEI and is not consumed, and `.addCondition(GTX.damageItemLabel('modid:tool'))` to show its name on a second row |
 | `.addCondition(GTX.outputRpm(n))` | Generates rotation: needs an **Output** Rotation Interface, which drives the network at `n` RPM (maximum 256) with stress from the recipe's real EU/t |
@@ -241,6 +303,7 @@ Used in a pattern like `Predicates.abilities(GTX.MANA_INPUT)`.
 | `GTX.SOURCE_INPUT`, `GTX.SOURCE_OUTPUT` | Source hatches |
 | `GTX.BLOOD_INPUT`, `GTX.BLOOD_OUTPUT` | Blood hatches |
 | `GTX.WILL_INPUT`, `GTX.WILL_OUTPUT` | Will hatches |
+| `GTX.bridgeInput('<bridge>')`, `GTX.bridgeOutput('<bridge>')` | Bridge hatches of the named bridge |
 
 Working examples, including rotation recipes for both interface types, are in `examples/test_multiblock/`.
 
@@ -253,6 +316,7 @@ Working examples, including rotation recipes for both interface types, are in `e
 | `gtextras-fluids.toml` | server | Fluid lists for blood, mana, Source and the five will types, and the `willItems` list. Entries are fluid ids or `#tags`, optionally `=ratio`. |
 | `gtextras-hatches.toml` | server | Storage and rate per resource and tier (rate is per tick; an existing world keeps its old values, so delete the file to pick up new defaults), `euPerOperation` (EU drawn from the multiblock's energy hatches each time the hatch moves something on its own, default 0), and `transferParticles` to turn the Ars style orbs on mana and source hatches off. |
 | `config/gtextras.json` | client | Coil and research badge settings. |
+| `kubejs/config/gtextras_bridges.json` | startup | Bridge definitions: name, beam colours, resonance capacity and decay, link range. Falls back to `config/gtextras-bridges.json`. |
 
 Server configs are per world and sync to players. Put copies in `defaultconfigs/` to set them for new worlds. Fluids that are not installed are skipped.
 
@@ -309,6 +373,7 @@ If a category has no entry, `autoDetectKeys` is tried in order. `showResearchIco
 ## Known issues
 
 * The Rotation Interface and the controller status fix in 0.19.4 have not been tested in game by the author.
+* Bridge hatches, packets and resonance (0.20.0) have not been tested in game by the author.
 * If another EMI addon also adds a Blood Magic meteor tab, you will see two tabs. Turn one off.
 
 ---

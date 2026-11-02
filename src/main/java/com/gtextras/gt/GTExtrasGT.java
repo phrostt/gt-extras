@@ -37,9 +37,12 @@ public final class GTExtrasGT {
 
         com.gtextras.gt.trait.ExtrasFluids.register();
         com.gtextras.gt.trait.HatchConfig.register();
+        com.gtextras.gt.bridge.BridgeRegistry.load();
         REGISTRATE = GTRegistrate.create(GTExtras.MOD_ID);
         REGISTRATE.registerRegistrate();
 
+        modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent event) -> event
+                .enqueueWork(com.gtextras.gt.bridge.BridgeCapability::registerLookup));
         modBus.addGenericListener(MachineDefinition.class,
                 (GTCEuAPI.RegisterEvent<?, MachineDefinition> event) -> registerMachines());
         if (create) {
@@ -69,6 +72,7 @@ public final class GTExtrasGT {
         if (ars) ExtrasMachines.initSource();
         if (blood) ExtrasMachines.initBlood();
         if (blood) ExtrasMachines.initWill();
+        com.gtextras.gt.bridge.BridgeMachines.init();
     }
 
     private static void registerConditions() {

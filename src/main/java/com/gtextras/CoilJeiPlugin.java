@@ -287,7 +287,7 @@ public class CoilJeiPlugin implements IModPlugin {
             CoilConfig config = CoilConfig.get();
             CoilInfo.Result info = resolve(recipe);
             List<ExtraBadges.Badge> badges = ExtraBadges.of(config, recipe);
-            if (info == null && badges.isEmpty()) {
+            if (info == null && badges.isEmpty() && ExtraBadges.lineCount() == 0) {
                 return;
             }
             boolean nativeCoil = info != null && info.hasCoil() && NativeLines.showsCoilText(recipe);

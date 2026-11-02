@@ -27,7 +27,7 @@ public class CoilDecorator implements EmiRecipeDecorator {
         Object backing = EmiRecipeData.backingRecipeOf(recipe);
         CoilInfo.Result info = CoilInfo.resolve(config, category, backing);
         java.util.List<ExtraBadges.Badge> badges = ExtraBadges.of(config, backing);
-        if (info == null && badges.isEmpty()) {
+        if (info == null && badges.isEmpty() && ExtraBadges.lineCount() == 0) {
             return;
         }
         boolean nativeCoil = info != null && info.hasCoil() && NativeLines.showsCoilText(backing);

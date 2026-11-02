@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "pattern": [
+    "PXP",
+    "CHC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/titanium"
+    },
+    "C": {
+      "tag": "gtceu:circuits/ev"
+    },
+    "H": {
+      "item": "gtceu:ev_machine_hull"
+    },
+    "X": {
+      "item": "minecraft:ender_eye"
+    }
+  },
+  "result": {
+    "item": "gtextras:einstein_rosen_input_hatch_ev"
+  }
+}

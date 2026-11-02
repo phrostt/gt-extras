@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.20.0
+
+### Added
+* **Bridge hatches.** A new family of linked hatches that send named packets between two multiblocks. Each bridge has an input and an output hatch for every tier from LV to UV, registered as `gtextras:<bridge>_input_hatch_<tier>` and `gtextras:<bridge>_output_hatch_<tier>`. The first bridge, `einstein_rosen` (Einstein-Rosen Bridge), is built in. The existing Mana, Source, Blood and Will hatches are untouched.
+* **Bridge definitions in JSON.** Bridges are read at startup from `kubejs/config/gtextras_bridges.json` (so they travel with a pack's KubeJS folder) or from `config/gtextras-bridges.json`. A default file is written on first start. Each entry sets `displayName`, `color`, `returnColor`, `resonanceCap`, `resonanceDecayPerSecond` and `range`. Any number of bridges can be defined, and each gets its own hatches and multiblock abilities.
+* **Packets.** A packet is a kind (`item`, `fluid`, `tag` or `data`), a name and an amount, written as one string `'<bridge> <kind> <name> <amount>'`. A `tag` packet used as a recipe input accepts any `item` packet whose item is in that tag. A `data` packet is a named number with no item behind it.
+* **New recipe capability `bridge`.** KubeJS recipes can use `.input(GTX.BRIDGE, '...')` and `.output(GTX.BRIDGE, '...')` on any recipe type. Packets scale with parallel hatches and with output modifiers, like other contents. Recipe pages show them as "Bridge in" and "Bridge out" lines.
+* **Linking.** The existing Link Tool links a bridge output hatch to bridge input hatches of the same bridge, up to 10 per output, within the bridge's `range`, with In order or Round robin distribution. Output hatches push packets to their linked input hatches every half second. Beams of dust particles run along a link while packets move. The colour is `color` or `returnColor` from the bridge definition, chosen per output hatch with the **Beam colour** button.
+* **Recipe search.** Bridge packets take part in GregTech's recipe search. A recipe whose only input is a packet, with no item or fluid input, starts as soon as the packet has arrived in an input hatch. Recipes are matched to a hatch by bridge name first, then the recipe checks the exact packets.
+* **Resonance.** `data resonance` is held by an input hatch as a level with a capacity of `resonanceCap` times the hatch tier (LV 1x up to UV 8x) and drains at `resonanceDecayPerSecond`. It does nothing by itself. Two new recipe modifiers, `GTX.bridgeYield(bridge, data, maxBonus)` and `GTX.bridgeSpeed(bridge, data, maxBonus)`, read the highest level among a machine's input hatches and scale recipe outputs or shorten recipe duration, up to `maxBonus` at a full bar.
+* **Hatch screen.** Shows the stored packets in a scrolling list, the resonance bar (input hatches), the list of links with a remove button each and a Clear all links button (output hatches), the Beam colour toggle, and an Empty buffer button that needs a second click.
+* **KubeJS API.** `GTX.BRIDGE` (the capability), `GTX.bridgeInput(bridge)` and `GTX.bridgeOutput(bridge)` (multiblock abilities for patterns), `GTX.bridgeYield(...)` and `GTX.bridgeSpeed(...)` (recipe modifiers).
+* **Assets.** Blockstates, models, item models and a crafting recipe for each of the 16 `einstein_rosen` hatches, and overlay textures for the input and output hatch (a ring with arrows pointing in or out, with an emissive layer) in the bridge's default ice blue. Hatch recipes use the matching tier hull, circuits and plates around an Eye of Ender and are meant to be replaced by pack recipes.
+* **Documentation.** The README covers bridges, packets, resonance, the definition file, the new KubeJS methods and abilities and how to add assets for a new bridge.
+
+### Changed
+* **Recipe cards show bridge packets.** In JEI the packet names are listed under the card's text as `bridge in:` and `bridge out:` (a blank line between, `data` packets as `data <name>`). The card grows to fit them and they no longer overlap the tier label or leave the card.
+* The README and version are updated for 0.20.0.
+
+### Notes
+* Bridge hatches have no connection to the Mana, Source, Blood and Will hatches, their fluids config or their per hatch configuration.
+* A bridge's hatch models and overlay textures are files, not settings. A bridge other than `einstein_rosen` needs its own model, blockstate and overlay files. Its beams and names follow the definition file, but the overlay colour in the texture does not.
+* Packets are only counted. Items and fluids are not stored inside the hatch, so the white end of a link recreates whatever its recipe says.
+* Removing a bridge from the definition file removes its hatches on the next start. Placed hatches of a removed bridge disappear.
+
 ## 0.19.7
 
 ### Fixed

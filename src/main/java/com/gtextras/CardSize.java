@@ -110,7 +110,7 @@ public final class CardSize {
         for (GTRecipe recipe : recipes) {
             CoilInfo.Result info = CoilInfo.resolve(config, type.registryName, recipe);
             List<ExtraBadges.Badge> badges = ExtraBadges.of(config, recipe);
-            int lines = badges.isEmpty() ? 0 : ExtraBadges.lineCount();
+            int lines = ExtraBadges.lineCount();
             boolean nativeCoil = info != null && info.hasCoil() && NativeLines.showsCoilText(recipe);
             if (info != null && info.hasCoil() && config.showText && !nativeCoil) {
                 lines += 2;

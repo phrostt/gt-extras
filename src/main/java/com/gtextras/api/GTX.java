@@ -3,9 +3,13 @@ package com.gtextras.api;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
+import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 
 import com.gtextras.gt.ExtrasAbilities;
 import com.gtextras.gt.ExtrasCapabilities;
+import com.gtextras.gt.bridge.BridgeAbilities;
+import com.gtextras.gt.bridge.BridgeCapability;
+import com.gtextras.gt.bridge.BridgeModifiers;
 import com.gtextras.gt.rotation.MinRpmCondition;
 import com.gtextras.gt.rotation.OutputRpmCondition;
 
@@ -21,6 +25,8 @@ public final class GTX {
     public static final RecipeCapability<Integer> WILL_VENGEFUL = ExtrasCapabilities.WILL[3];
     public static final RecipeCapability<Integer> WILL_STEADFAST = ExtrasCapabilities.WILL[4];
 
+    public static final RecipeCapability<String> BRIDGE = BridgeCapability.CAP;
+
     public static final PartAbility WILL_INPUT = ExtrasAbilities.WILL_INPUT;
     public static final PartAbility WILL_OUTPUT = ExtrasAbilities.WILL_OUTPUT;
 
@@ -32,6 +38,22 @@ public final class GTX {
     public static final PartAbility BLOOD_OUTPUT = ExtrasAbilities.BLOOD_OUTPUT;
 
     private GTX() {}
+
+    public static PartAbility bridgeInput(String bridge) {
+        return BridgeAbilities.input(bridge);
+    }
+
+    public static PartAbility bridgeOutput(String bridge) {
+        return BridgeAbilities.output(bridge);
+    }
+
+    public static RecipeModifier bridgeYield(String bridge, String data, double maxBonus) {
+        return BridgeModifiers.yield(bridge, data, maxBonus);
+    }
+
+    public static RecipeModifier bridgeSpeed(String bridge, String data, double maxBonus) {
+        return BridgeModifiers.speed(bridge, data, maxBonus);
+    }
 
     public static RecipeCondition<?> minRpm(int rpm) {
         return new MinRpmCondition(rpm);

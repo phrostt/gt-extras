@@ -55,9 +55,7 @@ public final class ExtraBadges {
             String name = Component.translatable("gtextras.text.coil", info.coil().name().getString()).getString();
             coil = List.of(new TextLine(temp, NEUTRAL_COLOR), new TextLine(name, NEUTRAL_COLOR));
         }
-        if (replace) {
-            currentText = coil;
-        } else if (!coil.isEmpty()) {
+        if (!coil.isEmpty()) {
             List<TextLine> merged = new ArrayList<>(coil);
             merged.addAll(currentText);
             currentText = merged;
@@ -188,6 +186,7 @@ public final class ExtraBadges {
 
     public static List<Badge> of(CoilConfig config, Object recipe) {
         if (!config.enabled || !config.showExtraBadges || recipe == null || !ModList.get().isLoaded("gtceu")) {
+            currentText = List.of();
             return List.of();
         }
         try {

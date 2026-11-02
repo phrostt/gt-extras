@@ -218,5 +218,21 @@
   "gtextras.tool.unlinked": "Link removed (%1$s/%2$s).",
   "gtextras.tool.full": "Link limit reached (%1$s).",
   "block.gtextras.rotation_interface": "Rotation Interface",
-  "gtextras.tooltip.rotation_interface": "Place next to a Create gearbox or shaft that is part of the multiblock. Right-click to open its screen and switch it between Output (only generates rotation for output-RPM recipes) and Input (only consumes rotation for minimum-RPM recipes). Output is the default."
+  "gtextras.tooltip.rotation_interface": "Place next to a Create gearbox or shaft that is part of the multiblock. Right-click to open its screen and switch it between Output (only generates rotation for output-RPM recipes) and Input (only consumes rotation for minimum-RPM recipes). Output is the default.",
+  "block.gtextras.einstein_rosen_input_hatch_lv": "LV Einstein-Rosen Bridge Input Hatch",
+  "block.gtextras.einstein_rosen_input_hatch_mv": "MV Einstein-Rosen Bridge Input Hatch",
+  "block.gtextras.einstein_rosen_input_hatch_hv": "HV Einstein-Rosen Bridge Input Hatch",
+  "block.gtextras.einstein_rosen_input_hatch_ev": "EV Einstein-Rosen Bridge Input Hatch",
+  "block.gtextras.einstein_rosen_input_hatch_iv": "IV Einstein-Rosen Bridge Input Hatch",
+  "block.gtextras.einstein_rosen_input_hatch_luv": "LuV Einstein-Rosen Bridge Input Hatch",
+  "block.gtextras.einstein_rosen_input_hatch_zpm": "ZPM Einstein-Rosen Bridge Input Hatch",
+  "block.gtextras.einstein_rosen_input_hatch_uv": "UV Einstein-Rosen Bridge Input Hatch",
+  "block.gtextras.einstein_rosen_output_hatch_lv": "LV Einstein-Rosen Bridge Output Hatch",
+  "block.gtextras.einstein_rosen_output_hatch_mv": "MV Einstein-Rosen Bridge Output Hatch",
+  "block.gtextras.einstein_rosen_output_hatch_hv": "HV Einstein-Rosen Bridge Output Hatch",
+  "block.gtextras.einstein_rosen_output_hatch_ev": "EV Einstein-Rosen Bridge Output Hatch",
+  "block.gtextras.einstein_rosen_output_hatch_iv": "IV Einstein-Rosen Bridge Output Hatch",
+  "block.gtextras.einstein_rosen_output_hatch_luv": "LuV Einstein-Rosen Bridge Output Hatch",
+  "block.gtextras.einstein_rosen_output_hatch_zpm": "ZPM Einstein-Rosen Bridge Output Hatch",
+  "block.gtextras.einstein_rosen_output_hatch_uv": "UV Einstein-Rosen Bridge Output Hatch"
 }
