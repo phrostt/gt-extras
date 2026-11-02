@@ -27,29 +27,41 @@ public final class BridgeMachines {
 
     public static void init() {
         for (BridgeDef def : BridgeRegistry.all()) {
-            for (int tier = MIN_TIER; tier <= MAX_TIER; tier++) {
+            int[] ampList = def.energyEnabled && def.energyAmperages.length > 0 ? def.energyAmperages : new int[] { 0 };
+            for (int tier : def.tiers) for (int amps : ampList) {
                 final int fixedTier = tier;
-                hatch(def, tier, "input", IO.IN, BridgeAbilities.input(def.id), List.of(
+                final String ampText = amps > 0 ? " Rated for " + amps + " A." : "";
+                hatch(def, tier, amps, "input", IO.IN, BridgeAbilities.input(def.id), List.of(
                         Component.literal("Receives packets from linked " + def.displayName + " output hatches."),
                         Component.literal("Stores incoming packets for recipes and holds resonance."),
+                        Component.literal(def.energyEnabled
+                                ? "Emits energy received from linked output hatches to adjacent blocks at "
+                                        + GTValues.VN[fixedTier] + "." + ampText
+                                : "Energy transfer is disabled for this bridge."),
                         Component.literal("Resonance capacity: " + String.format("%,d",
                                 (long) def.resonanceCap * Math.max(1, fixedTier - GTValues.LV + 1)))));
-                hatch(def, tier, "output", IO.OUT, BridgeAbilities.output(def.id), List.of(
+                hatch(def, tier, amps, "output", IO.OUT, BridgeAbilities.output(def.id), List.of(
                         Component.literal("Sends packets produced by recipes to linked " + def.displayName
                                 + " input hatches."),
-                        Component.literal("Link it with the Link Tool, up to " + def.range + " blocks away.")));
+                        Component.literal("Link it with the Link Tool, up to " + def.maxLinkRange() + " blocks away."),
+                        Component.literal(def.energyEnabled
+                                ? "Accepts " + GTValues.VN[fixedTier] + " energy from cables and sends it to linked "
+                                        + "input hatches up to " + def.energyRange + " blocks away"
+                                        + (def.energyLossPercent > 0 ? " (" + def.energyLossPercent + "% loss)." : ".")
+                                        + (def.energyAllowTierMismatch ? "" : " Only to hatches of the same tier.") + ampText
+                                : "Energy transfer is disabled for this bridge.")));
             }
         }
     }
 
-    private static void hatch(BridgeDef def, int tier, String kind, IO io, PartAbility ability,
+    private static void hatch(BridgeDef def, int tier, int amps, String kind, IO io, PartAbility ability,
                               List<Component> tooltip) {
         String name = def.id + "_" + kind + "_hatch";
-        String id = name + "_" + GTValues.VN[tier].toLowerCase();
-        Function<IMachineBlockEntity, MetaMachine> factory = holder -> new BridgeHatchMachine(holder, io, tier, def);
+        String id = name + "_" + GTValues.VN[tier].toLowerCase() + (amps > 0 ? "_" + amps + "a" : "");
+        Function<IMachineBlockEntity, MetaMachine> factory = holder -> new BridgeHatchMachine(holder, io, tier, def, amps);
         GTExtrasGT.REGISTRATE.machine(id, factory)
                 .langValue(GTValues.VNF[tier] + " " + def.displayName + " " + (kind.equals("input") ? "Input" : "Output")
-                        + " Hatch")
+                        + " Hatch" + (amps > 0 ? " (" + amps + "A)" : ""))
                 .tier(tier)
                 .rotationState(RotationState.ALL)
                 .abilities(ability)

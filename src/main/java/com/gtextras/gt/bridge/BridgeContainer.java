@@ -43,15 +43,22 @@ public class BridgeContainer extends NotifiableRecipeHandlerTrait<String> implem
     private final Map<String, Long> store = new LinkedHashMap<>();
     private final LinkSet links = new LinkSet();
     private boolean returnBeam;
+    private double decayCarry;
     private boolean armed;
     private TickableSubscription tickSubscription;
+    private final BridgeEnergy energy;
 
-    public BridgeContainer(MetaMachine machine, IO io, int tier, BridgeDef def) {
+    public BridgeContainer(MetaMachine machine, IO io, int tier, BridgeDef def, int amps) {
         super(machine);
         this.io = io;
         this.tier = tier;
         this.def = def;
         this.nbt = "gtextras_bridge_" + io.name().toLowerCase(java.util.Locale.ROOT);
+        this.energy = def.energyEnabled ? new BridgeEnergy(machine, this, io, tier, def, amps) : null;
+    }
+
+    public BridgeEnergy energy() {
+        return energy;
     }
 
     public BridgeDef def() {
@@ -79,6 +86,7 @@ public class BridgeContainer extends NotifiableRecipeHandlerTrait<String> implem
     public void emptyBuffer() {
         if (machine.isRemote()) return;
         store.clear();
+        if (energy != null) energy.clear();
         notifyListeners();
         machine.markDirty();
     }
@@ -165,7 +173,10 @@ public class BridgeContainer extends NotifiableRecipeHandlerTrait<String> implem
         if (def.resonanceDecayPerSecond <= 0) return;
         long current = store.getOrDefault(RESONANCE, 0L);
         if (current <= 0) return;
-        long step = Math.max(1L, (long) def.resonanceDecayPerSecond * INTERVAL / 20);
+        decayCarry += (double) def.resonanceDecayPerSecond * INTERVAL / 20.0;
+        long step = (long) decayCarry;
+        if (step <= 0) return;
+        decayCarry -= step;
         long next = Math.max(0L, current - step);
         if (next == 0) {
             store.remove(RESONANCE);
@@ -264,8 +275,15 @@ public class BridgeContainer extends NotifiableRecipeHandlerTrait<String> implem
                 rest.add(text);
                 continue;
             }
-            long remaining = io == IO.IN ? take(work, packet) : give(work, packet);
-            if (remaining != packet.amount()) changed = true;
+            long remaining;
+            if (io == IO.IN) {
+                remaining = take(work, packet);
+            } else {
+                long overflow = give(work, packet);
+                remaining = 0L;
+                if (overflow != packet.amount()) changed = true;
+            }
+            if (io == IO.IN && remaining != packet.amount()) changed = true;
             if (remaining > 0) rest.add(packet.withAmount(remaining).toString());
         }
         if (!simulate) {
@@ -323,7 +341,7 @@ public class BridgeContainer extends NotifiableRecipeHandlerTrait<String> implem
 
     @Override
     public int linkRange() {
-        return def.range;
+        return def.maxLinkRange();
     }
 
     @Override

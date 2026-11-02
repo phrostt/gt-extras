@@ -4,7 +4,7 @@
 
 **Mana, Source, Blood and Demonic Will for GregTech CEu Modern, configurable linked Bridge hatches, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
 
-Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.20.0
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.21.0
 
 </div>
 
@@ -176,14 +176,14 @@ A bridge is a named link between two multiblocks. One machine sends packets thro
 
 | | |
 |---|---|
-| Tiers | LV to UV, input and output |
-| Hatches | `gtextras:<bridge>_input_hatch_<tier>` and `gtextras:<bridge>_output_hatch_<tier>` |
+| Tiers | LV to UV, chosen per bridge with `tiers`. Input and output |
+| Hatches | `gtextras:<bridge>_input_hatch_<tier>` and `gtextras:<bridge>_output_hatch_<tier>`, with `_<n>a` after the tier for rated hatches. The tiers a bridge registers come from its `tiers` setting |
 | Linking | Link Tool: select the **output** hatch, then right click an **input** hatch of the same bridge. Up to 10 inputs per output, in order or round robin, within the bridge's `range` (24 blocks by default). A link always runs from an output hatch to an input hatch, and a bridge needs one link per direction for a loop. |
 | Beams | A line of particles along every link while packets move. The colour comes from the bridge definition: `color` for the forward link and `returnColor` for the return link. The hatch screen has a **Beam colour** button to choose which one an output hatch uses. |
 | Buffer | Input hatches store received packets until a recipe uses them (10,000,000 per packet name). Output hatches hold packets produced by a recipe until they have been sent. |
 | Screen | Shows the stored packets, the links (output hatches), the resonance bar (input hatches) and an **Empty buffer** button that asks for a second click. |
 
-**Packets.** A packet is written as one string: `'<bridge> <kind> <name> <amount>'`.
+**Packets.** A packet is written as one string: `'<bridge> <kind> <name> [amount]'`. The amount can be left out and then counts as 1.
 
 | Kind | Example | Meaning |
 |---|---|---|
@@ -198,7 +198,7 @@ Packets match on kind and name, so a recipe asking for `item minecraft:cobblesto
 
 | Modifier | Effect |
 |---|---|
-| `GTX.bridgeYield('einstein_rosen', 'resonance', 0.5)` | Multiplies the recipe's outputs by up to 1.5 at a full resonance bar, scaling linearly |
+| `GTX.bridgeYield('einstein_rosen', 'resonance', 0.5)` | Multiplies the recipe's outputs by up to 1.5 at a full resonance bar, scaling linearly. Packets are whole numbers, so the leftover part of the bonus is applied by chance and the average output is exact |
 | `GTX.bridgeSpeed('einstein_rosen', 'resonance', 0.5)` | Shortens the recipe duration by up to 50% at a full resonance bar |
 
 Both leave a recipe unchanged at zero resonance. Any other `data` name can be used the same way.
@@ -209,11 +209,32 @@ Both leave a recipe unchanged at zero resonance. Any other `data` name can be us
 {
   "einstein_rosen": {
     "displayName": "Einstein-Rosen Bridge",
-    "color": "6FD3FF",
-    "returnColor": "14141C",
-    "resonanceCap": 1000,
-    "resonanceDecayPerSecond": 5,
-    "range": 24
+    "color": "000000",
+    "returnColor": "FFFFFF",
+    "resonanceCap": 10000,
+    "resonanceDecayPerSecond": 1,
+    "range": 24,
+    "tiers": ["uv"],
+    "hatchItem": "#gtceu:circuits/uxv",
+    "energy": { "enabled": false }
+  },
+  "wireless_energy": {
+    "displayName": "Wireless Energy",
+    "color": "FFC94A",
+    "returnColor": "3A2A08",
+    "range": 64,
+    "tiers": ["uv"],
+    "hatchItem": "#gtceu:circuits/opv",
+    "energy": {
+      "enabled": true,
+      "range": 64,
+      "lossPercent": 0,
+      "maxAmperage": 0,
+      "bufferTicks": 20,
+      "bufferSize": 0,
+      "allowTierMismatch": false,
+      "amperages": [1, 2, 4, 8, 16]
+    }
   }
 }
 ```
@@ -225,9 +246,24 @@ Both leave a recipe unchanged at zero resonance. Any other `data` name can be us
 | `returnColor` | same as `color` | Beam colour of the return link |
 | `resonanceCap` | 1000 | Resonance capacity of an LV input hatch |
 | `resonanceDecayPerSecond` | 5 | Resonance lost per second |
-| `range` | 24 | Link range in blocks |
+| `tiers` | all of LV to UV when the field is missing, `["uv"]` in the generated default file | List of hatch tiers to register, for example `["mv", "hv"]`. Valid names are lv, mv, hv, ev, iv, luv, zpm, uv. An empty or missing list registers every tier |
+| `hatchItem` | `minecraft:ender_eye` | Item placed above the hull in the crafting recipe of every hatch of this bridge. An item id (`minecraft:ender_eye`, or a custom one from KubeJS) or an item tag written with a leading `#` (`#gtceu:circuits/uxv`), in which case any item in the tag works in the recipe. Something that is not an item or tag logs a warning and falls back to the Eye of Ender. It is a direct field of the bridge, next to `range` |
+| `range` | 24 | Link range in blocks for packets |
+| `energy.enabled` | true (the built-in `einstein_rosen` sets false) | Turns wireless energy transfer on or off for this bridge. When off, hatches carry packets only |
+| `energy.range` | 64 | Link range in blocks for energy (4 chunks). The Link Tool allows the larger of `range` and `energy.range` |
+| `energy.lossPercent` | 0 | Percentage of energy lost in transit, 0 to 99 |
+| `energy.maxAmperage` | 0 | Amps one hatch can take in or push out per tick. 0 means no cap |
+| `energy.bufferTicks` | 20 | Ticks of throughput the hatch can store. Buffer size is hatch voltage times amps times this value, using 1,024 amps when `maxAmperage` is 0 |
+| `energy.bufferSize` | 0 | Exact buffer size of an energy hatch in EU. 0 means automatic from `bufferTicks`. When the buffer is full the hatch accepts no more energy |
+| `energy.allowTierMismatch` | false | Energy only flows between hatches of the same tier unless this is true. Packets are not affected |
+| `energy.amperages` | none | Hatch ratings to register: any of 1, 2, 4, 8, 16. Each tier then gets `<bridge>_<input\|output>_hatch_<tier>_<n>a` hatches in place of the plain ones. A higher rating is crafted from two hatches of half the rating plus the `hatchItem` |
 
-A new bridge needs its hatch models and textures in a resource pack or the pack's `kubejs/assets/gtextras` folder: `models/block/machine/<bridge>_<input|output>_hatch_<tier>.json`, `blockstates/<same>.json`, `models/item/<same>.json`, `models/block/machine/part/<bridge>_<input|output>_hatch.json` and the two overlay textures it names. Copy the `einstein_rosen` files and rename them. The overlay colour is part of the texture, so recolour the PNGs to match the bridge. Beams use the `color` setting.
+**Energy.** The built-in `wireless_energy` bridge (Wireless Energy hatches, amber) is for power, and `einstein_rosen` has energy turned off. Any bridge can carry energy by setting `energy.enabled` to true. On a bridge with energy enabled, every hatch also carries energy. An output hatch accepts EU from cables or machines next to it at its tier voltage and sends it along its links to input hatches of the same bridge, up to `energy.range` blocks away. An input hatch pushes the energy it receives into any adjacent cable or machine at its tier voltage. No recipe is needed, the hatches work on their own, placed anywhere. Both ends must be in loaded chunks. Energy shares the output hatch's links with packets. The hatch screen shows the energy buffer. Energy only flows between hatches of the same tier unless `energy.allowTierMismatch` is set, so a UV output hatch cannot feed an LV input hatch. When a hatch's buffer is full it accepts no more energy. Hatches can carry a rating of 1, 2, 4, 8 or 16 amps through `energy.amperages`. A multiblock energy hatch only accepts energy through its front face, so a bridge input hatch has to touch that face, or touch a cable that leads to it.
+
+The full reference for bridges, with worked examples and troubleshooting, is in [docs/BRIDGES.md](docs/BRIDGES.md).
+
+
+A new bridge needs its hatch models and textures in a resource pack or the pack's `kubejs/assets/gtextras` folder: `models/block/machine/<bridge>_<input|output>_hatch_<tier>.json`, `blockstates/<same>.json`, `models/item/<same>.json`, `models/block/machine/part/<bridge>_<input|output>_hatch.json` and the two overlay textures it names. Copy the `einstein_rosen` files and rename them. In each copied crafting recipe, set the `X` ingredient to `{"type": "gtextras:bridge_item", "bridge": "<bridge>"}` so it takes the bridge's `hatchItem`. The overlay colour is part of the texture, so recolour the PNGs to match the bridge. Beams use the `color` setting.
 
 ### Rotation Interface
 *Needs Create.*
@@ -272,8 +308,8 @@ const GTX = Java.loadClass('com.gtextras.api.GTX')
 | `.output(GTX.MANA, n)` | Gives `n` at the end of the recipe |
 | `.input(GTX.MANA, n).perTick(true)` | Draws `n` every tick while running |
 | `.output(GTX.MANA, n).perTick(true)` | Produces `n` every tick while running |
-| `.input(GTX.BRIDGE, '<bridge> <kind> <name> <amount>')` | Takes a packet from the machine's bridge input hatches |
-| `.output(GTX.BRIDGE, '<bridge> <kind> <name> <amount>')` | Sends a packet through the machine's bridge output hatches |
+| `.input(GTX.BRIDGE, '<bridge> <kind> <name> [amount]')` | Takes a packet from the machine's bridge input hatches |
+| `.output(GTX.BRIDGE, '<bridge> <kind> <name> [amount]')` | Sends a packet through the machine's bridge output hatches |
 | `.addCondition(GTX.minRpm(n))` | Consumes rotation: needs an **Input** Rotation Interface in the multiblock and a network spinning at `n` RPM or more; the recipe pauses below that |
 | `.addCondition(GTX.damageItem('modid:tool', 1))` | Uses 1 durability of the item (or `'#modid:tag'`) from any input slot as soon as the recipe starts, after which the item can be removed; the recipe will not start without a usable one. Add `.notConsumable('modid:tool')` too so the item shows in JEI and is not consumed, and `.addCondition(GTX.damageItemLabel('modid:tool'))` to show its name on a second row |
 | `.addCondition(GTX.outputRpm(n))` | Generates rotation: needs an **Output** Rotation Interface, which drives the network at `n` RPM (maximum 256) with stress from the recipe's real EU/t |
@@ -316,7 +352,7 @@ Working examples, including rotation recipes for both interface types, are in `e
 | `gtextras-fluids.toml` | server | Fluid lists for blood, mana, Source and the five will types, and the `willItems` list. Entries are fluid ids or `#tags`, optionally `=ratio`. |
 | `gtextras-hatches.toml` | server | Storage and rate per resource and tier (rate is per tick; an existing world keeps its old values, so delete the file to pick up new defaults), `euPerOperation` (EU drawn from the multiblock's energy hatches each time the hatch moves something on its own, default 0), and `transferParticles` to turn the Ars style orbs on mana and source hatches off. |
 | `config/gtextras.json` | client | Coil and research badge settings. |
-| `kubejs/config/gtextras_bridges.json` | startup | Bridge definitions: name, beam colours, resonance capacity and decay, link range. Falls back to `config/gtextras-bridges.json`. |
+| `kubejs/config/gtextras_bridges.json` | startup | Bridge definitions: name, beam colours, resonance capacity and decay, link range, energy transfer settings. Falls back to `config/gtextras-bridges.json`. |
 
 Server configs are per world and sync to players. Put copies in `defaultconfigs/` to set them for new worlds. Fluids that are not installed are skipped.
 
@@ -373,7 +409,7 @@ If a category has no entry, `autoDetectKeys` is tried in order. `showResearchIco
 ## Known issues
 
 * The Rotation Interface and the controller status fix in 0.19.4 have not been tested in game by the author.
-* Bridge hatches, packets and resonance (0.20.0) have not been tested in game by the author.
+* Bridge hatches, packets, resonance (0.20.0) and wireless energy (0.21.0) have not been fully tested in game by the author.
 * If another EMI addon also adds a Blood Magic meteor tab, you will see two tabs. Turn one off.
 
 ---

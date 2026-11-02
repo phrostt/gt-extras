@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    },
+    {
+      "type": "forge:item_exists",
+      "item": "gtextras:wireless_energy_input_hatch_mv"
+    }
+  ],
+  "pattern": [
+    "PXP",
+    "CHC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/aluminium"
+    },
+    "C": {
+      "tag": "gtceu:circuits/mv"
+    },
+    "H": {
+      "item": "gtceu:mv_machine_hull"
+    },
+    "X": {
+      "type": "gtextras:bridge_item",
+      "bridge": "wireless_energy"
+    }
+  },
+  "result": {
+    "item": "gtextras:wireless_energy_input_hatch_mv"
+  }
+}

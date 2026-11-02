@@ -13,9 +13,9 @@ public class BridgeHatchMachine extends TieredPartMachine implements IUIMachine 
 
     private final BridgeContainer container;
 
-    public BridgeHatchMachine(IMachineBlockEntity holder, IO io, int tier, BridgeDef def) {
+    public BridgeHatchMachine(IMachineBlockEntity holder, IO io, int tier, BridgeDef def, int amps) {
         super(holder, tier);
-        this.container = new BridgeContainer(this, io, tier, def);
+        this.container = new BridgeContainer(this, io, tier, def, amps);
     }
 
     public BridgeContainer container() {

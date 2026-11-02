@@ -5,6 +5,10 @@
     {
       "type": "forge:mod_loaded",
       "modid": "gtceu"
+    },
+    {
+      "type": "forge:item_exists",
+      "item": "gtextras:einstein_rosen_output_hatch_zpm"
     }
   ],
   "pattern": [
@@ -22,7 +26,8 @@
       "item": "gtceu:zpm_machine_hull"
     },
     "X": {
-      "item": "minecraft:ender_eye"
+      "type": "gtextras:bridge_item",
+      "bridge": "einstein_rosen"
     }
   },
   "result": {

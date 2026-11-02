@@ -100,7 +100,7 @@ public final class NeedsReader {
                 String name = p.kind().equals(com.gtextras.gt.bridge.BridgePacket.DATA)
                         ? "data " + p.name() : p.name();
                 if (p.kind().equals(com.gtextras.gt.bridge.BridgePacket.TAG)) name = "#" + name;
-                if (name.length() > 34) name = name.substring(0, 33) + "~";
+                if (name.length() > 30) name = name.substring(0, 29) + "~";
                 names.add(name);
             } catch (IllegalArgumentException e) {
                 names.add(String.valueOf(content.getContent()));

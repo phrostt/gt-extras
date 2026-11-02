@@ -23,6 +23,7 @@ public class GTExtras {
         if (FMLEnvironment.dist == Dist.CLIENT) {
             LOGGER.info("[{}] loaded, waiting for EMI", MOD_ID);
             RecipeIdCopy.register();
+            CardSize.register();
             net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus().addListener(RecipeIdCopy::registerKeys);
         }
     }

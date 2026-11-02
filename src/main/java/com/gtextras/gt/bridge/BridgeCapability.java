@@ -67,7 +67,12 @@ public final class BridgeCapability extends RecipeCapability<String> {
     public String copyWithModifier(String content, ContentModifier modifier) {
         try {
             BridgePacket packet = BridgePacket.parse(content);
-            long scaled = Math.round(modifier.apply((double) packet.amount()));
+            double exact = modifier.apply((double) packet.amount());
+            long scaled = (long) Math.floor(exact);
+            double fraction = exact - scaled;
+            if (fraction > 0 && java.util.concurrent.ThreadLocalRandom.current().nextDouble() < fraction) {
+                scaled++;
+            }
             return packet.withAmount(scaled).toString();
         } catch (IllegalArgumentException e) {
             return content;

@@ -66,6 +66,7 @@ public final class CoilInfo {
 
     public static final int JEI_EXTRA_HEIGHT = ExtraBadges.TEXT_TOP + ExtraBadges.MAX_TEXT_LINES * ExtraBadges.LINE_H + 25;
     public static final int RIGHT_MARGIN = 12;
+    public static final int COIL_LIFT = 7;
 
     private static boolean jei() {
         return !net.minecraftforge.fml.ModList.get().isLoaded("emi");
@@ -99,6 +100,11 @@ public final class CoilInfo {
         int iconY = padTop + (EXTRA_HEIGHT - SLOT_SIZE) / 2 + config.offsetY;
         if (recipe != null && NativeLines.showsCoilText(recipe)) {
             iconY = NativeLines.coilLineY(recipe, displayHeight) - 4 + config.offsetY;
+        } else if (recipe != null) {
+            Result found = resolve(config, category, recipe);
+            if (found != null && found.hasCoil()) {
+                iconY -= COIL_LIFT;
+            }
         }
         int dataX = iconX - 40;
         return new Layout(textX, textY1, textY2, iconX, iconY, dataX, dataX + 20, iconY + 4, textX, padTop + 1);

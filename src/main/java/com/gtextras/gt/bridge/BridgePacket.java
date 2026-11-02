@@ -10,17 +10,17 @@ public record BridgePacket(String channel, String kind, String name, long amount
     public static BridgePacket parse(String text) {
         if (text == null) throw new IllegalArgumentException("empty bridge packet");
         String[] parts = text.trim().split("\\s+");
-        if (parts.length != 4) {
-            throw new IllegalArgumentException("a bridge packet is '<bridge> <item|fluid|tag|data> <name> <amount>', got '"
+        if (parts.length != 3 && parts.length != 4) {
+            throw new IllegalArgumentException("a bridge packet is '<bridge> <item|fluid|tag|data> <name> [amount]', got '"
                     + text + "'");
         }
         String kind = parts[1].toLowerCase(java.util.Locale.ROOT);
         if (!kind.equals(ITEM) && !kind.equals(FLUID) && !kind.equals(TAG) && !kind.equals(DATA)) {
             throw new IllegalArgumentException("unknown bridge packet kind '" + parts[1] + "' in '" + text + "'");
         }
-        long amount;
+        long amount = 1L;
         try {
-            amount = Long.parseLong(parts[3]);
+            if (parts.length == 4) amount = Long.parseLong(parts[3]);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("bad amount '" + parts[3] + "' in bridge packet '" + text + "'");
         }

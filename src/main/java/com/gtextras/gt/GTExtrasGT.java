@@ -42,7 +42,10 @@ public final class GTExtrasGT {
         REGISTRATE.registerRegistrate();
 
         modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent event) -> event
-                .enqueueWork(com.gtextras.gt.bridge.BridgeCapability::registerLookup));
+                .enqueueWork(() -> {
+                    com.gtextras.gt.bridge.BridgeCapability.registerLookup();
+                    com.gtextras.gt.bridge.BridgeItemIngredient.register();
+                }));
         modBus.addGenericListener(MachineDefinition.class,
                 (GTCEuAPI.RegisterEvent<?, MachineDefinition> event) -> registerMachines());
         if (create) {

@@ -1,5 +1,43 @@
 # Changelog
 
+## 0.21.0
+
+### Added
+* **Wireless Energy bridge.** A second built-in bridge, `wireless_energy`, with its own 16 hatches (`gtextras:wireless_energy_input_hatch_<tier>` and `gtextras:wireless_energy_output_hatch_<tier>`, LV to UV), amber overlay textures, models, names and crafting recipes (hull, circuits and plates around a block of redstone). `einstein_rosen` stays the resonance bridge and has energy turned off by default.
+* **Wireless energy through bridge hatches.** Hatches of a bridge with energy enabled now carry energy. An output hatch accepts EU from adjacent cables or machines at its tier voltage and sends it along its links to input hatches of the same bridge. An input hatch pushes the energy it receives into adjacent cables or machines at its tier voltage. No recipe is needed.
+* **Energy settings per bridge.** A new optional `energy` block in `gtextras_bridges.json` with `enabled` (true), `range` (64 blocks), `lossPercent` (0), `maxAmperage` (0, no cap) and `bufferTicks` (20). A bridge without an `energy` block uses these defaults, and `"enabled": false` turns energy off for that bridge.
+* **Energy on the hatch screen.** An energy bar showing stored and maximum EU appears on every bridge hatch screen when energy is enabled.
+* **Hatch tooltips** describe the energy behaviour and the link range.
+
+### Fixed
+* **A full output hatch no longer stops recipes.** When a bridge output hatch has no room for a packet a recipe produces, for example resonance when the hatch is already full or has nowhere to send it, the hatch stores what fits and discards the rest. The recipe used to fail with "Insufficient Outputs".
+* **Stale card heights after a reload.** The extra card height measured for each recipe type is now cleared whenever the client receives updated recipes, so cards for recipe types whose recipes change on a script reload (the black and white hole) are measured again instead of keeping a height from before the reload. The log line `card extra` now also shows the recipe count.
+* **Bridge lines line up with the card text.** The `bridge in` and `bridge out` lines now start at the same left edge as the native lines (Duration, Total, Usage) instead of sitting a few pixels to the right, and long names are cut at 30 characters so they stay inside the card.
+* **Coil icon no longer covers the tier label.** On cards that draw the coil icon themselves, the icon now sits 7 pixels higher, so its bottom lines up with the bottom of the temperature line and it no longer overlaps the tier label (ZPM, UV and so on) at the bottom right.
+* **Yield bonus applies by chance on small packets.** The bonus used to be rounded to the nearest whole packet, so a packet of 1 only became 2 at a bar that was exactly full, which never happens while resonance decays. The leftover part of the bonus is now a probability, so a packet of 1 at a 20% bonus becomes 2 one time in five and the average output follows the bonus exactly.
+* **Resonance decay matches the setting.** Decay used to lose at least 1 every half second, which doubled a setting of 1 per second. It now follows the configured rate exactly, including fractions of a point.
+* **Bridge capability name.** Machine status messages showed `recipe.capability.bridge.name`. They now show "Bridge".
+
+### Added (continued)
+* **New default configuration.** The generated default bridge file now holds every setting: `einstein_rosen` with black and white beams, a resonance cap of 10,000, UV hatches and `#gtceu:circuits/uxv` as the hatch item, and `wireless_energy` with UV hatches, `#gtceu:circuits/opv` as the hatch item and the full `energy` block with amperage ratings 1, 2, 4, 8 and 16.
+* **Energy buffer setting.** `energy.bufferSize` sets the exact buffer of an energy hatch in EU, 0 for automatic. A hatch with a full buffer accepts no more energy.
+* **Amperage ratings.** `energy.amperages` takes any of 1, 2, 4, 8, 16. Each tier then gets a hatch per rating, named `<bridge>_<input|output>_hatch_<tier>_<n>a`. The rating limits the amps in and out and sizes the buffer. Models, blockstates, names and crafting recipes for all ratings and tiers of `wireless_energy` are included. A higher rating is crafted from two hatches of half the rating and the bridge's `hatchItem`.
+* **Tier matching for energy.** Energy only flows between hatches of the same tier, so a bridge cannot act as a free voltage transformer. `energy.allowTierMismatch` turns this off. Packets are not affected.
+* **Documentation.** A new reference, `docs/BRIDGES.md`, covering hatches, linking, packets, resonance, wireless energy, every config field, recipes, the KubeJS API, worked examples, how to make a new bridge, and troubleshooting. The README is updated to match.
+
+### Changed
+* **Hatch recipes only load when the hatch exists.** Every bridge hatch recipe now has an item exists condition, so hatches removed by `tiers` or `amperages` no longer produce recipe errors in the log.
+* **Configurable hatch recipe item.** Each bridge has a `hatchItem` setting in `gtextras_bridges.json`, the item placed above the hull in the crafting recipe of its hatches. It defaults to the Eye of Ender and the built-in `wireless_energy` bridge uses a block of redstone. The crafting recipes use a new ingredient type, `gtextras:bridge_item`, that reads the setting when recipes load. It takes an item id, including one registered by KubeJS, or an item tag written with a leading `#`, such as `#gtceu:circuits/uxv`.
+* **Packet amount is optional.** `'einstein_rosen item gtceu:tesseract'` is the same as `'einstein_rosen item gtceu:tesseract 1'`. A packet with a missing or extra part is still rejected.
+* **Selectable hatch tiers.** A bridge can list the tiers it registers, for example `"tiers": ["mv", "hv"]`, to gate its hatches. A missing or empty list registers LV to UV as before, and the generated default config lists only `uv` for both built-in bridges, and an unknown tier name is logged and skipped.
+* The Link Tool range for a bridge is now the larger of `range` and `energy.range`. Packets still travel only within `range`.
+* Version and README updated for 0.21.0.
+
+### Notes
+* A hatch only accepts energy at or below its tier voltage, so a higher voltage is refused.
+* Both ends of a link must be in loaded chunks for energy to flow.
+* Energy is not a recipe packet kind. Recipes cannot read or produce it.
+
 ## 0.20.0
 
 ### Added

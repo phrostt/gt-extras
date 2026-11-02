@@ -21,6 +21,16 @@ public final class CardSize {
     private CardSize() {
     }
 
+    public static void register() {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(
+                net.minecraftforge.eventbus.api.EventPriority.NORMAL, false,
+                net.minecraftforge.client.event.RecipesUpdatedEvent.class, event -> reset());
+    }
+
+    public static void reset() {
+        EXTRA.clear();
+    }
+
     private static String version() {
         try {
             return net.minecraftforge.fml.ModList.get().getModContainerById(GTExtras.MOD_ID)
@@ -77,7 +87,8 @@ public final class CardSize {
             }
             int value = measure(type, manager);
             EXTRA.put(id, value);
-            GTExtras.LOGGER.info("[{}] card extra: {} = {}", GTExtras.MOD_ID, id, value);
+            GTExtras.LOGGER.info("[{}] card extra: {} = {} ({} recipes)", GTExtras.MOD_ID, id, value,
+                    manager.getAllRecipesFor(type).size());
             return value;
         } catch (Throwable t) {
             return 0;

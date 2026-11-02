@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "gtextras:wireless_energy_input_hatch_ev_4a"
+    },
+    {
+      "item": "gtextras:wireless_energy_input_hatch_ev_4a"
+    },
+    {
+      "type": "gtextras:bridge_item",
+      "bridge": "wireless_energy"
+    }
+  ],
+  "result": {
+    "item": "gtextras:wireless_energy_input_hatch_ev_8a"
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    },
+    {
+      "type": "forge:item_exists",
+      "item": "gtextras:wireless_energy_input_hatch_ev_8a"
+    }
+  ]
+}

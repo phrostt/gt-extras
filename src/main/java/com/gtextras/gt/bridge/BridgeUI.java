@@ -67,6 +67,18 @@ public final class BridgeUI {
             group.addWidget(level);
             y += 18;
         }
+        BridgeEnergy energy = container.energy();
+        if (energy != null) {
+            int accent = 0xFF000000 | def.color;
+            group.addWidget(new ProgressWidget(
+                    () -> energy.capacity() <= 0 ? 0 : (double) energy.stored() / energy.capacity(), 8, y, INNER, 12)
+                    .setProgressTexture(new ColorRectTexture(0xFF373737), new ColorRectTexture(accent)));
+            LabelWidget eu = new LabelWidget(12, y + 3, () -> "Energy  " + String.format("%,d / %,d EU",
+                    energy.stored(), energy.capacity()));
+            eu.setColor(WHITE);
+            group.addWidget(eu);
+            y += 18;
+        }
         group.addWidget(text(8, y, () -> "Stored packets  (" + container.entryCount() + ")"));
         y += 12;
         DraggableScrollableWidgetGroup list = new DraggableScrollableWidgetGroup(8, y, INNER, 62);

@@ -31,7 +31,11 @@ public final class ExtraBadges {
 
     public record Badge(ItemStack icon, List<Component> tooltip, String text, int color) {}
 
-    public record TextLine(String text, int color) {}
+    public record TextLine(String text, int color, boolean flush) {
+        public TextLine(String text, int color) {
+            this(text, color, false);
+        }
+    }
 
     private static List<TextLine> currentText = List.of();
 
@@ -76,7 +80,8 @@ public final class ExtraBadges {
                 text = "+" + (all.size() - shown + 1) + " more, hover the icons";
                 color = 0xFF9A9A9A;
             }
-            g.drawString(font, text, layout.gridX(), layout.gridY() + TEXT_TOP + i * LINE_H, color, true);
+            int x = all.get(i).flush() ? layout.gridX() - CoilConfig.get().textX - 1 : layout.gridX();
+            g.drawString(font, text, x, layout.gridY() + TEXT_TOP + i * LINE_H, color, true);
         }
     }
 
@@ -127,6 +132,18 @@ public final class ExtraBadges {
         if (needs.hasOutRpm()) {
             out.add(new TextLine("Generates rotation: " + Math.min(256, needs.outRpm()) + " RPM", RPM_COLOR));
             out.add(new TextLine("Needs an OUTPUT Rotation Interface", RPM_COLOR));
+        }
+        if (needs.hasBridge()) {
+            int bridgeColor = 0xFF6FD3FF;
+            if (!needs.bridgeIn().isEmpty()) {
+                out.add(new TextLine("bridge in:", bridgeColor, true));
+                for (String name : needs.bridgeIn()) out.add(new TextLine(name, NEUTRAL_COLOR, true));
+            }
+            if (!needs.bridgeOut().isEmpty()) {
+                if (!out.isEmpty()) out.add(new TextLine("", NEUTRAL_COLOR, true));
+                out.add(new TextLine("bridge out:", bridgeColor, true));
+                for (String name : needs.bridgeOut()) out.add(new TextLine(name, NEUTRAL_COLOR, true));
+            }
         }
         return out;
     }
