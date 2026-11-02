@@ -2,7 +2,7 @@
 
 Complete reference for the bridge system in GT Extras: packet hatches, resonance, wireless energy, the definition file, the KubeJS API, recipes, assets for new bridges, and troubleshooting. The README has the short version of everything here.
 
-Everything in this file describes version 0.21.0. Bridges were added in 0.20.0 and wireless energy in 0.21.0.
+Everything in this file describes version 0.21.3. Bridges were added in 0.20.0 and wireless energy in 0.21.0.
 
 ---
 

@@ -65,7 +65,7 @@ public final class CoilInfo {
     }
 
     public static final int JEI_EXTRA_HEIGHT = ExtraBadges.TEXT_TOP + ExtraBadges.MAX_TEXT_LINES * ExtraBadges.LINE_H + 25;
-    public static final int RIGHT_MARGIN = 12;
+    public static final int RIGHT_MARGIN = 5;
     public static final int COIL_LIFT = 7;
 
     private static boolean jei() {
@@ -102,7 +102,7 @@ public final class CoilInfo {
             iconY = NativeLines.coilLineY(recipe, displayHeight) - 4 + config.offsetY;
         } else if (recipe != null) {
             Result found = resolve(config, category, recipe);
-            if (found != null && found.hasCoil()) {
+            if (found != null && (found.hasCoil() || found.hasTarget() || found.hasResearch())) {
                 iconY -= COIL_LIFT;
             }
         }

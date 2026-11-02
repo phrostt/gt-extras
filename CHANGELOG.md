@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.21.3
+
+### Fixed
+* **Research icons no longer cover the tier label.** On research cards such as the Prototype Assembler, the research and target icons and the arrow between them sit 7 pixels higher, the same lift the coil icon got, so the blueprint no longer overlaps the tier label (LuV, ZPM and so on).
+
+## 0.21.2
+
+### Changed
+* **Coil icon lines up with the tier label.** The coil icon sits 3 pixels further right, so its right edge matches the right edge of the tier label (IV, ZPM and so on).
+* **Long names on cards fit.** The right edge limit for the `bridge in` and `bridge out` lines was too strict and cut names such as `gtceu:bose_einstein_condensate` with a `~` even though they fit. The limit is now at the card edge, so only names that really run past it are shortened.
+
+## 0.21.1
+
+### Fixed
+* **Bridge lines line up with the card text.** The `bridge in` and `bridge out` lines now start at the same left edge as the native lines (Duration, Total, Usage) instead of sitting a few pixels to the right, and long names are cut at 30 characters so they stay inside the card.
+* **Coil icon no longer covers the tier label.** On cards that draw the coil icon themselves, the icon now sits 7 pixels higher, so its bottom lines up with the bottom of the temperature line and it no longer overlaps the tier label (ZPM, UV and so on) at the bottom right.
+* **Yield bonus applies by chance on small packets.** The bonus used to be rounded to the nearest whole packet, so a packet of 1 only became 2 at a bar that was exactly full, which never happens while resonance decays. The leftover part of the bonus is now a probability, so a packet of 1 at a 20% bonus becomes 2 one time in five and the average output follows the bonus exactly.
+* **Resonance decay matches the setting.** Decay used to lose at least 1 every half second, which doubled a setting of 1 per second. It now follows the configured rate exactly, including fractions of a point.
+* **Coil text and icon spacing.** The temperature and coil lines now start at the same left edge as the native card text, and the coil icon sits 4 pixels further right, so the text no longer runs into the icon. The bridge lines moved 2 pixels further left to match exactly. Lines that would run past the card edge are shortened with a `~` instead of being cut off by the border.
+
+### Changed
+* Version bumped so the jar is easy to tell from earlier 0.21.0 test builds.
+* **Build.** The compile-time copies of the pack jars from `libs/` are now staged in `.staged-libs/` instead of `build/staged-libs/`, so `gradlew clean build` no longer deletes them and fails with "Could not find local:...". `.staged-libs/` is ignored by git.
+
 ## 0.21.0
 
 ### Added
@@ -8,17 +32,6 @@
 * **Energy settings per bridge.** A new optional `energy` block in `gtextras_bridges.json` with `enabled` (true), `range` (64 blocks), `lossPercent` (0), `maxAmperage` (0, no cap) and `bufferTicks` (20). A bridge without an `energy` block uses these defaults, and `"enabled": false` turns energy off for that bridge.
 * **Energy on the hatch screen.** An energy bar showing stored and maximum EU appears on every bridge hatch screen when energy is enabled.
 * **Hatch tooltips** describe the energy behaviour and the link range.
-
-### Fixed
-* **A full output hatch no longer stops recipes.** When a bridge output hatch has no room for a packet a recipe produces, for example resonance when the hatch is already full or has nowhere to send it, the hatch stores what fits and discards the rest. The recipe used to fail with "Insufficient Outputs".
-* **Stale card heights after a reload.** The extra card height measured for each recipe type is now cleared whenever the client receives updated recipes, so cards for recipe types whose recipes change on a script reload (the black and white hole) are measured again instead of keeping a height from before the reload. The log line `card extra` now also shows the recipe count.
-* **Bridge lines line up with the card text.** The `bridge in` and `bridge out` lines now start at the same left edge as the native lines (Duration, Total, Usage) instead of sitting a few pixels to the right, and long names are cut at 30 characters so they stay inside the card.
-* **Coil icon no longer covers the tier label.** On cards that draw the coil icon themselves, the icon now sits 7 pixels higher, so its bottom lines up with the bottom of the temperature line and it no longer overlaps the tier label (ZPM, UV and so on) at the bottom right.
-* **Yield bonus applies by chance on small packets.** The bonus used to be rounded to the nearest whole packet, so a packet of 1 only became 2 at a bar that was exactly full, which never happens while resonance decays. The leftover part of the bonus is now a probability, so a packet of 1 at a 20% bonus becomes 2 one time in five and the average output follows the bonus exactly.
-* **Resonance decay matches the setting.** Decay used to lose at least 1 every half second, which doubled a setting of 1 per second. It now follows the configured rate exactly, including fractions of a point.
-* **Bridge capability name.** Machine status messages showed `recipe.capability.bridge.name`. They now show "Bridge".
-
-### Added (continued)
 * **New default configuration.** The generated default bridge file now holds every setting: `einstein_rosen` with black and white beams, a resonance cap of 10,000, UV hatches and `#gtceu:circuits/uxv` as the hatch item, and `wireless_energy` with UV hatches, `#gtceu:circuits/opv` as the hatch item and the full `energy` block with amperage ratings 1, 2, 4, 8 and 16.
 * **Energy buffer setting.** `energy.bufferSize` sets the exact buffer of an energy hatch in EU, 0 for automatic. A hatch with a full buffer accepts no more energy.
 * **Amperage ratings.** `energy.amperages` takes any of 1, 2, 4, 8, 16. Each tier then gets a hatch per rating, named `<bridge>_<input|output>_hatch_<tier>_<n>a`. The rating limits the amps in and out and sizes the buffer. Models, blockstates, names and crafting recipes for all ratings and tiers of `wireless_energy` are included. A higher rating is crafted from two hatches of half the rating and the bridge's `hatchItem`.
@@ -32,6 +45,11 @@
 * **Selectable hatch tiers.** A bridge can list the tiers it registers, for example `"tiers": ["mv", "hv"]`, to gate its hatches. A missing or empty list registers LV to UV as before, and the generated default config lists only `uv` for both built-in bridges, and an unknown tier name is logged and skipped.
 * The Link Tool range for a bridge is now the larger of `range` and `energy.range`. Packets still travel only within `range`.
 * Version and README updated for 0.21.0.
+
+### Fixed
+* **A full output hatch no longer stops recipes.** When a bridge output hatch has no room for a packet a recipe produces, for example resonance when the hatch is already full or has nowhere to send it, the hatch stores what fits and discards the rest. The recipe used to fail with "Insufficient Outputs".
+* **Stale card heights after a reload.** The extra card height measured for each recipe type is now cleared whenever the client receives updated recipes, so cards for recipe types whose recipes change on a script reload (the black and white hole) are measured again instead of keeping a height from before the reload. The log line `card extra` now also shows the recipe count.
+* **Bridge capability name.** Machine status messages showed `recipe.capability.bridge.name`. They now show "Bridge".
 
 ### Notes
 * A hatch only accepts energy at or below its tier voltage, so a higher voltage is refused.

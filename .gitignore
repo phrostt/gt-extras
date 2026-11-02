@@ -7,3 +7,4 @@ run/
 
 # mod jars used only for compiling the GregTech hatches
 libs/*.jar
+.staged-libs/

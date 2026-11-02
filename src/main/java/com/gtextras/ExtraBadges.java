@@ -57,7 +57,7 @@ public final class ExtraBadges {
             String temp = Component.translatable("gtextras.text." + info.mode(),
                     String.format("%,d", info.required())).getString();
             String name = Component.translatable("gtextras.text.coil", info.coil().name().getString()).getString();
-            coil = List.of(new TextLine(temp, NEUTRAL_COLOR), new TextLine(name, NEUTRAL_COLOR));
+            coil = List.of(new TextLine(temp, NEUTRAL_COLOR, true), new TextLine(name, NEUTRAL_COLOR, true));
         }
         if (!coil.isEmpty()) {
             List<TextLine> merged = new ArrayList<>(coil);
@@ -80,7 +80,13 @@ public final class ExtraBadges {
                 text = "+" + (all.size() - shown + 1) + " more, hover the icons";
                 color = 0xFF9A9A9A;
             }
-            int x = all.get(i).flush() ? layout.gridX() - CoilConfig.get().textX - 1 : layout.gridX();
+            int x = all.get(i).flush() ? layout.gridX() - CoilConfig.get().textX - 3 : layout.gridX();
+            if (all.get(i).flush()) {
+                int right = layout.iconX() - CoilConfig.get().offsetX + CoilInfo.SLOT_SIZE + CoilInfo.RIGHT_MARGIN + 1;
+                while (text.length() > 3 && x + font.width(text) > right) {
+                    text = text.substring(0, text.length() - 2) + "~";
+                }
+            }
             g.drawString(font, text, x, layout.gridY() + TEXT_TOP + i * LINE_H, color, true);
         }
     }

@@ -70,7 +70,7 @@ mixin {
     config 'gtextras.mixins.json'
 }
 
-def stagedLibs = file("${buildDir}/staged-libs")
+def stagedLibs = file("${projectDir}/.staged-libs")
 stagedLibs.mkdirs()
 fileTree(dir: 'libs', include: ['*.jar']).files.each { jarFile ->
     def target = new File(stagedLibs, jarFile.name.replaceAll(/\.jar$/, '') + '-1.jar')
