@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.21.4
+
+### Fixed
+* **Full item names fit on the bridge lines.** The right edge limit was still a few pixels too strict, so `gtceu:bose_einstein_condensate` lost its last letters. The limit is now wide enough for the full name on a standard card.
+
 ## 0.21.3
 
 ### Fixed

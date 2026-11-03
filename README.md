@@ -4,7 +4,7 @@
 
 **Mana, Source, Blood and Demonic Will for GregTech CEu Modern, configurable linked Bridge hatches, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
 
-Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.21.3
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.21.4
 
 </div>
 

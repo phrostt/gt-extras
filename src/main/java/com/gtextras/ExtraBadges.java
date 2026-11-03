@@ -82,7 +82,7 @@ public final class ExtraBadges {
             }
             int x = all.get(i).flush() ? layout.gridX() - CoilConfig.get().textX - 3 : layout.gridX();
             if (all.get(i).flush()) {
-                int right = layout.iconX() - CoilConfig.get().offsetX + CoilInfo.SLOT_SIZE + CoilInfo.RIGHT_MARGIN + 1;
+                int right = layout.iconX() - CoilConfig.get().offsetX + CoilInfo.SLOT_SIZE + CoilInfo.RIGHT_MARGIN + 5;
                 while (text.length() > 3 && x + font.width(text) > right) {
                     text = text.substring(0, text.length() - 2) + "~";
                 }
