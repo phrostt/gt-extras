@@ -227,6 +227,16 @@ public class CoilJeiPlugin implements IModPlugin {
     }
 
     @Override
+    public void onRuntimeAvailable(mezz.jei.api.runtime.IJeiRuntime jeiRuntime) {
+        JeiFluidTooltips.setRuntime(jeiRuntime);
+    }
+
+    @Override
+    public void onRuntimeUnavailable() {
+        JeiFluidTooltips.clearRuntime();
+    }
+
+    @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public void registerAdvanced(IAdvancedRegistration registration) {
         CoilConfig config = CoilConfig.get();

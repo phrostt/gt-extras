@@ -4,7 +4,7 @@
 
 **Mana, Source, Blood and Demonic Will for GregTech CEu Modern, configurable linked Bridge hatches, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
 
-Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.21.4
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.21.7
 
 </div>
 
@@ -18,6 +18,7 @@ Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.21.4
 * **ME network support** for source (Ars Énergistique) and mana (Applied Botanics), and fluid and item exposure on blood and will hatches.
 * **Create Rotation Interface**: one block that is set to Input (consumes rotation) or Output (generates rotation) next to a Create gearbox.
 * **Recipe viewer extras** for EMI and JEI: coil and research badges, a requirement grid for the new resources, Blood Magic meteor and ritual tabs.
+* **GregTech fluid tooltips in the JEI ingredient list.** Hovering a fluid, gas or plasma in the JEI list (or in any non-GregTech JEI recipe) now shows the GregTech lines: chemical formula, state (liquid, gas, plasma), temperature, cryogenic note, fluid attributes and the ingot conversion when Shift is held.
 
 Every other mod is optional. A feature turns on when the mod it needs is installed.
 

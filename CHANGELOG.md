@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.21.7
+
+### Fixed
+* **Fluid tooltips in the JEI ingredient list, for real this time.** The mixin approach from 0.21.5/0.21.6 had no visible effect, so it is removed. A client event handler on Forge's tooltip gather event now asks the JEI runtime which fluid is under the mouse (ingredient list, bookmarks or recipe screen) and inserts GregTech's own fluid lines (formula, state, temperature, cryogenic note, attributes, Shift ingot conversion) right after the name. It does not depend on JEI internals, and skips fluids whose tooltip already contains the GT lines, so GregTech's own recipe widgets are not doubled. Needs JEI and GTCEu; items were not affected.
+
+## 0.21.6
+
+### Changed
+* **JEI fluid tooltip hook now logs.** The hook from 0.21.5 failed silently. It now writes one line to `latest.log` the first time it runs (`[GT Extras] JEI fluid tooltip hook ran for <fluid> and added <n> lines`) and one error with the stack trace if GregTech's tooltip code throws, so a missing tooltip can be traced.
+
+## 0.21.5
+
+### Fixed
+* **Fluid tooltips in the JEI ingredient list.** Hovering a fluid, gas or plasma in the JEI ingredient list only showed its name, because GregTech adds its fluid lines in its own widgets and not in JEI's list. A new client mixin on JEI's fluid tooltip (`mezz.jei.forge.platform.FluidHelper.getTooltip`) now calls GregTech's own fluid tooltip handler after JEI builds the tooltip, so the chemical formula, state, temperature, cryogenic note, fluid attributes and the Shift ingot conversion show up. Items were not affected. GregTech's own recipe pages are unchanged, so lines are not doubled there.
+
 ## 0.21.4
 
 ### Fixed

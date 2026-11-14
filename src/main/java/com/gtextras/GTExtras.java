@@ -24,6 +24,7 @@ public class GTExtras {
             LOGGER.info("[{}] loaded, waiting for EMI", MOD_ID);
             RecipeIdCopy.register();
             CardSize.register();
+            JeiFluidTooltips.register();
             net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus().addListener(RecipeIdCopy::registerKeys);
         }
     }
