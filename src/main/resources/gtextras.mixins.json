@@ -6,7 +6,9 @@
   "refmap": "gtextras.refmap.json",
   "mixins": [
     "RecipeStartDamageMixin",
-    "WaitingStatusMixin"
+    "WaitingStatusMixin",
+    "ConverterOutputSideMixin",
+    "ConverterPipePushMixin"
   ],
   "client": [
     "CoilRecipeSizeMixin",

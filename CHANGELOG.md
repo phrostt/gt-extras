@@ -1,5 +1,95 @@
 # Changelog
 
+## 0.21.25
+
+### Changed
+* **Converter push into Pipez rewritten.** A Pipez pipe that has no Extract face or upgrade has no block entity, so it could not take a push and had no destination list; every earlier hook on the pipe's block entity had nothing to attach to. A GT converter in EU to FE mode whose front is a Pipez energy pipe now finds the connected energy pipes itself and delivers into every block on that network that accepts Forge Energy, with no per-face transfer limit, spending EU from its buffer at the normal ratio (limited only by the converter's own voltage and amps). A pipe face set to Extract is left to Pipez, so pulling still works. The earlier push, capability, rate and connection hooks and the diagnostic probes are removed.
+
+## 0.21.24
+
+### Added
+* **Converter probe.** Every few seconds each GT converter logs its mode, front direction, what block is in front of it, whether that block gives an energy capability and whether it can receive. To be removed once converter push is working.
+
+## 0.21.23
+
+### Changed
+* **Pipe hooks fail loudly again, with a heartbeat log.** The Pipez push and capability hooks stop the game at load if a target does not match, and the log prints (throttled) when a pipe is asked for its energy capability, so a hook that is not applying can be told apart from one that is not reached.
+
+## 0.21.22
+
+### Added
+* **Converter to pipe diagnostics.** The log now shows when a pipe is asked for its energy capability by a GT machine next to it, what that machine is, the converter's front and mode, and when the capability is handed to a converter. To be removed once converter push is confirmed.
+
+## 0.21.21
+
+### Changed
+* **Back to the 0.21.14 Pipez push.** The Pipez push mixins are restored to exactly their 0.21.14 form (capability on the converter-facing face, push accepted on any face, no rate cap, source face skipped), and the connection-cache hook, converter helper, buffer and loud-failure settings from 0.21.15 to 0.21.20 are removed. One log line is added where a push reaches the pipe, showing the face's own rate.
+
+## 0.21.20
+
+### Changed
+* **Pipez hooks now fail loudly.** The three Pipez mixins no longer skip silently when a target does not match; the game stops at load and names the mismatch. A line is also logged when a pipe next to a converter is counted as a source.
+
+## 0.21.19
+
+### Fixed
+* **Converter push into a pipe now has somewhere to go.** Pipez only works out a pipe's destinations when the pipe has an Extract face, so a pipe taking a converter's push with no Extract face had an empty destination list and the energy was never delivered. A pipe touching the output of a converter in EU to FE mode is now treated as a source for that, so its destinations are found. The buffer (0.21.16) and the diagnostic logging (0.21.15, 0.21.18) are removed; they were built on a wrong diagnosis.
+
+## 0.21.18
+
+### Added
+* **Pipe push diagnostics.** The log prints (throttled) when a pipe face is offered to a converter, when a converter next to a pipe is not used and why, and what a push offers, delivers and buffers. To be removed once converter push into pipes is confirmed working.
+
+## 0.21.17
+
+### Fixed
+* **Buffered push no longer touches the pipe class.** 0.21.16 stored the buffer in a field added to Pipez's pipe and drained it from a hook in the pipe's tick; push stopped working. The buffer now lives in a separate table and is drained from a world tick event, and the pipe mixin is back to only handing out the capability. The diagnostic log line from 0.21.15 is removed.
+
+## 0.21.16
+
+### Changed
+* **Buffered push into a pipe.** A converter pushing into a non-Extract pipe face is no longer held to what the pipe's destinations take in that single tick. Energy that cannot be delivered at once waits in a buffer on that face (up to 2,147,483,647 FE) and the pipe feeds it onward every tick, like a Mekanism cable. The buffer is not saved across a world unload.
+
+## 0.21.15
+
+### Added
+* **Pipez push logging.** While a non-Extract pipe face is being pushed into, the log prints a line every 200 pushes with the pipe position, face, the FE offered and the FE accepted. This is a diagnostic for finding what limits a converter's output into a pipe, and will be removed once that is found.
+
+## 0.21.14
+
+### Changed
+* **Unlimited push into a non-Extract pipe face.** A pipe face that takes a converter's push is no longer limited by Pipez's per-face transfer rate or upgrade (1024 FE/t with no upgrade). It accepts whatever the converter offers; the pipe's other faces and Extract faces keep their normal Pipez rates.
+
+## 0.21.13
+
+### Fixed
+* **Pipez no longer affected anywhere except at a converter.** 0.21.9 to 0.21.12 gave every energy pipe an energy capability on every non-Extract face and changed how Extract faces take pushes, which could disturb ordinary Pipez networks. The capability is now only added on a pipe face that touches the front of a GregTech converter running in EU to FE mode, and the push check no longer rejects Extract faces. Everything else behaves exactly as Pipez ships.
+
+## 0.21.12
+
+### Changed
+* **Converter pull rewritten.** The mixin that lets a Pipez Extract face pull from a GregTech converter in EU to FE mode (0.21.11) was replaced by an independent implementation (`ConverterOutputSideMixin`). It behaves the same: in EU to FE mode the converter's Forge Energy side can be drained at the normal ratio from its EU buffer, and in FE to EU mode nothing changes.
+
+## 0.21.11
+
+### Added
+* **Pipes can pull from GregTech energy converters.** A converter in EU to FE mode reported that its Forge Energy side cannot be extracted from, so a Pipez Extract face (or any other puller) got nothing. That side can now be drained in EU to FE mode, taking EU from the converter's buffer and giving FE at the normal ratio. In FE to EU mode it still only accepts energy. Together with 0.21.10 this means a non-Extract pipe face takes the converter's push and an Extract face pulls, each through its own face. Pipez's transfer rate and upgrades still apply. If you also run the GT Pipez Compat mod, the two give the same result, so you can remove it.
+
+## 0.21.10
+
+### Changed
+* **Pipez energy push only on non-Extract faces.** A face of a Pipez energy pipe now accepts a push only when it is not set to Extract. In 0.21.8 and 0.21.9 every face accepted one. An Extract face goes back to being pull-only, so it no longer takes pushes (for example from a GregTech converter), and it can be used with a mod that lets pipes pull from converters without the two paths adding up on the same face.
+
+## 0.21.9
+
+### Fixed
+* **Pipez energy push, second half.** 0.21.8 let `EnergyPipeType.receive` accept a push on any face, but Pipez also hides an energy pipe's Forge Energy capability on every face that is not set to Extract, so a GregTech converter never even found the pipe to push into. A new mixin on `PipeLogicTileEntity.getCapability` now hands out the energy capability on those faces too. The storage it gives out is never ticked, so a non-extract face still never pulls energy out of its neighbour.
+
+## 0.21.8
+
+### Added
+* **GregTech energy converters can push into Pipez energy pipes.** Pipez only accepted energy pushed into a face set to Extract, so a converter in EU to FE mode could not feed a pipe. A new mixin on Pipez's `EnergyPipeType.receive` lets a face of an energy pipe accept a push, the way Mekanism cables do, and leaves the face being pushed into out of the destinations so energy never loops back. Pipez's per-pipe transfer rate (upgrades and the `energyPipeAmount*` server config values) still caps how much goes through. Does nothing if Pipez is not installed. Building needs `pipez-forge-1.20.1-1.2.26.jar` in `libs/`.
+
 ## 0.21.7
 
 ### Fixed
