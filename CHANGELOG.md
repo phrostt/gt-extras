@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.25
+
+### Added
+* **Alt + left click copies the item id of any recipe slot.** On JEI's recipe screen, Alt + left click on any slot of a recipe, input, output or catalyst, copies the registry id of the item shown there (for a fluid slot, the fluid's id) to the clipboard and prints "Copied item id" in chat. Shift + left click still copies the recipe id. Both use the same `copyRecipeId` setting in `config/gtextras.json`. The new `gtextras.copied_item_id` lang key is added.
+
+### Changed
+* **README documents the JEI id copy.** A new "Copy ids from JEI" section describes Shift click, Alt click, the copy key and the config setting.
+
+## 0.21.27
+
+### Changed
+* **Sterile Cleaning Maintenance Hatch recipe is now a full 3x3.** The pattern is circuit, casing, circuit / pump, hatch, pump / circuit, casing, circuit, so it takes 4 UV circuits, 2 Sterilizing Filter Casings, 2 UV Electric Pumps and a Cleaning Maintenance Hatch (it was a 2-row recipe with 2 casings, 1 circuit and 2 pumps).
+
+## 0.21.26
+
+### Added
+* **Sterile Cleaning Maintenance Hatch.** A UV maintenance hatch that gives the multiblock it is part of a Sterile Cleanroom. GregTech 7.5.3 has the Sterile Cleanroom type but only registers the plain Cleaning Maintenance Hatch. The new hatch also counts as a plain Cleanroom, so Cleanroom recipes run on it too, and it maintains the multiblock automatically like the plain hatch. It comes with a model, a green overlay, a crafting recipe, language entries and the wrench and pickaxe tags.
+
+### Removed
+* **Converter push log line.** The `converter at ... pushing into pipe network` message that was printed every few seconds for each converter is gone, along with the counters that only fed it.
+
 ## 0.21.25
 
 ### Changed

@@ -65,6 +65,7 @@
     "gtextras:will_output_hatch_luv",
     "gtextras:will_output_hatch_zpm",
     "gtextras:will_output_hatch_uv",
-    "gtextras:rotation_interface"
+    "gtextras:rotation_interface",
+    "gtextras:sterile_cleaning_maintenance_hatch"
   ]
 }

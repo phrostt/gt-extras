@@ -10,7 +10,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 
 /**
  * Pack-dev helper: shift + left click on a recipe's output item in the JEI recipe screen
- * copies the recipe id to the clipboard, for every recipe category. Holds no JEI types, so it is
+ * copies the recipe id to the clipboard, for every recipe category; alt + left click on any slot (input, output or
+ * catalyst) copies that slot's item (or fluid) id instead. Holds no JEI types, so it is
  * safe to load without JEI; the JEI lookup lives in {@link JeiRecipeIdLookup}.
  */
 public final class RecipeIdCopy {
@@ -66,7 +67,11 @@ public final class RecipeIdCopy {
     }
 
     static void onClick(ScreenEvent.MouseButtonPressed.Pre event) {
-        if (event.getButton() != 0 || !Screen.hasShiftDown()) {
+        if (event.getButton() != 0) {
+            return;
+        }
+        boolean alt = Screen.hasAltDown();
+        if (!alt && !Screen.hasShiftDown()) {
             return;
         }
         if (!CoilConfig.get().copyRecipeId) {
@@ -78,9 +83,11 @@ public final class RecipeIdCopy {
         }
         String id;
         try {
-            id = JeiRecipeIdLookup.find(screen, event.getMouseX(), event.getMouseY());
+            id = alt
+                    ? JeiRecipeIdLookup.findSlotId(screen, event.getMouseX(), event.getMouseY())
+                    : JeiRecipeIdLookup.find(screen, event.getMouseX(), event.getMouseY());
         } catch (Throwable t) {
-            GTExtras.LOGGER.warn("[{}] recipe id lookup failed", GTExtras.MOD_ID, t);
+            GTExtras.LOGGER.warn("[{}] {} lookup failed", GTExtras.MOD_ID, alt ? "item id" : "recipe id", t);
             return;
         }
         if (id == null || id.isEmpty()) {
@@ -89,7 +96,7 @@ public final class RecipeIdCopy {
         Minecraft mc = Minecraft.getInstance();
         mc.keyboardHandler.setClipboard(id);
         if (mc.player != null) {
-            mc.player.sendSystemMessage(Component.translatable("gtextras.copied_recipe_id", id));
+            mc.player.sendSystemMessage(Component.translatable(alt ? "gtextras.copied_item_id" : "gtextras.copied_recipe_id", id));
         }
         event.setCanceled(true);
     }

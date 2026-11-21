@@ -95,7 +95,7 @@ public class CoilConfig {
     public int offsetY = 0;
     
     /** Draw the requirement as plain text on the recipe page too, not just in a tooltip. */
-    /** Shift + left click a recipe output item in JEI to copy the recipe id (for pack development). */
+    /** Shift + left click a recipe output item in JEI to copy the recipe id, alt + left click any recipe slot to copy its item id (for pack development). */
     public boolean copyRecipeId = true;
 
     public boolean showText = true;

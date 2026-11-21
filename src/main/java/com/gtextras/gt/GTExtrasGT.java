@@ -75,6 +75,7 @@ public final class GTExtrasGT {
         if (ars) ExtrasMachines.initSource();
         if (blood) ExtrasMachines.initBlood();
         if (blood) ExtrasMachines.initWill();
+        ExtrasMachines.initCleanroom();
         com.gtextras.gt.bridge.BridgeMachines.init();
     }
 

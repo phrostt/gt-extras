@@ -21,6 +21,7 @@
   "gtextras.meteor.fill": "Fill block: %s%%",
   "gtextras.meteor.chance": "Chance: %s%%",
   "gtextras.copied_recipe_id": "Copied recipe id: %s",
+  "gtextras.copied_item_id": "Copied item id: %s",
   "gtextras.ritual.title": "Blood Magic Rituals",
   "gtextras.ritual.activation": "Activation: %s LP",
   "gtextras.ritual.upkeep": "Upkeep: %s LP every %s ticks",
@@ -331,5 +332,7 @@
   "block.gtextras.wireless_energy_output_hatch_uv_2a": "UV Wireless Energy Output Hatch (2A)",
   "block.gtextras.wireless_energy_output_hatch_uv_4a": "UV Wireless Energy Output Hatch (4A)",
   "block.gtextras.wireless_energy_output_hatch_uv_8a": "UV Wireless Energy Output Hatch (8A)",
-  "block.gtextras.wireless_energy_output_hatch_uv_16a": "UV Wireless Energy Output Hatch (16A)"
+  "block.gtextras.wireless_energy_output_hatch_uv_16a": "UV Wireless Energy Output Hatch (16A)",
+  "block.gtextras.sterile_cleaning_maintenance_hatch": "Sterile Cleaning Maintenance Hatch",
+  "gtextras.tooltip.sterile_hatch": "§fSterile Cleanroom§7, also counts as a plain Cleanroom"
 }

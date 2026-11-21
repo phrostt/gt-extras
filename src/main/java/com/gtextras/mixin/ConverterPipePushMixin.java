@@ -4,7 +4,6 @@ import com.gregtechceu.gtceu.api.capability.compat.FeCompat;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.trait.MachineTrait;
 import com.gregtechceu.gtceu.common.machine.trait.ConverterTrait;
-import com.gtextras.GTExtras;
 import de.maxhenkel.pipez.blocks.EnergyPipeBlock;
 import de.maxhenkel.pipez.blocks.PipeBlock;
 import de.maxhenkel.pipez.blocks.UniversalPipeBlock;
@@ -46,11 +45,7 @@ public abstract class ConverterPipePushMixin {
     @Unique
     private long gtxNextScan;
     @Unique
-    private int gtxScans;
-    @Unique
     private int gtxStart;
-    @Unique
-    private int gtxPipeCount;
     @Unique
     private List<BlockPos> gtxEndPos;
     @Unique
@@ -92,10 +87,6 @@ public abstract class ConverterPipePushMixin {
         if (now >= gtxNextScan) {
             gtxScan(level, machine.getPos(), frontPos);
             gtxNextScan = now + REFRESH_TICKS;
-            if (gtxScans++ % 15 == 0) {
-                GTExtras.LOGGER.info("[gtextras] converter at {} pushing into pipe network at {}: {} pipes, {} receivers, stored {} EU",
-                        machine.getPos(), frontPos, gtxPipeCount, gtxEndPos.size(), trait.getEnergyStored());
-            }
         }
         if (gtxEndPos.isEmpty()) {
             return;
@@ -179,6 +170,5 @@ public abstract class ConverterPipePushMixin {
                 }
             }
         }
-        gtxPipeCount = seen.size();
     }
 }

@@ -1,16 +1,20 @@
 package com.gtextras;
 
 import mezz.jei.api.gui.IRecipeLayoutDrawable;
+import mezz.jei.api.forge.ForgeTypes;
 import mezz.jei.api.gui.ingredient.IRecipeSlotDrawable;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-/** Finds the recipe id behind the output slot under the mouse on JEI's recipe screen, whatever the category. */
+/** Finds the recipe id behind the output slot, or the item id behind any slot, under the mouse on JEI's recipe screen, whatever the category. */
 final class JeiRecipeIdLookup {
 
     private JeiRecipeIdLookup() {
@@ -33,20 +37,48 @@ final class JeiRecipeIdLookup {
         return layout == null ? null : recipeId(layout);
     }
 
-    static String find(Screen screen, double mouseX, double mouseY) throws ReflectiveOperationException {
-        IRecipeLayoutDrawable<?> layout = layoutAt(screen, mouseX, mouseY);
-        if (layout == null) {
-            return null;
-        }
+    private static IRecipeSlotDrawable slotAt(IRecipeLayoutDrawable<?> layout, double mouseX, double mouseY) {
         net.minecraft.client.renderer.Rect2i rect = layout.getRect();
         Optional<IRecipeSlotDrawable> slot = layout.getRecipeSlotUnderMouse(mouseX - rect.getX(), mouseY - rect.getY());
         if (slot.isEmpty()) {
             slot = layout.getRecipeSlotUnderMouse(mouseX, mouseY);
         }
-        if (slot.isEmpty() || slot.get().getRole() != RecipeIngredientRole.OUTPUT) {
+        return slot.orElse(null);
+    }
+
+    static String find(Screen screen, double mouseX, double mouseY) throws ReflectiveOperationException {
+        IRecipeLayoutDrawable<?> layout = layoutAt(screen, mouseX, mouseY);
+        if (layout == null) {
+            return null;
+        }
+        IRecipeSlotDrawable slot = slotAt(layout, mouseX, mouseY);
+        if (slot == null || slot.getRole() != RecipeIngredientRole.OUTPUT) {
             return null;
         }
         return recipeId(layout);
+    }
+
+    /** Registry id of the item (or fluid) shown in whichever recipe slot is under the mouse, input, output or catalyst, or null when the mouse is not over a slot. */
+    static String findSlotId(Screen screen, double mouseX, double mouseY) throws ReflectiveOperationException {
+        IRecipeLayoutDrawable<?> layout = layoutAt(screen, mouseX, mouseY);
+        if (layout == null) {
+            return null;
+        }
+        IRecipeSlotDrawable slot = slotAt(layout, mouseX, mouseY);
+        if (slot == null) {
+            return null;
+        }
+        Optional<ItemStack> item = slot.getDisplayedItemStack();
+        if (item.isPresent() && !item.get().isEmpty()) {
+            ResourceLocation key = ForgeRegistries.ITEMS.getKey(item.get().getItem());
+            return key == null ? null : key.toString();
+        }
+        Optional<FluidStack> fluid = slot.getDisplayedIngredient(ForgeTypes.FLUID_STACK);
+        if (fluid.isPresent() && !fluid.get().isEmpty()) {
+            ResourceLocation key = ForgeRegistries.FLUIDS.getKey(fluid.get().getFluid());
+            return key == null ? null : key.toString();
+        }
+        return null;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})

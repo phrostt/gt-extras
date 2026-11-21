@@ -4,7 +4,7 @@
 
 **Mana, Source, Blood and Demonic Will for GregTech CEu Modern, configurable linked Bridge hatches, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
 
-Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.21.25
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.25
 
 </div>
 
@@ -16,6 +16,7 @@ Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.21.25
 * **Bridge hatches**: pairs of linked hatches that send named packets (items, fluids, tags or plain data) between two multiblocks, with a resonance value that can speed up or boost a machine. Bridges are defined in a JSON file, so you can add as many as you like.
 * **Link Tool** that links mana and source hatches to pools, spreaders and jars, and bridge hatches to each other, with visual feedback.
 * **ME network support** for source (Ars Énergistique) and mana (Applied Botanics), and fluid and item exposure on blood and will hatches.
+* **Sterile Cleaning Maintenance Hatch**: an automatic maintenance hatch that gives a multiblock a Sterile Cleanroom, so it can run Sterile Cleanroom recipes without a cleanroom structure.
 * **Create Rotation Interface**: one block that is set to Input (consumes rotation) or Output (generates rotation) next to a Create gearbox.
 * **Recipe viewer extras** for EMI and JEI: coil and research badges, a requirement grid for the new resources, Blood Magic meteor and ritual tabs.
 * **GregTech fluid tooltips in the JEI ingredient list.** Hovering a fluid, gas or plasma in the JEI list (or in any non-GregTech JEI recipe) now shows the GregTech lines: chemical formula, state (liquid, gas, plasma), temperature, cryogenic note, fluid attributes and the ingot conversion when Shift is held.
@@ -267,6 +268,16 @@ The full reference for bridges, with worked examples and troubleshooting, is in 
 
 A new bridge needs its hatch models and textures in a resource pack or the pack's `kubejs/assets/gtextras` folder: `models/block/machine/<bridge>_<input|output>_hatch_<tier>.json`, `blockstates/<same>.json`, `models/item/<same>.json`, `models/block/machine/part/<bridge>_<input|output>_hatch.json` and the two overlay textures it names. Copy the `einstein_rosen` files and rename them. In each copied crafting recipe, set the `X` ingredient to `{"type": "gtextras:bridge_item", "bridge": "<bridge>"}` so it takes the bridge's `hatchItem`. The overlay colour is part of the texture, so recolour the PNGs to match the bridge. Beams use the `color` setting.
 
+### Sterile Cleaning Maintenance Hatch
+
+| | |
+|---|---|
+| Id | `gtextras:sterile_cleaning_maintenance_hatch` (UV tier) |
+| Ability | Maintenance. It maintains the multiblock automatically, like GregTech's Cleaning Maintenance Hatch. |
+| Cleanroom | Gives the multiblock a Sterile Cleanroom. Because a sterile room is also a clean room, plain Cleanroom recipes run too. |
+| Note | GregTech only ships the plain Cleaning Maintenance Hatch. It needs no cleanroom structure around the machine. |
+| Recipe | 2 Sterilizing Filter Casings, 4 UV circuits, 2 UV Electric Pumps and a Cleaning Maintenance Hatch (`CSC` / `PHP` / `CSC`: four circuits, two casings, two pumps). |
+
 ### Rotation Interface
 *Needs Create.*
 
@@ -371,6 +382,10 @@ GregTech only shows coil and temperature requirements natively for the Electric 
 ### JEI
 
 When EMI is not installed the same info is drawn by a JEI category decorator. GregTech's recipe type ids are discovered by reflection; list any that are missed under `jeiRecipeTypes`. `jeiEnabled` turns the JEI side off.
+
+### Copy ids from JEI
+
+For pack development. On JEI's recipe screen, hold Shift and left click a recipe's output slot to copy that recipe's id, or hold Alt and left click any slot, input, output or catalyst, to copy that slot's item id (a fluid slot copies the fluid's id). The copied id is also printed in chat. This works for every recipe category, and it is turned off by `copyRecipeId` in `config/gtextras.json`. The hovered recipe id can also be copied with the "Copy hovered recipe id" key (default I).
 
 ### Blood Magic meteor tab
 

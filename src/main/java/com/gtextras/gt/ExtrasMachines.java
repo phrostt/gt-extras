@@ -36,7 +36,25 @@ public final class ExtrasMachines {
     public static final MachineDefinition[] WILL_INPUT_HATCH = new MachineDefinition[GTValues.TIER_COUNT];
     public static final MachineDefinition[] WILL_OUTPUT_HATCH = new MachineDefinition[GTValues.TIER_COUNT];
 
+    public static MachineDefinition STERILE_CLEANING_MAINTENANCE_HATCH;
+
     private ExtrasMachines() {}
+
+    public static void initCleanroom() {
+        STERILE_CLEANING_MAINTENANCE_HATCH = GTExtrasGT.REGISTRATE
+                .machine("sterile_cleaning_maintenance_hatch", SterileCleaningHatchMachine::new)
+                .langValue("Sterile Cleaning Maintenance Hatch")
+                .tier(GTValues.UV)
+                .rotationState(RotationState.ALL)
+                .abilities(PartAbility.MAINTENANCE)
+                .modelProperty(GTMachineModelProperties.IS_FORMED, false)
+                .tooltips(Component.translatable("gtceu.part_sharing.disabled"),
+                        Component.translatable("gtceu.machine.maintenance_hatch_cleanroom_auto.tooltip.0"),
+                        Component.translatable("gtceu.machine.maintenance_hatch_cleanroom_auto.tooltip.1"),
+                        Component.translatable("gtextras.tooltip.sterile_hatch"))
+                .overlayTieredHullModel(new ResourceLocation(GTExtras.MOD_ID, "block/machine/part/sterile_cleaning_maintenance_hatch"))
+                .register();
+    }
 
     public static void initMana() {
         for (int tier = MIN_TIER; tier <= MAX_TIER; tier++) {
