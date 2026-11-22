@@ -4,7 +4,7 @@
 
 **Mana, Source, Blood and Demonic Will for GregTech CEu Modern, configurable linked Bridge hatches, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
 
-Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.25
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.26
 
 </div>
 
@@ -20,6 +20,7 @@ Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.25
 * **Create Rotation Interface**: one block that is set to Input (consumes rotation) or Output (generates rotation) next to a Create gearbox.
 * **Recipe viewer extras** for EMI and JEI: coil and research badges, a requirement grid for the new resources, Blood Magic meteor and ritual tabs.
 * **GregTech fluid tooltips in the JEI ingredient list.** Hovering a fluid, gas or plasma in the JEI list (or in any non-GregTech JEI recipe) now shows the GregTech lines: chemical formula, state (liquid, gas, plasma), temperature, cryogenic note, fluid attributes and the ingot conversion when Shift is held.
+* **Forestry individual ingredient**: a recipe ingredient (`gtextras:forestry_individual`) that names a Forestry species and life stage, so a recipe can hand out a specific bee (a Pirate drone, a Steadfast princess) that keeps its genome when the recipe is copied, saved or sent to the client.
 * **Pipez energy push**: a GregTech energy converter in EU to FE mode whose front touches a Pipez energy (or universal) pipe delivers straight into the pipe network, with no Extract face, upgrade or transfer cap needed on that pipe. It reaches every connected block that accepts Forge Energy, limited only by the converter's own voltage and amps. A pipe face set to Extract is left to Pipez, and an Extract face can still pull from a converter in EU to FE mode.
 
 Every other mod is optional. A feature turns on when the mod it needs is installed.
@@ -44,6 +45,7 @@ Every other mod is optional. A feature turns on when the mod it needs is install
 | Meteor and ritual tabs | Blood Magic, and EMI or JEI |
 | Rotation parts | Create |
 | Recipes that use the resources | KubeJS |
+| Forestry individual ingredient | Forestry |
 
 ---
 
@@ -341,6 +343,22 @@ event.recipes.gtceu.my_machine('example')
     .duration(100)
     .EUt(GTValues.VA[GTValues.LV])
 ```
+
+### Forestry individual ingredient
+
+A Forestry bee keeps its genome in capability data, not in its plain item NBT. Forge writes only the plain NBT when a recipe is copied, sent to the client or saved again, so a recipe that names a bee with `forge:nbt` can lose the genome on the way and end up as a Forest drone. This ingredient names the species instead, and builds the real stack from Forestry's own API each time it is needed.
+
+```json
+{ "type": "gtextras:forestry_individual", "species": "forestry:bee_pirate", "stage": "drone" }
+```
+
+| Field | Meaning |
+|---|---|
+| `species` | The species id, for example `forestry:bee_pirate` (required) |
+| `stage` | The life stage: `drone` (default), `princess`, `queen` or `larvae` |
+| `species_type` | The species type, `forestry:bee` by default |
+
+Use it anywhere a recipe takes an ingredient, for example as the `ingredient` inside a `gtceu:sized` content entry of a GregTech recipe added as datapack JSON (`ServerEvents.highPriorityData` and `event.addJson`). It matches only a stack of that species and stage, and it is sent to the client as just the three ids, so the client builds the real bee itself. It needs Forestry; without Forestry it is not registered.
 
 ### Multiblock abilities
 

@@ -45,6 +45,9 @@ public final class GTExtrasGT {
                 .enqueueWork(() -> {
                     com.gtextras.gt.bridge.BridgeCapability.registerLookup();
                     com.gtextras.gt.bridge.BridgeItemIngredient.register();
+                    if (ModList.get().isLoaded("forestry")) {
+                        com.gtextras.gt.forestry.ForestryIndividualIngredient.register();
+                    }
                 }));
         modBus.addGenericListener(MachineDefinition.class,
                 (GTCEuAPI.RegisterEvent<?, MachineDefinition> event) -> registerMachines());

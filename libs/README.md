@@ -15,6 +15,7 @@ Needed:
 - `create-1.20.1-6.0.8.jar`
 - `BloodMagic-1.18-1.20.1-3.3.8-50.jar` (needed for the Will hatches)
 - `pipez-forge-1.20.1-1.2.26.jar` (energy push mixin)
+- `forestry-1.20.1-2.11.2.jar` (Forestry individual ingredient)
 - `ponder-*.jar` and `flywheel-*.jar` (Create needs both to compile)
 
 Only the classes the hatch code touches must resolve, so extra jars do no harm.

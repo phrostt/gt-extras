@@ -91,3 +91,10 @@ Every other mod is optional. Each feature turns on when the mod it needs is inst
     versionRange="*"
     ordering="AFTER"
     side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="forestry"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"

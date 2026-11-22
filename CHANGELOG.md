@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.26
+
+### Added
+* **Forestry individual ingredient (`gtextras:forestry_individual`).** A recipe ingredient that names a Forestry species and life stage, `{ "type": "gtextras:forestry_individual", "species": "forestry:bee_pirate", "stage": "drone" }`, with an optional `species_type` (default `forestry:bee`). A Forestry bee keeps its genome in capability data, and Forge writes only the plain item NBT when GregTech copies, saves or sends a recipe, so a drone named with `forge:nbt` ended up as a Forest drone in a GregTech recipe. This ingredient is rebuilt from Forestry's own API (`createStack` of the species type) each time its stacks are needed, is saved to JSON as the three ids, and is sent to the client as the three ids, so the server, the saved recipe and the client all build the same real bee. `test` accepts only a stack of that species and stage. It is registered only when Forestry is loaded.
+* **Forestry as an optional dependency.** `mods.toml` lists Forestry as optional, loaded before this mod, and `libs/README.md` lists `forestry-1.20.1-2.11.2.jar` as a compile-time jar to copy into `libs/`.
+
+### Changed
+* **README documents the ingredient.** A new "Forestry individual ingredient" section covers the fields, the stage values and why it exists, and the feature list and requirements table mention it.
+* **Version bumped to 0.26.**
+
 ## 0.25
 
 ### Added
