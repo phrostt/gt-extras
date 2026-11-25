@@ -62,6 +62,8 @@
   "gtextras.tooltip.badge.mana": "Mana",
   "gtextras.tooltip.badge.source": "Source",
   "gtextras.tooltip.badge.rpm": "Rotation",
+  "gtextras.tooltip.badge.circuit": "Programmed circuit",
+  "gtextras.tooltip.badge.circuit_config": "Set the machine's circuit to %s",
   "gtextras.tooltip.badge.consumes": "Consumes %s",
   "gtextras.tooltip.badge.consumes_tick": "Consumes %s per tick",
   "gtextras.tooltip.badge.produces": "Produces %s",

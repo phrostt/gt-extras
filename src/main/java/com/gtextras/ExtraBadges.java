@@ -28,6 +28,7 @@ public final class ExtraBadges {
     private static final int IN_COLOR = 0xFFFF8080;
     private static final int OUT_COLOR = 0xFF80FF80;
     private static final int NEUTRAL_COLOR = 0xFFFFFFFF;
+    private static final int CIRCUIT_COLOR = 0xFFFFFFFE;
 
     public record Badge(ItemStack icon, List<Component> tooltip, String text, int color) {}
 
@@ -158,6 +159,10 @@ public final class ExtraBadges {
         return badge.color() == IN_COLOR;
     }
 
+    public static boolean isCircuit(Badge badge) {
+        return badge.color() == CIRCUIT_COLOR;
+    }
+
     public static int cellX(CoilInfo.Layout layout, int index) {
         return layout.gridX() + (index % COLUMNS) * CELL_W;
     }
@@ -214,6 +219,18 @@ public final class ExtraBadges {
         }
         try {
             NeedsReader.Needs needs = NeedsReader.read(recipe);
+            Badge circuitBadge = null;
+            if (config.showCircuitBadge && recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe circuitRecipe) {
+                ItemStack circuit = CircuitBadge.find(circuitRecipe);
+                if (!circuit.isEmpty()) {
+                    int configuration = com.gregtechceu.gtceu.common.item.IntCircuitBehaviour.getCircuitConfiguration(circuit);
+                    List<Component> circuitLines = new ArrayList<>();
+                    circuitLines.add(Component.translatable("gtextras.tooltip.badge.circuit").withStyle(ChatFormatting.GOLD));
+                    circuitLines.add(Component.translatable("gtextras.tooltip.badge.circuit_config", configuration)
+                            .withStyle(ChatFormatting.GRAY));
+                    circuitBadge = new Badge(circuit, circuitLines, "", CIRCUIT_COLOR);
+                }
+            }
             currentDuration = recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe gt ? gt.duration : 0;
             currentText = needs == null ? List.of() : buildText(needs, currentDuration);
             if (needs != null && recipe instanceof com.gregtechceu.gtceu.api.recipe.GTRecipe gtRecipe
@@ -231,9 +248,12 @@ public final class ExtraBadges {
                 currentText = withLoad;
             }
             if (needs == null) {
-                return List.of();
+                return circuitBadge == null ? List.of() : new ArrayList<>(List.of(circuitBadge));
             }
             List<Badge> badges = new ArrayList<>(3);
+            if (circuitBadge != null) {
+                badges.add(circuitBadge);
+            }
             if (needs.hasMana()) {
                 add(badges, fluidIcon(com.gtextras.gt.trait.ExtrasFluids.mana(), "botania:mana_pool"), "mana", needs.manaIn(), needs.manaInTick(), needs.manaOut(),
                         needs.manaOutTick());
@@ -273,7 +293,7 @@ public final class ExtraBadges {
                             OUT_COLOR));
                 }
             }
-            badges.sort(java.util.Comparator.comparingInt(b -> b.color() == NEUTRAL_COLOR ? 0 : 1));
+            badges.sort(java.util.Comparator.comparingInt(b -> b.color() == CIRCUIT_COLOR ? -1 : b.color() == NEUTRAL_COLOR ? 0 : 1));
             return badges.size() > MAX_CELLS ? new ArrayList<>(badges.subList(0, MAX_CELLS)) : badges;
         } catch (Throwable t) {
             return List.of();

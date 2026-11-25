@@ -64,7 +64,9 @@ public abstract class CoilJeiSlotMixin {
                             .addRichTooltipCallback((view, tooltip) -> lines.forEach(tooltip::add));
                     continue;
                 }
-                builder.addSlot(RecipeIngredientRole.RENDER_ONLY, com.gtextras.ExtraBadges.cellX(layout, i) + 1,
+                RecipeIngredientRole itemRole = com.gtextras.ExtraBadges.isCircuit(badge)
+                        ? RecipeIngredientRole.INPUT : RecipeIngredientRole.RENDER_ONLY;
+                builder.addSlot(itemRole, com.gtextras.ExtraBadges.cellX(layout, i) + 1,
                                 com.gtextras.ExtraBadges.cellY(layout, i) + 1)
                         .addItemStack(badge.icon())
                         .addRichTooltipCallback((view, tooltip) -> lines.forEach(tooltip::add));

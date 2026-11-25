@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.27
+
+### Added
+* **Programmed circuit badge.** GregTech shows a recipe's programmed circuit as an item input. A recipe that already uses every item slot of its machine (three inputs on a Large Chemical Reactor, for example) had no slot left for it, so the circuit was missing from the recipe page. The circuit is now removed from the item input slots and drawn as the first badge in the badge grid, as the circuit item with its configuration number, with the tooltip "Programmed circuit" and "Set the machine's circuit to N". This applies to every GregTech recipe type on both EMI and JEI, and needs no change to any recipe.
+* **Circuit badge is a recipe lookup in JEI.** On JEI the badge is registered as an input slot, so pressing R or U on a circuit still lists the recipes that use it, as it did when the circuit sat in an item slot.
+* **`showCircuitBadge` setting.** New option in `config/gtextras.json` (default `true`) to turn the circuit badge off. It is also off when `enabled`, `showExtraBadges` or the active viewer's integration (`jeiEnabled`, or EMI) is off, and the circuit then stays in its slot as before.
+* **New lang keys** `gtextras.tooltip.badge.circuit` and `gtextras.tooltip.badge.circuit_config`.
+
+### Changed
+* **`GtRecipeWidgetMixin` filters the circuit out of the item input list.** A new `@ModifyArg` on the first `Table.put` in `GTRecipeWidget.collectStorage` hands GregTech a copy of the input list without the circuit. The recipe itself is never changed, only the list the viewer lays out. It is `require = 0`, so if a GregTech update moves that call the circuit simply shows in its slot again.
+* **Badge grid grows by one row** for categories whose recipes use a circuit, and the circuit badge sorts before the mana, source, blood, will and rotation badges.
+* **README documents the circuit badge** in a new "Programmed circuit badge" section, the feature list, the requirements table and the badge configuration.
+* **Version bumped to 0.27.**
+
 ## 0.26
 
 ### Added
