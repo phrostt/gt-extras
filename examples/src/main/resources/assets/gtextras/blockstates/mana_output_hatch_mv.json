@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "gtextras:block/machine/mana_output_hatch_mv",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "gtextras:block/machine/mana_output_hatch_mv",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "gtextras:block/machine/mana_output_hatch_mv"
+    },
+    "facing=south": {
+      "model": "gtextras:block/machine/mana_output_hatch_mv",
+      "y": 180
+    },
+    "facing=up": {
+      "gtceu:z": 180,
+      "model": "gtextras:block/machine/mana_output_hatch_mv",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "gtextras:block/machine/mana_output_hatch_mv",
+      "y": 270
+    }
+  }
+}

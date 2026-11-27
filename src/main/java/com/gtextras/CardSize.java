@@ -29,6 +29,13 @@ public final class CardSize {
 
     public static void reset() {
         EXTRA.clear();
+        ROW.clear();
+    }
+
+    private static final Map<String, Boolean> ROW = new ConcurrentHashMap<>();
+
+    public static boolean hasRow(ResourceLocation category) {
+        return category != null && Boolean.TRUE.equals(ROW.get(category.toString()));
     }
 
     private static String version() {
@@ -126,7 +133,10 @@ public final class CardSize {
             if (info != null && info.hasCoil() && config.showText && !nativeCoil) {
                 lines += 2;
             }
-            if (info != null && !nativeCoil) {
+            if (info != null) {
+                icon = true;
+            }
+            if (!icon && ExtraBadges.circuitOf(config, recipe) != null) {
                 icon = true;
             }
             maxLines = Math.max(maxLines, Math.min(lines, ExtraBadges.MAX_TEXT_LINES));
@@ -135,6 +145,7 @@ public final class CardSize {
         } finally {
             ExtraBadges.restoreText(savedText);
         }
+        ROW.put(type.registryName.toString(), icon);
         return CoilInfo.extraHeight(maxLines, maxBadges, icon);
     }
 }

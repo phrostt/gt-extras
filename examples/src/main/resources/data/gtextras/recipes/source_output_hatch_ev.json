@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "ars_nouveau"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "pattern": [
+    "PHP",
+    "CXC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/titanium"
+    },
+    "C": {
+      "tag": "gtceu:circuits/ev"
+    },
+    "H": {
+      "item": "gtceu:ev_machine_hull"
+    },
+    "X": {
+      "item": "ars_nouveau:source_jar"
+    }
+  },
+  "result": {
+    "item": "gtextras:source_output_hatch_ev"
+  }
+}

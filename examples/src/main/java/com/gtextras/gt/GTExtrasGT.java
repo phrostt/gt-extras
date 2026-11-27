@@ -1,0 +1,94 @@
+package com.gtextras.gt;
+
+import com.gregtechceu.gtceu.api.GTCEuAPI;
+import com.gregtechceu.gtceu.api.machine.MachineDefinition;
+import com.gregtechceu.gtceu.api.recipe.condition.RecipeConditionType;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
+import com.gregtechceu.gtceu.api.registry.registrate.GTRegistrate;
+
+import com.gtextras.GTExtras;
+import com.gtextras.gt.mana.ManaCaps;
+import com.gtextras.gt.rotation.MinRpmCondition;
+import com.gtextras.gt.rotation.OutputRpmCondition;
+
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModList;
+
+import java.util.function.Consumer;
+
+public final class GTExtrasGT {
+
+    public static GTRegistrate REGISTRATE;
+
+    private static boolean botania;
+    private static boolean ars;
+    private static boolean create;
+    private static boolean blood;
+
+    private GTExtrasGT() {}
+
+    @SuppressWarnings({ "rawtypes" })
+    public static void init(IEventBus modBus) {
+        ModList mods = ModList.get();
+        botania = mods.isLoaded("botania");
+        ars = mods.isLoaded("ars_nouveau");
+        create = mods.isLoaded("create");
+        blood = mods.isLoaded("bloodmagic");
+
+        com.gtextras.gt.trait.ExtrasFluids.register();
+        com.gtextras.gt.trait.HatchConfig.register();
+        com.gtextras.gt.bridge.BridgeRegistry.load();
+        REGISTRATE = GTRegistrate.create(GTExtras.MOD_ID);
+        REGISTRATE.registerRegistrate();
+
+        modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent event) -> event
+                .enqueueWork(() -> {
+                    com.gtextras.gt.bridge.BridgeCapability.registerLookup();
+                    com.gtextras.gt.bridge.BridgeItemIngredient.register();
+                    if (ModList.get().isLoaded("forestry")) {
+                        com.gtextras.gt.forestry.ForestryIndividualIngredient.register();
+                    }
+                }));
+        modBus.addGenericListener(MachineDefinition.class,
+                (GTCEuAPI.RegisterEvent<?, MachineDefinition> event) -> registerMachines());
+        if (create) {
+            modBus.addGenericListener(RecipeConditionType.class,
+                    (GTCEuAPI.RegisterEvent<?, RecipeConditionType> event) -> registerConditions());
+        }
+        if (create) {
+            com.gtextras.gt.rotation.RotationRegistry.init(modBus);
+        }
+        com.gtextras.gt.tool.ExtrasItems.init(modBus);
+        if (botania) {
+            com.gtextras.gt.mana.ManaCaps.init();
+        }
+        if (ars) {
+            com.gtextras.gt.source.SourceCaps.init();
+        }
+        if (blood) {
+            com.gtextras.gt.trait.HatchStorageCaps.init();
+        }
+        GTExtras.LOGGER.info("[{}] GregTech hatches enabled (botania={}, ars_nouveau={}, create={})",
+                GTExtras.MOD_ID, botania, ars, create);
+    }
+
+    private static void registerMachines() {
+        REGISTRATE.creativeModeTab(com.gregtechceu.gtceu.common.data.GTCreativeModeTabs.MACHINE);
+        if (botania) ExtrasMachines.initMana();
+        if (ars) ExtrasMachines.initSource();
+        if (blood) ExtrasMachines.initBlood();
+        if (blood) ExtrasMachines.initWill();
+        ExtrasMachines.initCleanroom();
+        com.gtextras.gt.bridge.BridgeMachines.init();
+    }
+
+    private static void registerConditions() {
+        ExtrasConditions.MIN_RPM = GTRegistries.RECIPE_CONDITIONS.register("gtextras_min_rpm",
+                new RecipeConditionType<>(MinRpmCondition::new, MinRpmCondition.CODEC));
+        ExtrasConditions.OUTPUT_RPM = GTRegistries.RECIPE_CONDITIONS.register("gtextras_output_rpm",
+                new RecipeConditionType<>(OutputRpmCondition::new, OutputRpmCondition.CODEC));
+        ExtrasConditions.DAMAGE_ITEM = GTRegistries.RECIPE_CONDITIONS.register("gtextras_damage_item",
+                new RecipeConditionType<>(com.gtextras.gt.durability.DamageItemCondition::new,
+                        com.gtextras.gt.durability.DamageItemCondition.CODEC));
+    }
+}

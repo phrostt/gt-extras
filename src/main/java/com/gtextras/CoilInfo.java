@@ -46,7 +46,7 @@ public final class CoilInfo {
     }
 
     public record Layout(int textX, int textY1, int textY2, int iconX, int iconY, int dataX, int arrowX, int arrowY,
-                         int gridX, int gridY) {
+                         int gridX, int gridY, int circuitX, int voltageX) {
     }
 
     /** What a recipe needs. Either part may be absent. */
@@ -67,6 +67,8 @@ public final class CoilInfo {
     public static final int JEI_EXTRA_HEIGHT = ExtraBadges.TEXT_TOP + ExtraBadges.MAX_TEXT_LINES * ExtraBadges.LINE_H + 25;
     public static final int RIGHT_MARGIN = 5;
     public static final int COIL_LIFT = 7;
+    public static final int BOX_STEP = 20;
+    public static final int BOTTOM_MARGIN = 2;
 
     private static boolean jei() {
         return !net.minecraftforge.fml.ModList.get().isLoaded("emi");
@@ -83,7 +85,7 @@ public final class CoilInfo {
         }
         height += 4;
         if (icon) {
-            height = Math.max(height, EXTRA_HEIGHT + 2);
+            height += EXTRA_HEIGHT;
         }
         return height;
     }
@@ -94,20 +96,15 @@ public final class CoilInfo {
         int textX = (jei ? 7 : 4) + config.textX;
         int textY1 = padTop + (jei ? 18 : 2) + config.textY;
         int textY2 = textY1 + 9;
-        int iconX = displayWidth > 0
+        int voltageX = displayWidth > 0
                 ? displayWidth - SLOT_SIZE - RIGHT_MARGIN + config.offsetX
                 : textX + 110 + config.offsetX;
-        int iconY = padTop + (EXTRA_HEIGHT - SLOT_SIZE) / 2 + config.offsetY;
-        if (recipe != null && NativeLines.showsCoilText(recipe)) {
-            iconY = NativeLines.coilLineY(recipe, displayHeight) - 4 + config.offsetY;
-        } else if (recipe != null) {
-            Result found = resolve(config, category, recipe);
-            if (found != null && (found.hasCoil() || found.hasTarget() || found.hasResearch())) {
-                iconY -= COIL_LIFT;
-            }
-        }
-        int dataX = iconX - 40;
-        return new Layout(textX, textY1, textY2, iconX, iconY, dataX, dataX + 20, iconY + 4, textX, padTop + 1);
+        int circuitX = voltageX - BOX_STEP;
+        int iconX = circuitX - BOX_STEP;
+        int dataX = iconX - BOX_STEP;
+        int iconY = displayHeight - SLOT_SIZE - BOTTOM_MARGIN + config.offsetY;
+        return new Layout(textX, textY1, textY2, iconX, iconY, dataX, dataX + 20, iconY + 4, textX, padTop + 1,
+                circuitX, voltageX);
     }
 
     /**
@@ -115,6 +112,10 @@ public final class CoilInfo {
      * @param recipe   the underlying game recipe, may be null if the viewer did not expose it
      * @return null when nothing should be drawn at all
      */
+    private static boolean hasNativeResearchSlot(ResourceLocation category) {
+        return "gtceu:assembly_line".equals(category.toString());
+    }
+
     public static Result resolve(CoilConfig config, ResourceLocation category, Object recipe) {
         if (!config.enabled) {
             return null;
@@ -122,7 +123,8 @@ public final class CoilInfo {
 
         ItemStack research = ItemStack.EMPTY;
         ItemStack target = ItemStack.EMPTY;
-        if (config.showResearchIcon && !config.researchExcludedCategories.contains(category.toString())) {
+        if (config.showResearchIcon && !config.researchExcludedCategories.contains(category.toString())
+                && !hasNativeResearchSlot(category)) {
             ItemStack dataItem = ResearchLookup.dataItemOf(recipe);
             if (dataItem != null && !dataItem.isEmpty()) {
                 research = dataItem;

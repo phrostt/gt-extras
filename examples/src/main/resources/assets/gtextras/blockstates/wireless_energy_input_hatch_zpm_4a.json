@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "gtextras:block/machine/wireless_energy_input_hatch_zpm_4a",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "gtextras:block/machine/wireless_energy_input_hatch_zpm_4a",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "gtextras:block/machine/wireless_energy_input_hatch_zpm_4a"
+    },
+    "facing=south": {
+      "model": "gtextras:block/machine/wireless_energy_input_hatch_zpm_4a",
+      "y": 180
+    },
+    "facing=up": {
+      "gtceu:z": 180,
+      "model": "gtextras:block/machine/wireless_energy_input_hatch_zpm_4a",
+      "x": 270
+    },
+    "facing=west": {
+      "model": "gtextras:block/machine/wireless_energy_input_hatch_zpm_4a",
+      "y": 270
+    }
+  }
+}

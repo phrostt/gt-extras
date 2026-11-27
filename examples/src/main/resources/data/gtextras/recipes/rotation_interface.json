@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "ingredients": [
+    {
+      "item": "create:gearbox"
+    },
+    {
+      "item": "gtceu:hv_machine_casing"
+    }
+  ],
+  "result": {
+    "item": "gtextras:rotation_interface"
+  }
+}

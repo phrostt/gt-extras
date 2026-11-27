@@ -1,0 +1,489 @@
+<div align="center">
+
+# GT Extras
+
+**Mana, Source, Blood and Demonic Will for GregTech CEu Modern, configurable linked Bridge hatches, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
+
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.45
+
+</div>
+
+---
+
+## What it adds
+
+* **Resource hatches** for Botania mana, Ars Nouveau Source, Blood Magic blood and the five types of Demonic Will, LV to UV, usable as multiblock parts and in KubeJS recipes.
+* **Bridge hatches**: pairs of linked hatches that send named packets (items, fluids, tags or plain data) between two multiblocks, with a resonance value that can speed up or boost a machine. Bridges are defined in a JSON file, so you can add as many as you like.
+* **Link Tool** that links mana and source hatches to pools, spreaders and jars, and bridge hatches to each other, with visual feedback.
+* **ME network support** for source (Ars Énergistique) and mana (Applied Botanics), and fluid and item exposure on blood and will hatches.
+* **Sterile Cleaning Maintenance Hatch**: an automatic maintenance hatch that gives a multiblock a Sterile Cleanroom, so it can run Sterile Cleanroom recipes without a cleanroom structure.
+* **Create Rotation Interface**: one block that is set to Input (consumes rotation) or Output (generates rotation) next to a Create gearbox.
+* **Recipe viewer extras** for EMI and JEI: coil and research badges, a requirement grid for the new resources, an icon row (research, coil, circuit, voltage) that also frees the circuit's item slot, Blood Magic meteor and ritual tabs.
+* **GregTech fluid tooltips in the JEI ingredient list.** Hovering a fluid, gas or plasma in the JEI list (or in any non-GregTech JEI recipe) now shows the GregTech lines: chemical formula, state (liquid, gas, plasma), temperature, cryogenic note, fluid attributes and the ingot conversion when Shift is held.
+* **Forestry individual ingredient**: a recipe ingredient (`gtextras:forestry_individual`) that names a Forestry species and life stage, so a recipe can hand out a specific bee (a Pirate drone, a Steadfast princess) that keeps its genome when the recipe is copied, saved or sent to the client.
+* **Pipez energy push**: a GregTech energy converter in EU to FE mode whose front touches a Pipez energy (or universal) pipe delivers straight into the pipe network, with no Extract face, upgrade or transfer cap needed on that pipe. It reaches every connected block that accepts Forge Energy, limited only by the converter's own voltage and amps. A pipe face set to Extract is left to Pipez, and an Extract face can still pull from a converter in EU to FE mode.
+
+Every other mod is optional. A feature turns on when the mod it needs is installed.
+
+## Installation
+
+1. Install Minecraft 1.20.1 with Forge 47 or newer and GregTech CEu Modern 7.5.x.
+2. Drop the GT Extras jar into `mods/`, along with whichever optional mods you want features for (see below).
+3. Start the game once. The configs are written on first launch.
+
+## Requirements
+
+| Feature | Needs |
+|---|---|
+| Hatches, resources, recipe cards | GregTech CEu Modern 7.5.x |
+| Coil, research and circuit icons | EMI, or JEI when EMI is absent |
+| Mana hatches | Botania |
+| Mana on the ME network | Applied Botanics |
+| Source hatches | Ars Nouveau |
+| Source on the ME network | Ars Énergistique |
+| Blood and Will hatches | Blood Magic |
+| Meteor and ritual tabs | Blood Magic, and EMI or JEI |
+| Rotation parts | Create |
+| Recipes that use the resources | KubeJS |
+| Forestry individual ingredient | Forestry |
+
+---
+
+## Hatches
+
+All hatches come in **LV to UV** (for example `gtextras:mana_input_hatch_hv`) and work as multiblock parts and in KubeJS recipes. Right click a hatch to open its screen. Hatches only work while they are part of a formed multiblock, and all hatches of one kind in a multiblock share one buffer, as large as the smallest of them.
+
+### Hatch screen
+
+Every hatch opens a screen with the buffer bar and amount, the maximum transfer rate, the passive drain readout and the buttons below.
+
+* **Passive operation** (ON by default). ON means the hatch also pulls and pushes by itself, up to its rate. OFF means it does nothing by itself and only moves what a running or waiting recipe asks for, at its design rate.
+* **Passive drain** shows the most EU/t the hatch can draw from the multiblock's energy hatches for that, from `euPerOperation` in the config (0 by default).
+* **Empty buffer** voids the buffer after a second click.
+* Mana and source hatches show a list of linked targets (up to 10), an x button per target, **In order** and **Round robin** distribution, and **Clear all links**.
+* Blood output hatches show a scrolling list to pick the output fluid. Will output hatches show buttons to pick the type.
+
+### Link Tool
+
+Mana, source and blood hatches only use targets you link. Nothing nearby is used automatically.
+
+| | |
+|---|---|
+| Recipe | Ender pearl, stick, lapis lazuli (shaped). |
+| Select | Right click a mana or source hatch. |
+| Link | Right click a target within 6 blocks of the hatch: a Mana Pool, Spreader or other mana receiver, an Ars Source Jar, ME Source Jar or other source tile, or a Blood Altar (blood hatches, within 10 blocks). Right click it again to remove the link. |
+| Clear | Sneak right click on the hatch clears its links. Sneak right click in the air deselects. |
+| Feedback | While you hold the tool, lines are drawn between each hatch you select and its targets. Linked hatches also show orbs while they transfer, unless `transferParticles` is off. |
+
+The Wand of the Forest (mana) and the Dominion Wand (source) link hatches the same way. Creative pools and jars count as unlimited sources and sinks.
+
+### Mana Input / Output Hatch
+*Needs Botania.*
+
+| | |
+|---|---|
+| Input | Pulls from linked Mana Pools and accepts spreader bursts. Also takes mana fluid from adjacent tanks. |
+| Output | Pushes into linked pools, sparks and spreaders, or mana fluid into an adjacent tank. |
+| Screwdriver | Sneak right click on the output cycles the fluids on the mana list. |
+| ME network | Link the hatch to an Applied Botanics Fluix Mana Pool (it is connected to the ME network and works on the network's mana). An output hatch fills the network through it and an input hatch draws from it. Applied Botanics has no mana buses (needs Applied Botanics). |
+| Capability | `GTX.MANA` |
+| Ability | `GTX.MANA_INPUT`, `GTX.MANA_OUTPUT` |
+
+| Tier | Buffer | Per tick | Per second |
+|---|---|---|---|
+| LV | 100,000 | 100 | 2,000 |
+| MV | 200,000 | 200 | 4,000 |
+| HV | 400,000 | 400 | 8,000 |
+| EV | 800,000 | 800 | 16,000 |
+| IV | 1,600,000 | 1,600 | 32,000 |
+| LuV | 3,200,000 | 3,200 | 64,000 |
+| ZPM | 6,400,000 | 6,400 | 128,000 |
+| UV | 12,800,000 | 12,800 | 256,000 |
+
+### Source Input / Output Hatch
+*Needs Ars Nouveau.*
+
+| | |
+|---|---|
+| Input | Pulls from linked Source Jars, ME Source Jars and other source tiles. Also takes source fluid from adjacent tanks. |
+| Output | Pushes into linked source tiles, or source fluid into an adjacent tank. |
+| Screwdriver | Sneak right click on the output cycles the fluids on the Source list. |
+| ME network | Ars Énergistique source buses can import into and export from the hatch (needs Ars Énergistique). An output hatch fed by a bus pushes what it receives on to its links, so it works as a relay. |
+| Capability | `GTX.SOURCE` |
+| Ability | `GTX.SOURCE_INPUT`, `GTX.SOURCE_OUTPUT` |
+
+| Tier | Buffer | Per tick | Per second |
+|---|---|---|---|
+| LV | 10,000 | 40 | 800 |
+| MV | 20,000 | 80 | 1,600 |
+| HV | 40,000 | 160 | 3,200 |
+| EV | 80,000 | 320 | 6,400 |
+| IV | 160,000 | 640 | 12,800 |
+| LuV | 320,000 | 1,280 | 25,600 |
+| ZPM | 640,000 | 2,560 | 51,200 |
+| UV | 1,280,000 | 5,120 | 102,400 |
+
+### Blood Input / Output Hatch
+*Needs Blood Magic.*
+
+| | |
+|---|---|
+| Input | Takes the blood fluids on the list from adjacent tanks and from linked Blood Altars, and eats blood items such as condensed blood from adjacent inventories. |
+| Output | Pushes the fluid picked on the screen into adjacent tanks and into linked Blood Altars. |
+| Linking | Link Tool, right click a Blood Altar within 10 blocks of the hatch. Up to 10 altars, with In order or Round robin distribution. |
+| Pipes and buses | The hatch exposes a fluid handler, so pipes and fluid buses can fill an input hatch and drain an output hatch. Input hatches also accept the listed blood items. An item that does not fit completely is not taken. |
+| Screwdriver | Sneak right click on the output cycles the blood fluid. |
+| Capability | `GTX.BLOOD` |
+| Ability | `GTX.BLOOD_INPUT`, `GTX.BLOOD_OUTPUT` |
+
+| Tier | Buffer | Per tick | Per second |
+|---|---|---|---|
+| LV | 20,000 | 200 | 4,000 |
+| MV | 40,000 | 400 | 8,000 |
+| HV | 80,000 | 800 | 16,000 |
+| EV | 160,000 | 1,600 | 32,000 |
+| IV | 320,000 | 3,200 | 64,000 |
+| LuV | 640,000 | 6,400 | 128,000 |
+| ZPM | 1,280,000 | 12,800 | 256,000 |
+| UV | 2,560,000 | 25,600 | 512,000 |
+
+### Fluid recipes on resource hatches
+Mana, Source, Blood and Will hatches also act as fluid tanks for recipes. A recipe fluid input or output that matches a fluid in the hatch's fluid list (see `gtextras-fluids.toml`) is paid from or added to the hatch buffer at the configured ratio, so a multiblock needs no separate fluid hatch for them. For example `.inputFluids('#forge:blood 500')` takes 500 blood from a Blood Input Hatch, and `.inputFluids('#forge:demon 400')` takes 400 raw will from a Will Input Hatch.
+
+### Will Input / Output Hatch
+*Needs Blood Magic.* Five separate buffers, one per type: raw, corrosive, destructive, vengeful, steadfast. 1 will is 1 unit.
+
+| | |
+|---|---|
+| Input | Drains tartaric gems, Demon Will items, demon crystals and the extra gem items from the `willItems` config in adjacent inventories, plus will fluids from adjacent tanks. |
+| Output | Pushes will fluid into adjacent tanks, or fills tartaric gems in adjacent inventories. |
+| Pipes and buses | An input hatch accepts will fluids and will items. An output hatch exposes the active type as a fluid and its crystals (144 will each) as items. Tartaric gems are not accepted through the item side, since a gem's will cannot be partly taken. |
+| Screwdriver | Right click on the output cycles which kind of will it outputs. Next to a tank it pushes the fluid, next to an inventory it fills tartaric gems, and drops will gems worth 144 only when the inventory has no tartaric gem at all. |
+| Capabilities | `GTX.WILL_RAW`, `GTX.WILL_CORROSIVE`, `GTX.WILL_DESTRUCTIVE`, `GTX.WILL_VENGEFUL`, `GTX.WILL_STEADFAST` |
+| Ability | `GTX.WILL_INPUT`, `GTX.WILL_OUTPUT` |
+
+| Tier | Buffer | Per tick | Per second |
+|---|---|---|---|
+| LV | 20,000 | 200 | 4,000 |
+| MV | 40,000 | 400 | 8,000 |
+| HV | 80,000 | 800 | 16,000 |
+| EV | 160,000 | 1,600 | 32,000 |
+| IV | 320,000 | 3,200 | 64,000 |
+| LuV | 640,000 | 6,400 | 128,000 |
+| ZPM | 1,280,000 | 12,800 | 256,000 |
+| UV | 2,560,000 | 25,600 | 512,000 |
+
+A tartaric gem holds one type. An empty gem takes whichever type fills it first. Converting between types is done in a recipe: take one type in, give another out, and let the energy be the cost.
+
+### Bridge Hatches (Einstein-Rosen Bridge)
+
+A bridge is a named link between two multiblocks. One machine sends packets through an **output** hatch and another receives them in an **input** hatch. Nothing physical travels. A packet is only a kind, a name and an amount, and the recipes on both ends decide what goes in and what comes out. The first bridge, `einstein_rosen`, is built in. More are defined in a JSON file and each gets its own hatches, abilities and link channel.
+
+| | |
+|---|---|
+| Tiers | LV to UV, chosen per bridge with `tiers`. Input and output |
+| Hatches | `gtextras:<bridge>_input_hatch_<tier>` and `gtextras:<bridge>_output_hatch_<tier>`, with `_<n>a` after the tier for rated hatches. The tiers a bridge registers come from its `tiers` setting |
+| Linking | Link Tool: select the **output** hatch, then right click an **input** hatch of the same bridge. Up to 10 inputs per output, in order or round robin, within the bridge's `range` (24 blocks by default). A link always runs from an output hatch to an input hatch, and a bridge needs one link per direction for a loop. |
+| Beams | A line of particles along every link while packets move. The colour comes from the bridge definition: `color` for the forward link and `returnColor` for the return link. The hatch screen has a **Beam colour** button to choose which one an output hatch uses. |
+| Buffer | Input hatches store received packets until a recipe uses them (10,000,000 per packet name). Output hatches hold packets produced by a recipe until they have been sent. |
+| Screen | Shows the stored packets, the links (output hatches), the resonance bar (input hatches) and an **Empty buffer** button that asks for a second click. |
+
+**Packets.** A packet is written as one string: `'<bridge> <kind> <name> [amount]'`. The amount can be left out and then counts as 1.
+
+| Kind | Example | Meaning |
+|---|---|---|
+| `item` | `'einstein_rosen item minecraft:cobblestone 64'` | A count of one item id |
+| `fluid` | `'einstein_rosen fluid minecraft:water 1000'` | An amount of one fluid id |
+| `tag` | `'einstein_rosen tag forge:ingots/iron 8'` | As an **input**, accepts any `item` packet whose item is in the tag |
+| `data` | `'einstein_rosen data mass 640'` | A named number with no item behind it |
+
+Packets match on kind and name, so a recipe asking for `item minecraft:cobblestone` takes exactly that. A recipe can only take a packet that really arrived.
+
+**Resonance.** `data resonance` is special. An input hatch holds it as a level with a capacity of `resonanceCap` times the hatch tier (LV 1x up to UV 8x), and it drains at `resonanceDecayPerSecond`. Nothing consumes it automatically. A machine opts in by adding a modifier to its recipe modifiers, which read the highest resonance level among its input hatches:
+
+| Modifier | Effect |
+|---|---|
+| `GTX.bridgeYield('einstein_rosen', 'resonance', 0.5)` | Multiplies the recipe's outputs by up to 1.5 at a full resonance bar, scaling linearly. Packets are whole numbers, so the leftover part of the bonus is applied by chance and the average output is exact |
+| `GTX.bridgeSpeed('einstein_rosen', 'resonance', 0.5)` | Shortens the recipe duration by up to 50% at a full resonance bar |
+
+Both leave a recipe unchanged at zero resonance. Any other `data` name can be used the same way.
+
+**Defining bridges.** Bridges are read at startup from `kubejs/config/gtextras_bridges.json`, or from `config/gtextras-bridges.json` if the first file is missing. A default file with `einstein_rosen` is written on first start. A restart is needed after changing it.
+
+```json
+{
+  "einstein_rosen": {
+    "displayName": "Einstein-Rosen Bridge",
+    "color": "000000",
+    "returnColor": "FFFFFF",
+    "resonanceCap": 10000,
+    "resonanceDecayPerSecond": 1,
+    "range": 24,
+    "tiers": ["uv"],
+    "hatchItem": "#gtceu:circuits/uxv",
+    "energy": { "enabled": false }
+  },
+  "wireless_energy": {
+    "displayName": "Wireless Energy",
+    "color": "FFC94A",
+    "returnColor": "3A2A08",
+    "range": 64,
+    "tiers": ["uv"],
+    "hatchItem": "#gtceu:circuits/opv",
+    "energy": {
+      "enabled": true,
+      "range": 64,
+      "lossPercent": 0,
+      "maxAmperage": 0,
+      "bufferTicks": 20,
+      "bufferSize": 0,
+      "allowTierMismatch": false,
+      "amperages": [1, 2, 4, 8, 16]
+    }
+  }
+}
+```
+
+| Field | Default | Meaning |
+|---|---|---|
+| `displayName` | the id, prettified | Name shown on the hatches |
+| `color` | `6FD3FF` | Beam colour of the forward link (hex RGB) |
+| `returnColor` | same as `color` | Beam colour of the return link |
+| `resonanceCap` | 1000 | Resonance capacity of an LV input hatch |
+| `resonanceDecayPerSecond` | 5 | Resonance lost per second |
+| `tiers` | all of LV to UV when the field is missing, `["uv"]` in the generated default file | List of hatch tiers to register, for example `["mv", "hv"]`. Valid names are lv, mv, hv, ev, iv, luv, zpm, uv. An empty or missing list registers every tier |
+| `hatchItem` | `minecraft:ender_eye` | Item placed above the hull in the crafting recipe of every hatch of this bridge. An item id (`minecraft:ender_eye`, or a custom one from KubeJS) or an item tag written with a leading `#` (`#gtceu:circuits/uxv`), in which case any item in the tag works in the recipe. Something that is not an item or tag logs a warning and falls back to the Eye of Ender. It is a direct field of the bridge, next to `range` |
+| `range` | 24 | Link range in blocks for packets |
+| `energy.enabled` | true (the built-in `einstein_rosen` sets false) | Turns wireless energy transfer on or off for this bridge. When off, hatches carry packets only |
+| `energy.range` | 64 | Link range in blocks for energy (4 chunks). The Link Tool allows the larger of `range` and `energy.range` |
+| `energy.lossPercent` | 0 | Percentage of energy lost in transit, 0 to 99 |
+| `energy.maxAmperage` | 0 | Amps one hatch can take in or push out per tick. 0 means no cap |
+| `energy.bufferTicks` | 20 | Ticks of throughput the hatch can store. Buffer size is hatch voltage times amps times this value, using 1,024 amps when `maxAmperage` is 0 |
+| `energy.bufferSize` | 0 | Exact buffer size of an energy hatch in EU. 0 means automatic from `bufferTicks`. When the buffer is full the hatch accepts no more energy |
+| `energy.allowTierMismatch` | false | Energy only flows between hatches of the same tier unless this is true. Packets are not affected |
+| `energy.amperages` | none | Hatch ratings to register: any of 1, 2, 4, 8, 16. Each tier then gets `<bridge>_<input\|output>_hatch_<tier>_<n>a` hatches in place of the plain ones. A higher rating is crafted from two hatches of half the rating plus the `hatchItem` |
+
+**Energy.** The built-in `wireless_energy` bridge (Wireless Energy hatches, amber) is for power, and `einstein_rosen` has energy turned off. Any bridge can carry energy by setting `energy.enabled` to true. On a bridge with energy enabled, every hatch also carries energy. An output hatch accepts EU from cables or machines next to it at its tier voltage and sends it along its links to input hatches of the same bridge, up to `energy.range` blocks away. An input hatch pushes the energy it receives into any adjacent cable or machine at its tier voltage. No recipe is needed, the hatches work on their own, placed anywhere. Both ends must be in loaded chunks. Energy shares the output hatch's links with packets. The hatch screen shows the energy buffer. Energy only flows between hatches of the same tier unless `energy.allowTierMismatch` is set, so a UV output hatch cannot feed an LV input hatch. When a hatch's buffer is full it accepts no more energy. Hatches can carry a rating of 1, 2, 4, 8 or 16 amps through `energy.amperages`. A multiblock energy hatch only accepts energy through its front face, so a bridge input hatch has to touch that face, or touch a cable that leads to it.
+
+The full reference for bridges, with worked examples and troubleshooting, is in [docs/BRIDGES.md](docs/BRIDGES.md).
+
+
+A new bridge needs its hatch models and textures in a resource pack or the pack's `kubejs/assets/gtextras` folder: `models/block/machine/<bridge>_<input|output>_hatch_<tier>.json`, `blockstates/<same>.json`, `models/item/<same>.json`, `models/block/machine/part/<bridge>_<input|output>_hatch.json` and the two overlay textures it names. Copy the `einstein_rosen` files and rename them. In each copied crafting recipe, set the `X` ingredient to `{"type": "gtextras:bridge_item", "bridge": "<bridge>"}` so it takes the bridge's `hatchItem`. The overlay colour is part of the texture, so recolour the PNGs to match the bridge. Beams use the `color` setting.
+
+### Sterile Cleaning Maintenance Hatch
+
+| | |
+|---|---|
+| Id | `gtextras:sterile_cleaning_maintenance_hatch` (UV tier) |
+| Ability | Maintenance. It maintains the multiblock automatically, like GregTech's Cleaning Maintenance Hatch. |
+| Cleanroom | Gives the multiblock a Sterile Cleanroom. Because a sterile room is also a clean room, plain Cleanroom recipes run too. |
+| Note | GregTech only ships the plain Cleaning Maintenance Hatch. It needs no cleanroom structure around the machine. |
+| Recipe | 2 Sterilizing Filter Casings, 4 UV circuits, 2 UV Electric Pumps and a Cleaning Maintenance Hatch (`CSC` / `PHP` / `CSC`: four circuits, two casings, two pumps). |
+
+### Rotation Interface
+*Needs Create.*
+
+One block that connects a GregTech multiblock to a Create kinetic network. Each interface is fixed to one type, set from its screen: **Output** (generates rotation, the default) or **Input** (consumes rotation). An Output never loads or accepts rotation, and an Input never generates it. A multiblock that both needs and makes rotation uses one of each.
+
+| | |
+|---|---|
+| Block | `gtextras:rotation_interface` (recipe: Create gearbox plus HV machine casing, shapeless) |
+| Pattern | `Predicates.blocks('gtextras:rotation_interface')` and `Predicates.blocks('create:gearbox', 'create:vertical_gearbox')` |
+| Breaking | Wrench or pickaxe. It drops itself. |
+| Setting the type | Right click the interface (not with a Create wrench) to open its screen, then press the type button. |
+| Orientation | The interface has a shaft on all six faces, so it does not matter which way it faces. It connects to any Create shaft or gearbox side that touches it. A Create gearbox has shafts on its four sides but not on the two faces along its own axis, so the interface must touch one of those four sides (or a vertical gearbox's sides). |
+
+**Screen.** The type, the status, the controller machine, the recipe progress and EU/t, the target or required RPM, the network speed, the su provided or consumed, and the network stress with an OVERSTRESSED warning. When a recipe is paused it also shows the reason in short text.
+
+| Recipe has | Interface does |
+|---|---|
+| `GTX.minRpm(n)` | Input only: loads the Create network with a stress that grows with the recipe EU/t. The recipe runs only while the network spins at n RPM or more, and pauses below that. |
+| `GTX.damageItem(item, n)` | Works on any GT machine or multiblock: the recipe needs that item (or `#tag`) with at least n durability left in an input slot, and takes n durability from it as soon as the recipe starts. After that the item can be taken out and the recipe keeps running. A broken item is removed. Pair it with `.notConsumable(item)` so JEI shows the tool, and with `GTX.damageItemLabel(item)` to put the item name on its own row under the condition text. |
+| `GTX.outputRpm(n)` | Output only: drives the network at n RPM (maximum 256), with a stress capacity that grows with the recipe EU/t. |
+| the other kind of recipe | The interface stays idle. |
+| Network already driven | If the network is already spinning from another source when a generating recipe starts, the Output does not start and the screen shows Blocked. Create destroys a generator whose rotation conflicts with the network. |
+
+A wrong type for a recipe gives a short, clear message in the controller's status panel instead of silently doing nothing.
+
+Recipe pages (EMI and JEI) show "Consumes rotation: needs N+ RPM, needs an INPUT Rotation Interface" or "Generates rotation: N RPM, needs an OUTPUT Rotation Interface", with the su involved and a speedometer badge. A recipe with no item or fluid output still explains itself.
+
+---
+
+## KubeJS
+
+```js
+const GTX = Java.loadClass('com.gtextras.api.GTX')
+```
+
+### Recipe methods
+
+| Method | Meaning |
+|---|---|
+| `.input(GTX.MANA, n)` | Takes `n` at the start of the recipe |
+| `.output(GTX.MANA, n)` | Gives `n` at the end of the recipe |
+| `.input(GTX.MANA, n).perTick(true)` | Draws `n` every tick while running |
+| `.output(GTX.MANA, n).perTick(true)` | Produces `n` every tick while running |
+| `.input(GTX.BRIDGE, '<bridge> <kind> <name> [amount]')` | Takes a packet from the machine's bridge input hatches |
+| `.output(GTX.BRIDGE, '<bridge> <kind> <name> [amount]')` | Sends a packet through the machine's bridge output hatches |
+| `.addCondition(GTX.minRpm(n))` | Consumes rotation: needs an **Input** Rotation Interface in the multiblock and a network spinning at `n` RPM or more; the recipe pauses below that |
+| `.addCondition(GTX.damageItem('modid:tool', 1))` | Uses 1 durability of the item (or `'#modid:tag'`) from any input slot as soon as the recipe starts, after which the item can be removed; the recipe will not start without a usable one. Add `.notConsumable('modid:tool')` too so the item shows in JEI and is not consumed, and `.addCondition(GTX.damageItemLabel('modid:tool'))` to show its name on a second row |
+| `.addCondition(GTX.outputRpm(n))` | Generates rotation: needs an **Output** Rotation Interface, which drives the network at `n` RPM (maximum 256) with stress from the recipe's real EU/t |
+
+`perTick(true)` applies to the input or output written just before it. Capabilities: `GTX.MANA`, `GTX.SOURCE`, `GTX.BLOOD`, `GTX.WILL_RAW`, `GTX.WILL_CORROSIVE`, `GTX.WILL_DESTRUCTIVE`, `GTX.WILL_VENGEFUL`, `GTX.WILL_STEADFAST`.
+
+Parallel hatches work: the draw scales with the parallel count, and the count is limited by what the input hatches hold and the free space in the output hatches. Overclocking changes EU and duration only, so upfront amounts stay the same and per tick amounts are drawn for a shorter time.
+
+```js
+event.recipes.gtceu.my_machine('example')
+    .itemInputs('minecraft:iron_ingot')
+    .input(GTX.MANA, 50).perTick(true)
+    .input(GTX.WILL_RAW, 144)
+    .output(GTX.WILL_CORROSIVE, 144)
+    .addCondition(GTX.minRpm(64))
+    .duration(100)
+    .EUt(GTValues.VA[GTValues.LV])
+```
+
+### Staged recipes
+
+`.stage(chance, successItem, repeat, failItem)` turns any GregTech recipe into a recipe that runs in stages. Call it once per stage, in order.
+
+| Argument | Meaning |
+|---|---|
+| `chance` | Percent chance 0 to 100 that the stage succeeds. 100 is guaranteed. |
+| `successItem` | A string, `null`, or a list of strings (`['2x a:b', 'minecraft:water 500']`) paid out together on success, then the next stage starts. `null` for nothing. Item: `'2x gtceu:lead_plate'`, or `'gtceu:lead_plate'` for 1. Fluid: `'minecraft:water 1000'` (the amount after the id is required and marks it as a fluid). |
+| `repeat` | true: a failure gives nothing and the stage repeats. false: a failure ends the recipe. |
+| `failItem` | Same forms as `successItem`. Paid out when the stage fails and `repeat` is false. `null` for nothing. |
+
+Duration and EUt are the cost of every attempt. Inputs are taken when the recipe starts. All parallel copies share one roll per stage and the payout is multiplied by the parallels. The stage is saved with the machine, shown as `Stage 2/5` on its progress line, and listed under the recipe in JEI. Stage items are the only outputs and show as chanced outputs with their cumulative chance.
+
+### Forestry individual ingredient
+
+A Forestry bee keeps its genome in capability data, not in its plain item NBT. Forge writes only the plain NBT when a recipe is copied, sent to the client or saved again, so a recipe that names a bee with `forge:nbt` can lose the genome on the way and end up as a Forest drone. This ingredient names the species instead, and builds the real stack from Forestry's own API each time it is needed.
+
+```json
+{ "type": "gtextras:forestry_individual", "species": "forestry:bee_pirate", "stage": "drone" }
+```
+
+| Field | Meaning |
+|---|---|
+| `species` | The species id, for example `forestry:bee_pirate` (required) |
+| `stage` | The life stage: `drone` (default), `princess`, `queen` or `larvae` |
+| `species_type` | The species type, `forestry:bee` by default |
+
+Use it anywhere a recipe takes an ingredient, for example as the `ingredient` inside a `gtceu:sized` content entry of a GregTech recipe added as datapack JSON (`ServerEvents.highPriorityData` and `event.addJson`). It matches only a stack of that species and stage, and it is sent to the client as just the three ids, so the client builds the real bee itself. It needs Forestry; without Forestry it is not registered.
+
+### Multiblock abilities
+
+Used in a pattern like `Predicates.abilities(GTX.MANA_INPUT)`.
+
+| Ability | Hatch |
+|---|---|
+| `GTX.MANA_INPUT`, `GTX.MANA_OUTPUT` | Mana hatches |
+| `GTX.SOURCE_INPUT`, `GTX.SOURCE_OUTPUT` | Source hatches |
+| `GTX.BLOOD_INPUT`, `GTX.BLOOD_OUTPUT` | Blood hatches |
+| `GTX.WILL_INPUT`, `GTX.WILL_OUTPUT` | Will hatches |
+| `GTX.bridgeInput('<bridge>')`, `GTX.bridgeOutput('<bridge>')` | Bridge hatches of the named bridge |
+
+Working examples, including rotation recipes for both interface types, are in `examples/test_multiblock/`.
+
+---
+
+## Configuration
+
+| File | Type | Content |
+|---|---|---|
+| `gtextras-fluids.toml` | server | Fluid lists for blood, mana, Source and the five will types, and the `willItems` list. Entries are fluid ids or `#tags`, optionally `=ratio`. |
+| `gtextras-hatches.toml` | server | Storage and rate per resource and tier (rate is per tick; an existing world keeps its old values, so delete the file to pick up new defaults), `euPerOperation` (EU drawn from the multiblock's energy hatches each time the hatch moves something on its own, default 0), and `transferParticles` to turn the Ars style orbs on mana and source hatches off. |
+| `config/gtextras.json` | client | Coil and research badge settings. |
+| `kubejs/config/gtextras_bridges.json` | startup | Bridge definitions: name, beam colours, resonance capacity and decay, link range, energy transfer settings. Falls back to `config/gtextras-bridges.json`. |
+
+Server configs are per world and sync to players. Put copies in `defaultconfigs/` to set them for new worlds. Fluids that are not installed are skipped.
+
+---
+
+## Recipe viewer
+
+GregTech only shows coil and temperature requirements natively for the Electric Blast Furnace, Cracker and Pyrolyse Oven. Custom multiblocks registered through KubeJS show nothing, and research requirements are not shown outside the Assembly Line's own UI. The recipe viewer half of this mod fills both gaps.
+
+* **Coil requirement:** the coil list is read from the block registry at runtime, so coils added by KubeJS (`event.create('x_coil_block', 'gtceu:coil')`) show up automatically. The requirement is read from the recipe's own data tag, the value set with `.addData("RequiredTemp", 1000)`.
+* **Research requirement:** a recipe with a GregTech `ResearchCondition` (`.scannerResearch(...)` or `.stationResearch(...)`) shows the data item it demands (data stick, orb or module) next to the coil icon. Assembly Line recipes are skipped since GregTech already shows this.
+* **Resource grid:** mana, Source, blood, will and RPM requirements are drawn as a grid of cells, red for inputs and green for outputs, with `/t` for per tick amounts. Hover a cell for the full number. The cells also work as recipe lookups (R and U) on EMI and JEI.
+
+### JEI
+
+When EMI is not installed the same info is drawn by a JEI category decorator. GregTech's recipe type ids are discovered by reflection; list any that are missed under `jeiRecipeTypes`. `jeiEnabled` turns the JEI side off.
+
+### Copy ids from JEI
+
+For pack development. On JEI's recipe screen, hold Shift and left click a recipe's output slot to copy that recipe's id, or hold Alt and left click any slot, input, output or catalyst, to copy that slot's item id (a fluid slot copies the fluid's id). The copied id is also printed in chat. This works for every recipe category, and it is turned off by `copyRecipeId` in `config/gtextras.json`. The hovered recipe id can also be copied with the "Copy hovered recipe id" key (default I).
+
+### Blood Magic meteor tab
+
+Adds a "Blood Magic Meteor" tab to EMI (or JEI) for every `bloodmagic:meteor` recipe, the ones behind the Mark of the Falling Tower ritual: the ritual, the catalyst item, the blood the meteor costs, the activation cost, the explosion and meteor radius, and every layer with its radius and blocks. Turn it off with `meteorTab`; `meteorActivationCost` sets the activation figure shown (250,000 LP by default). If another meteor EMI addon is installed you will see two tabs, so disable one.
+
+### Icon row (research, coil, circuit, voltage)
+
+The voltage box is drawn by this mod as a coloured tier badge (each tier has its own colour, the name is scaled to fit so ZPM, LuV and UHV no longer overflow). It reads the tier from GregTech's widget, so clicking to step the overclock tier still updates it.
+
+The Assembly Line never gets a research box from this mod; GregTech's own research slot stays where it is. Every other category with research (for example a prototype assembler) gets the research box in the row.
+
+
+Categories where GregTech draws its own coil icon (for example the Electric Blast Furnace) have that icon moved into the coil box so it does not overlap the row.
+Recipes that need a coil, a research data item or a programmed circuit get a row of equal boxes at the bottom right of the recipe page, left to right: **research, coil, circuit, voltage**. A box is only drawn when the recipe has that info; the others keep their place, so the voltage box is always the rightmost one.
+
+* **Research:** the data item (stick, orb or module) the recipe's research condition asks for. If the research is for a specific item, that item is named in the tooltip.
+* **Coil:** the coil requirement, cycling through every coil that qualifies, with the temperature, level or tier in the tooltip.
+* **Circuit:** the recipe's programmed circuit, drawn as the circuit item with its number. GregTech lists the circuit as an item input, so a recipe that already uses every item slot (a Large Chemical Reactor with three inputs, say) had no slot left for it and it disappeared from the page. The circuit is now taken out of the item input slots and shown here instead, for every GregTech recipe type with no per-recipe setup. Hover it for "Set the machine's circuit to N". On JEI the box is an input slot, so R or U on the circuit still lists the recipes that use it.
+* **Voltage:** GregTech's own tier label (EV, HV and so on), moved into the last box. Clicking it still steps the overclock tier like before.
+
+The row only appears for categories that have at least one recipe with research, a coil or a circuit; other categories look as GregTech draws them. The circuit only leaves the item slots when its box will be drawn. Turn the circuit box off with `showCircuitBadge` in `config/gtextras.json`; it is also off whenever `enabled` or `showExtraBadges` is false, or `jeiEnabled` is false with EMI absent, and the circuit then shows in its item slot as GregTech draws it.
+
+### Badge configuration
+
+`config/gtextras.json` is written on first launch.
+
+```json
+{
+  "enabled": true,
+  "namespaces": ["gtceu", "kubejs"],
+  "autoDetect": true,
+  "autoDetectKeys": ["ebf_temp", "RequiredTemp", "required_temp", "coil_temp", "temperature"],
+  "categories": {
+    "gtceu:electric_blast_furnace": { "dataKey": "ebf_temp", "mode": "temperature" }
+  },
+  "showResearchIcon": true,
+  "researchExcludedCategories": ["gtceu:assembly_line"],
+  "showCircuitBadge": true,
+  "offsetX": 0,
+  "offsetY": 0
+}
+```
+
+To wire up your own multiblock, add its recipe category id and the data key your recipes use. `mode` picks which coil property the number is compared against:
+
+| mode | matched against | used by |
+|---|---|---|
+| `temperature` | coil temperature in K | Electric Blast Furnace and co. |
+| `level` | coil level | Multi Smelter parallels |
+| `tier` | coil tier | Pyrolyse Oven, Cracking Unit |
+
+If a category has no entry, `autoDetectKeys` is tried in order. `showResearchIcon` is a master toggle for the research badge, `researchExcludedCategories` lists categories to skip, and `showCircuitBadge` turns the programmed circuit box on or off.
+
+---
+
+## Known issues
+
+* The Rotation Interface and the controller status fix in 0.19.4 have not been tested in game by the author.
+* Bridge hatches, packets, resonance (0.20.0) and wireless energy (0.21.0) have not been fully tested in game by the author.
+* If another EMI addon also adds a Blood Magic meteor tab, you will see two tabs. Turn one off.
+
+---
+
+## Building
+
+JDK 17. Put the dependency jars in `libs/` (see `libs/README.md`), then run `./gradlew build`. The jar lands in `build/libs/`.
+
+## Card height log
+
+The client log prints `[gtextras] card sizing active, version X` once and `[gtextras] card extra: <type> = N` for each recipe type. N is the extra height this mod adds to that type's card; 0 means the card is not stretched by this mod.

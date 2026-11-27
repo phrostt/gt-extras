@@ -43,7 +43,8 @@ public abstract class CoilJeiSlotMixin {
             }
             CoilInfo.Result info = CoilInfo.resolve(config, category.getRecipeType().getUid(), recipe);
             List<com.gtextras.ExtraBadges.Badge> badges = com.gtextras.ExtraBadges.of(config, recipe);
-            if (info == null && badges.isEmpty()) {
+            com.gtextras.ExtraBadges.Badge circuit = com.gtextras.ExtraBadges.circuitOf(config, recipe);
+            if (info == null && badges.isEmpty() && circuit == null) {
                 return;
             }
             CoilInfo.Layout layout = CoilInfo.layout(config, category.getRecipeType().getUid(), recipe, category.getWidth(), category.getHeight());
@@ -64,12 +65,16 @@ public abstract class CoilJeiSlotMixin {
                             .addRichTooltipCallback((view, tooltip) -> lines.forEach(tooltip::add));
                     continue;
                 }
-                RecipeIngredientRole itemRole = com.gtextras.ExtraBadges.isCircuit(badge)
-                        ? RecipeIngredientRole.INPUT : RecipeIngredientRole.RENDER_ONLY;
-                builder.addSlot(itemRole, com.gtextras.ExtraBadges.cellX(layout, i) + 1,
+                builder.addSlot(RecipeIngredientRole.RENDER_ONLY, com.gtextras.ExtraBadges.cellX(layout, i) + 1,
                                 com.gtextras.ExtraBadges.cellY(layout, i) + 1)
                         .addItemStack(badge.icon())
                         .addRichTooltipCallback((view, tooltip) -> lines.forEach(tooltip::add));
+            }
+            if (circuit != null) {
+                List<Component> circuitLines = circuit.tooltip();
+                builder.addSlot(RecipeIngredientRole.INPUT, layout.circuitX() + 1, layout.iconY() + 1)
+                        .addItemStack(circuit.icon())
+                        .addRichTooltipCallback((view, tooltip) -> circuitLines.forEach(tooltip::add));
             }
             if (info == null) {
                 CoilInfo.markSlotted(recipe);
@@ -92,21 +97,18 @@ public abstract class CoilJeiSlotMixin {
                             tooltip.add(Component.translatable("gtextras.tooltip." + info.mode(), info.required())
                                     .withStyle(ChatFormatting.GRAY));
                         });
-            } else if (info.hasTarget()) {
+            }
+            if (info.hasResearch()) {
                 builder.addSlot(RecipeIngredientRole.RENDER_ONLY, layout.dataX() + 1, layout.iconY() + 1)
-                        .addItemStack(info.research())
-                        .addRichTooltipCallback((view, tooltip) -> tooltip.add(
-                                Component.translatable("gtextras.tooltip.research_data").withStyle(ChatFormatting.GOLD)));
-                builder.addSlot(RecipeIngredientRole.RENDER_ONLY, layout.iconX() + 1, layout.iconY() + 1)
-                        .addItemStack(info.target())
-                        .addRichTooltipCallback((view, tooltip) -> tooltip.add(
-                                Component.translatable("gtextras.tooltip.research_target").withStyle(ChatFormatting.GOLD)));
-            } else {
-                builder.addSlot(RecipeIngredientRole.RENDER_ONLY, layout.iconX() + 1, layout.iconY() + 1)
                         .addItemStack(info.research())
                         .addRichTooltipCallback((view, tooltip) -> {
                             tooltip.add(Component.translatable("gtextras.tooltip.research").withStyle(ChatFormatting.GOLD));
                             tooltip.add(info.research().getHoverName().copy().withStyle(ChatFormatting.GRAY));
+                            if (info.hasTarget()) {
+                                tooltip.add(Component.translatable("gtextras.tooltip.research_target")
+                                        .withStyle(ChatFormatting.GOLD));
+                                tooltip.add(info.target().getHoverName().copy().withStyle(ChatFormatting.GRAY));
+                            }
                         });
             }
             CoilInfo.markSlotted(recipe);

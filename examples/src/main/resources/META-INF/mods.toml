@@ -1,0 +1,100 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT"
+issueTrackerURL="https://github.com/phrostt/gt-extras/issues"
+
+[[mods]]
+modId="gtextras"
+version="${file.jarVersion}"
+displayName="GT Extras"
+authors="Phrost"
+displayURL="https://github.com/phrostt/gt-extras"
+credits="Built for GregTech CEu Modern, with support for Botania, Ars Nouveau, Blood Magic, Create, EMI and JEI."
+description='''
+GT Extras adds resource hatches and recipe-page info for GregTech CEu Modern.
+
+Hatches (LV to UV): Botania mana, Ars Nouveau Source, Blood Magic blood and the five types of Demonic Will, usable as multiblock parts and in KubeJS recipes, with a Link Tool for mana and source and ME network support.
+
+Create Rotation Interface: a block set to Input or Output that lets a GregTech multiblock consume or generate Create rotation.
+
+Recipe viewer extras for EMI and JEI: coil and research badges, a resource requirement grid, rotation info, and Blood Magic ritual and meteor tabs.
+
+Every other mod is optional. Each feature turns on when the mod it needs is installed.
+'''
+
+[[dependencies.gtextras]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="emi"
+    mandatory=false
+    versionRange="[1.1,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="gtceu"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="jei"
+    mandatory=false
+    versionRange="[15,)"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="botania"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="ars_nouveau"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="create"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="kubejs"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="bloodmagic"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.gtextras]]
+    modId="forestry"
+    mandatory=false
+    versionRange="*"
+    ordering="AFTER"
+    side="BOTH"

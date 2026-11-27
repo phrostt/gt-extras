@@ -27,7 +27,8 @@ public class CoilDecorator implements EmiRecipeDecorator {
         Object backing = EmiRecipeData.backingRecipeOf(recipe);
         CoilInfo.Result info = CoilInfo.resolve(config, category, backing);
         java.util.List<ExtraBadges.Badge> badges = ExtraBadges.of(config, backing);
-        if (info == null && badges.isEmpty() && ExtraBadges.lineCount() == 0) {
+        ExtraBadges.Badge circuit = ExtraBadges.circuitOf(config, backing);
+        if (info == null && badges.isEmpty() && circuit == null && ExtraBadges.lineCount() == 0) {
             return;
         }
         boolean nativeCoil = info != null && info.hasCoil() && NativeLines.showsCoilText(backing);
@@ -49,25 +50,27 @@ public class CoilDecorator implements EmiRecipeDecorator {
             widgets.addDrawable(layout.gridX(), layout.gridY() + ExtraBadges.TEXT_TOP, 170,
                     ExtraBadges.MAX_TEXT_LINES * ExtraBadges.LINE_H, (g, mx, my, delta) -> ExtraBadges.drawText(g, layout, text));
         }
+        if (circuit != null) {
+            var circuitSlot = widgets.addSlot(EmiStack.of(circuit.icon()), layout.circuitX(), layout.iconY())
+                    .catalyst(true).drawBack(false);
+            for (Component line : circuit.tooltip()) {
+                circuitSlot.appendTooltip(line);
+            }
+        }
         if (info == null) {
             return;
         }
 
         if (info.hasResearch()) {
             ItemStack dataItem = info.research();
+            var researchSlot = widgets.addSlot(EmiStack.of(dataItem), layout.dataX(), layout.iconY())
+                    .catalyst(true).drawBack(false)
+                    .appendTooltip(Component.translatable("gtextras.tooltip.research").withStyle(ChatFormatting.GOLD))
+                    .appendTooltip(dataItem.getHoverName().copy().withStyle(ChatFormatting.GRAY));
             if (info.hasTarget()) {
-                widgets.addSlot(EmiStack.of(dataItem), layout.dataX(), layout.iconY())
-                        .catalyst(true)
-                        .appendTooltip(Component.translatable("gtextras.tooltip.research_data").withStyle(ChatFormatting.GOLD));
-                widgets.addText(Component.literal("\u2192"), layout.arrowX() + 3, layout.iconY() + 5, 0xFF9A9A9A, false);
-                widgets.addSlot(EmiStack.of(info.target()), layout.iconX(), layout.iconY())
-                        .catalyst(true)
-                        .appendTooltip(Component.translatable("gtextras.tooltip.research_target").withStyle(ChatFormatting.GOLD));
-            } else {
-                widgets.addSlot(EmiStack.of(dataItem), layout.iconX(), layout.iconY())
-                        .catalyst(true)
-                        .appendTooltip(Component.translatable("gtextras.tooltip.research").withStyle(ChatFormatting.GOLD))
-                        .appendTooltip(dataItem.getHoverName().copy().withStyle(ChatFormatting.GRAY));
+                researchSlot.appendTooltip(Component.translatable("gtextras.tooltip.research_target")
+                        .withStyle(ChatFormatting.GOLD));
+                researchSlot.appendTooltip(info.target().getHoverName().copy().withStyle(ChatFormatting.GRAY));
             }
         }
 
@@ -81,7 +84,7 @@ public class CoilDecorator implements EmiRecipeDecorator {
                 options.add(EmiStack.of(coil.stack()));
             }
             widgets.addSlot(dev.emi.emi.api.stack.EmiIngredient.of(options), layout.iconX(), layout.iconY())
-                    .catalyst(true)
+                    .catalyst(true).drawBack(false)
                     .appendTooltip(Component.translatable("gtextras.tooltip.requires", coil.name())
                             .withStyle(ChatFormatting.GOLD))
                     .appendTooltip(Component.translatable("gtextras.tooltip." + info.mode(), info.required())

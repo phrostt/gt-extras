@@ -14,6 +14,16 @@ public class GtRecipeWidgetMixin {
         com.gtextras.NativeLines.record(this);
     }
 
+    @Inject(method = "initializeRecipeTextWidget", at = @At("TAIL"), remap = false, require = 0)
+    private void gtextras$placeRow(CallbackInfo ci) {
+        com.gtextras.RecipeRow.apply(this);
+    }
+
+    @Inject(method = "setRecipeOC", at = @At("TAIL"), remap = false, require = 0)
+    private void gtextras$replaceVoltage(int tier, boolean flag, CallbackInfo ci) {
+        com.gtextras.RecipeRow.apply(this);
+    }
+
     @ModifyArg(
             method = "collectStorage",
             at = @At(

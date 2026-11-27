@@ -1,0 +1,35 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "bloodmagic"
+    },
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "pattern": [
+    "PHP",
+    "CXC"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/tungsten_steel"
+    },
+    "C": {
+      "tag": "gtceu:circuits/iv"
+    },
+    "H": {
+      "item": "gtceu:iv_machine_hull"
+    },
+    "X": {
+      "item": "bloodmagic:altar"
+    }
+  },
+  "result": {
+    "item": "gtextras:blood_output_hatch_iv"
+  }
+}

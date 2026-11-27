@@ -4,7 +4,7 @@
 
 **Mana, Source, Blood and Demonic Will for GregTech CEu Modern, configurable linked Bridge hatches, a Link Tool, a Create Rotation Interface and smarter recipe pages.**
 
-Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.27
+Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.40
 
 </div>
 
@@ -18,7 +18,7 @@ Minecraft 1.20.1 · Forge 47+ · GTCEu 7.5.x · version 0.27
 * **ME network support** for source (Ars Énergistique) and mana (Applied Botanics), and fluid and item exposure on blood and will hatches.
 * **Sterile Cleaning Maintenance Hatch**: an automatic maintenance hatch that gives a multiblock a Sterile Cleanroom, so it can run Sterile Cleanroom recipes without a cleanroom structure.
 * **Create Rotation Interface**: one block that is set to Input (consumes rotation) or Output (generates rotation) next to a Create gearbox.
-* **Recipe viewer extras** for EMI and JEI: coil and research badges, a requirement grid for the new resources, a programmed circuit badge that frees the circuit's item slot, Blood Magic meteor and ritual tabs.
+* **Recipe viewer extras** for EMI and JEI: coil and research badges, a requirement grid for the new resources, an icon row (research, coil, circuit, voltage) that also frees the circuit's item slot, Blood Magic meteor and ritual tabs.
 * **GregTech fluid tooltips in the JEI ingredient list.** Hovering a fluid, gas or plasma in the JEI list (or in any non-GregTech JEI recipe) now shows the GregTech lines: chemical formula, state (liquid, gas, plasma), temperature, cryogenic note, fluid attributes and the ingot conversion when Shift is held.
 * **Forestry individual ingredient**: a recipe ingredient (`gtextras:forestry_individual`) that names a Forestry species and life stage, so a recipe can hand out a specific bee (a Pirate drone, a Steadfast princess) that keeps its genome when the recipe is copied, saved or sent to the client.
 * **Pipez energy push**: a GregTech energy converter in EU to FE mode whose front touches a Pipez energy (or universal) pipe delivers straight into the pipe network, with no Extract face, upgrade or transfer cap needed on that pipe. It reaches every connected block that accepts Forge Energy, limited only by the converter's own voltage and amps. A pipe face set to Extract is left to Pipez, and an Extract face can still pull from a converter in EU to FE mode.
@@ -36,7 +36,7 @@ Every other mod is optional. A feature turns on when the mod it needs is install
 | Feature | Needs |
 |---|---|
 | Hatches, resources, recipe cards | GregTech CEu Modern 7.5.x |
-| Coil, research and circuit badges | EMI, or JEI when EMI is absent |
+| Coil, research and circuit icons | EMI, or JEI when EMI is absent |
 | Mana hatches | Botania |
 | Mana on the ME network | Applied Botanics |
 | Source hatches | Ars Nouveau |
@@ -409,11 +409,22 @@ For pack development. On JEI's recipe screen, hold Shift and left click a recipe
 
 Adds a "Blood Magic Meteor" tab to EMI (or JEI) for every `bloodmagic:meteor` recipe, the ones behind the Mark of the Falling Tower ritual: the ritual, the catalyst item, the blood the meteor costs, the activation cost, the explosion and meteor radius, and every layer with its radius and blocks. Turn it off with `meteorTab`; `meteorActivationCost` sets the activation figure shown (250,000 LP by default). If another meteor EMI addon is installed you will see two tabs, so disable one.
 
-### Programmed circuit badge
+### Icon row (research, coil, circuit, voltage)
 
-GregTech lists a recipe's programmed circuit as an item input, so a machine whose recipe already fills every item slot (a Large Chemical Reactor with three inputs, say) has no slot left to show it and the circuit disappears from the page. The circuit is now taken out of the item input slots and drawn as the first badge in the badge grid, as the circuit item itself with its number. Hover it for "Set the machine's circuit to N". It works for every GregTech recipe type with no per-recipe setup, and the badge is still a recipe lookup, so pressing R or U on a circuit still lists the recipes that use it.
+The voltage box is drawn by this mod as a coloured tier badge (each tier has its own colour, the name is scaled to fit so ZPM, LuV and UHV no longer overflow). It reads the tier from GregTech's widget, so clicking to step the overclock tier still updates it.
 
-The circuit only leaves the slots when the badge is going to be drawn. Turn it off with `showCircuitBadge` in `config/gtextras.json`; it is also off whenever `enabled` or `showExtraBadges` is false, or `jeiEnabled` is false with EMI absent, and the circuit then shows in its slot as GregTech draws it. A recipe with no circuit looks the same as before. A category that now has circuit badges grows by one badge row.
+The Assembly Line never gets a research box from this mod; GregTech's own research slot stays where it is. Every other category with research (for example a prototype assembler) gets the research box in the row.
+
+
+Categories where GregTech draws its own coil icon (for example the Electric Blast Furnace) have that icon moved into the coil box so it does not overlap the row.
+Recipes that need a coil, a research data item or a programmed circuit get a row of equal boxes at the bottom right of the recipe page, left to right: **research, coil, circuit, voltage**. A box is only drawn when the recipe has that info; the others keep their place, so the voltage box is always the rightmost one.
+
+* **Research:** the data item (stick, orb or module) the recipe's research condition asks for. If the research is for a specific item, that item is named in the tooltip.
+* **Coil:** the coil requirement, cycling through every coil that qualifies, with the temperature, level or tier in the tooltip.
+* **Circuit:** the recipe's programmed circuit, drawn as the circuit item with its number. GregTech lists the circuit as an item input, so a recipe that already uses every item slot (a Large Chemical Reactor with three inputs, say) had no slot left for it and it disappeared from the page. The circuit is now taken out of the item input slots and shown here instead, for every GregTech recipe type with no per-recipe setup. Hover it for "Set the machine's circuit to N". On JEI the box is an input slot, so R or U on the circuit still lists the recipes that use it.
+* **Voltage:** GregTech's own tier label (EV, HV and so on), moved into the last box. Clicking it still steps the overclock tier like before.
+
+The row only appears for categories that have at least one recipe with research, a coil or a circuit; other categories look as GregTech draws them. The circuit only leaves the item slots when its box will be drawn. Turn the circuit box off with `showCircuitBadge` in `config/gtextras.json`; it is also off whenever `enabled` or `showExtraBadges` is false, or `jeiEnabled` is false with EMI absent, and the circuit then shows in its item slot as GregTech draws it.
 
 ### Badge configuration
 
@@ -444,7 +455,7 @@ To wire up your own multiblock, add its recipe category id and the data key your
 | `level` | coil level | Multi Smelter parallels |
 | `tier` | coil tier | Pyrolyse Oven, Cracking Unit |
 
-If a category has no entry, `autoDetectKeys` is tried in order. `showResearchIcon` is a master toggle for the research badge, `researchExcludedCategories` lists categories to skip, and `showCircuitBadge` turns the programmed circuit badge on or off.
+If a category has no entry, `autoDetectKeys` is tried in order. `showResearchIcon` is a master toggle for the research badge, `researchExcludedCategories` lists categories to skip, and `showCircuitBadge` turns the programmed circuit box on or off.
 
 ---
 

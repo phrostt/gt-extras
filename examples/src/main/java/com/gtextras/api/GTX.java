@@ -1,0 +1,73 @@
+package com.gtextras.api;
+
+import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
+import com.gregtechceu.gtceu.api.machine.multiblock.PartAbility;
+import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
+import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
+
+import com.gtextras.gt.ExtrasAbilities;
+import com.gtextras.gt.ExtrasCapabilities;
+import com.gtextras.gt.bridge.BridgeAbilities;
+import com.gtextras.gt.bridge.BridgeCapability;
+import com.gtextras.gt.bridge.BridgeModifiers;
+import com.gtextras.gt.rotation.MinRpmCondition;
+import com.gtextras.gt.rotation.OutputRpmCondition;
+
+public final class GTX {
+
+    public static final RecipeCapability<Integer> MANA = ExtrasCapabilities.MANA;
+    public static final RecipeCapability<Integer> SOURCE = ExtrasCapabilities.SOURCE;
+    public static final RecipeCapability<Integer> BLOOD = ExtrasCapabilities.BLOOD;
+
+    public static final RecipeCapability<Integer> WILL_RAW = ExtrasCapabilities.WILL[0];
+    public static final RecipeCapability<Integer> WILL_CORROSIVE = ExtrasCapabilities.WILL[1];
+    public static final RecipeCapability<Integer> WILL_DESTRUCTIVE = ExtrasCapabilities.WILL[2];
+    public static final RecipeCapability<Integer> WILL_VENGEFUL = ExtrasCapabilities.WILL[3];
+    public static final RecipeCapability<Integer> WILL_STEADFAST = ExtrasCapabilities.WILL[4];
+
+    public static final RecipeCapability<String> BRIDGE = BridgeCapability.CAP;
+
+    public static final PartAbility WILL_INPUT = ExtrasAbilities.WILL_INPUT;
+    public static final PartAbility WILL_OUTPUT = ExtrasAbilities.WILL_OUTPUT;
+
+    public static final PartAbility MANA_INPUT = ExtrasAbilities.MANA_INPUT;
+    public static final PartAbility MANA_OUTPUT = ExtrasAbilities.MANA_OUTPUT;
+    public static final PartAbility SOURCE_INPUT = ExtrasAbilities.SOURCE_INPUT;
+    public static final PartAbility SOURCE_OUTPUT = ExtrasAbilities.SOURCE_OUTPUT;
+    public static final PartAbility BLOOD_INPUT = ExtrasAbilities.BLOOD_INPUT;
+    public static final PartAbility BLOOD_OUTPUT = ExtrasAbilities.BLOOD_OUTPUT;
+
+    private GTX() {}
+
+    public static PartAbility bridgeInput(String bridge) {
+        return BridgeAbilities.input(bridge);
+    }
+
+    public static PartAbility bridgeOutput(String bridge) {
+        return BridgeAbilities.output(bridge);
+    }
+
+    public static RecipeModifier bridgeYield(String bridge, String data, double maxBonus) {
+        return BridgeModifiers.yield(bridge, data, maxBonus);
+    }
+
+    public static RecipeModifier bridgeSpeed(String bridge, String data, double maxBonus) {
+        return BridgeModifiers.speed(bridge, data, maxBonus);
+    }
+
+    public static RecipeCondition<?> minRpm(int rpm) {
+        return new MinRpmCondition(rpm);
+    }
+
+    public static RecipeCondition<?> outputRpm(int rpm) {
+        return new OutputRpmCondition(rpm);
+    }
+
+    public static RecipeCondition<?> damageItem(String item, int amount) {
+        return new com.gtextras.gt.durability.DamageItemCondition(item, amount);
+    }
+
+    public static RecipeCondition<?> damageItemLabel(String item) {
+        return new com.gtextras.gt.durability.DamageItemCondition(item, 1, true);
+    }
+}

@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    }
+  ],
+  "pattern": [
+    "CSC",
+    "PHP",
+    "CSC"
+  ],
+  "key": {
+    "S": {
+      "item": "gtceu:sterilizing_filter_casing"
+    },
+    "C": {
+      "tag": "gtceu:circuits/uv"
+    },
+    "P": {
+      "item": "gtceu:uv_electric_pump"
+    },
+    "H": {
+      "item": "gtceu:cleaning_maintenance_hatch"
+    }
+  },
+  "result": {
+    "item": "gtextras:sterile_cleaning_maintenance_hatch"
+  }
+}

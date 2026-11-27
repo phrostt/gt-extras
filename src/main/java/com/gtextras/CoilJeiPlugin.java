@@ -297,7 +297,8 @@ public class CoilJeiPlugin implements IModPlugin {
             CoilConfig config = CoilConfig.get();
             CoilInfo.Result info = resolve(recipe);
             List<ExtraBadges.Badge> badges = ExtraBadges.of(config, recipe);
-            if (info == null && badges.isEmpty() && ExtraBadges.lineCount() == 0) {
+            ExtraBadges.Badge circuit = ExtraBadges.circuitOf(config, recipe);
+            if (info == null && badges.isEmpty() && circuit == null && ExtraBadges.lineCount() == 0) {
                 return;
             }
             boolean nativeCoil = info != null && info.hasCoil() && NativeLines.showsCoilText(recipe);
@@ -318,6 +319,9 @@ public class CoilJeiPlugin implements IModPlugin {
             if (!badges.isEmpty() || ExtraBadges.lineCount() > 0) {
                 ExtraBadges.drawText(guiGraphics, layout);
             }
+            if (circuit != null && !gridSlotted) {
+                guiGraphics.renderItem(circuit.icon(), layout.circuitX() + 1, layout.iconY() + 1);
+            }
             if (info == null) {
                 return;
             }
@@ -330,14 +334,9 @@ public class CoilJeiPlugin implements IModPlugin {
                             : options.get((int) ((System.currentTimeMillis() / 1000) % options.size())).stack();
                     guiGraphics.renderItem(icon, layout.iconX() + 1, layout.iconY() + 1);
                 }
-            } else if (info.hasTarget()) {
-                if (!slotted) {
-                    guiGraphics.renderItem(info.research(), layout.dataX() + 1, layout.iconY() + 1);
-                    guiGraphics.renderItem(info.target(), layout.iconX() + 1, layout.iconY() + 1);
-                }
-                drawArrow(guiGraphics, layout.arrowX(), layout.arrowY());
-            } else if (!slotted) {
-                guiGraphics.renderItem(info.research(), layout.iconX() + 1, layout.iconY() + 1);
+            }
+            if (info.hasResearch() && !slotted) {
+                guiGraphics.renderItem(info.research(), layout.dataX() + 1, layout.iconY() + 1);
             }
         }
 
@@ -369,23 +368,39 @@ public class CoilJeiPlugin implements IModPlugin {
             }
             CoilConfig config = CoilConfig.get();
             CoilInfo.Layout layout = CoilInfo.layout(config, category, recipe, cardWidth, cardHeight);
-            if (mouseX < layout.iconX() || mouseX >= layout.iconX() + CoilInfo.SLOT_SIZE
-                    || mouseY < layout.iconY() || mouseY >= layout.iconY() + CoilInfo.SLOT_SIZE) {
+            if (mouseY < layout.iconY() || mouseY >= layout.iconY() + CoilInfo.SLOT_SIZE) {
                 return List.of();
+            }
+            boolean overCoil = mouseX >= layout.iconX() && mouseX < layout.iconX() + CoilInfo.SLOT_SIZE;
+            boolean overResearch = mouseX >= layout.dataX() && mouseX < layout.dataX() + CoilInfo.SLOT_SIZE;
+            boolean overCircuit = mouseX >= layout.circuitX() && mouseX < layout.circuitX() + CoilInfo.SLOT_SIZE;
+            if (!overCoil && !overResearch && !overCircuit) {
+                return List.of();
+            }
+            List<Component> lines = new ArrayList<>();
+            if (overCircuit) {
+                ExtraBadges.Badge circuit = ExtraBadges.circuitOf(config, recipe);
+                if (circuit != null) {
+                    lines.addAll(circuit.tooltip());
+                }
+                return lines;
             }
             CoilInfo.Result info = resolve(recipe);
             if (info == null) {
                 return List.of();
             }
-            List<Component> lines = new ArrayList<>();
-            if (info.hasCoil()) {
+            if (overCoil && info.hasCoil()) {
                 lines.add(Component.translatable("gtextras.tooltip.requires", info.coil().name())
                         .withStyle(ChatFormatting.GOLD));
                 lines.add(Component.translatable("gtextras.tooltip." + info.mode(), info.required())
                         .withStyle(ChatFormatting.GRAY));
-            } else {
+            } else if (overResearch && info.hasResearch()) {
                 lines.add(Component.translatable("gtextras.tooltip.research").withStyle(ChatFormatting.GOLD));
                 lines.add(info.research().getHoverName().copy().withStyle(ChatFormatting.GRAY));
+                if (info.hasTarget()) {
+                    lines.add(Component.translatable("gtextras.tooltip.research_target").withStyle(ChatFormatting.GOLD));
+                    lines.add(info.target().getHoverName().copy().withStyle(ChatFormatting.GRAY));
+                }
             }
             return lines;
         }

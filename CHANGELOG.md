@@ -1,5 +1,79 @@
 # Changelog
 
+## 0.40
+
+### Changed
+* **Version moved to 0.40.**
+* **Removed the per-category diagnostic log line** added in 0.38 ("native widgets added by GregTech..."). Nothing is written to the log for the icon row any more, apart from a warning if moving the native coil slot throws an error.
+
+## 0.38
+
+### Fixed
+* **Native coil icon is now moved at the moment GregTech adds it.** Earlier versions searched the recipe widget afterwards for GregTech's coil slot and never matched it. The mod now hooks GregTech's own step that adds the category's extra widgets (`appendJEIUI`), takes the slots that step added, and moves the coil one into the coil box straight away, with its frame behind it. If the mod draws its own coil icon for the recipe, GregTech's is hidden instead. Slots GregTech did not add in that step are never touched.
+
+### Added
+* **Log line per category.** The first time a category with the icon row is built, the log shows how many widgets GregTech added and whether a coil slot was found (`native widgets added by GregTech: N, slots: N, coil slot: true/false`), so a failure can be diagnosed from `latest.log`.
+
+## 0.37
+
+### Fixed
+* **The real cause of the Electric Blast Furnace coil icon not moving.** GregTech's slot widget defaults its ingredient role to render-only, never to none. The check added in 0.34 required no role at all, so it could never match GregTech's coil slot, and every version since then silently skipped it. The coil slot is now matched when it holds a coil block, or when its role is render-only (or unset) and it sits in the lower right of the card. Slots with an input, output or catalyst role, and slots named item, fluid or research, are still never touched.
+
+## 0.36
+
+### Fixed
+* **Electric Blast Furnace coil icon is now found.** GregTech builds a card's slots inside a nested child group of the recipe widget, and 0.30 to 0.35 only searched the top level, so GregTech's coil slot was never seen. The search now goes through nested groups and works out the slot's position inside its own group. The coil slot is moved into the coil box and its frame is added in the same group, directly behind it, so the frame no longer covers the icon.
+
+## 0.35
+
+### Fixed
+* **Electric Blast Furnace coil icon moves into the coil box regardless of where GregTech put it.** 0.30 to 0.34 only looked for GregTech slots that overlapped the icon row, but GregTech's coil slot sits just above it, so it was never found. The mod now finds the coil slot by what it is (a GregTech slot with no ingredient role that holds a coil block, or failing that one in the lower right of the card), takes it out of GregTech's position and puts it, framed, in the coil box. Item input, fluid input and research slots are still never touched.
+
+## 0.34
+
+### Fixed
+* **Electric Blast Furnace coil icon now actually moves into the row.** GregTech's native coil slot is GregTech's own slot widget subclass, which the 0.30 to 0.33 filter did not match, so the coil icon stayed above the voltage badge. The mod now recognises it as a GregTech slot with no ingredient role (item input, fluid input and research slots always have one), and moves it into the coil box with a frame.
+
+## 0.33
+
+### Changed
+* **Voltage box is now a tier badge.** The tier name (LV, HV, ZPM, LuV, UHV, ...) is drawn by the mod on a coloured gradient tile, one colour per tier, with the text scaled down when needed, so the long names no longer overflow the box. GregTech's own text label is hidden; its click-to-step-overclock button is kept over the box, and the badge reads the current tier from GregTech's widget every frame.
+
+## 0.32
+
+### Fixed
+* **Only the Assembly Line keeps GregTech's research slot.** 0.31 skipped the research box for every recipe type GregTech flags as having a research slot, which also caught other assembler-style machines. Now only `gtceu:assembly_line` is skipped. Every other category with research, such as a prototype assembler, gets the research box in the icon row again.
+
+## 0.31
+
+### Fixed
+* **Assembly Line research stays GregTech's own.** Recipe types with GregTech's dedicated research slot no longer get a research box in the icon row at all (JEI and EMI), so there is no duplicate and nothing near GregTech's research slot is touched.
+
+## 0.30
+
+### Fixed
+* **GregTech's own slots are left alone, including the Assembly Line research slot.** The 0.29 overlap fix could grab any slot near the icon row. It now only moves GregTech's native coil icon (the plain cycling coil slot on the Electric Blast Furnace and similar). Item input, fluid input and research slots are never moved or hidden, so the Assembly Line's dedicated research slot stays exactly where GregTech puts it.
+
+## 0.29
+
+### Fixed
+* **Electric Blast Furnace (and other categories with GregTech's own coil icon) no longer overlap the icon row.** GregTech places its own coil slot near the bottom right of those cards, which landed on top of our circuit and voltage boxes. The mod now finds any GregTech slot that overlaps the row and moves it into the coil box, with a matching frame, so the native coil icon becomes the coil box of the row. If the mod already shows its own coil icon for the recipe, GregTech's duplicate is hidden instead.
+
+## 0.28
+
+### Changed
+* **Icon row at the bottom right of the recipe page.** Research, coil, circuit and voltage now sit in one row of four equal boxes, left to right in that order, aligned to the bottom right of the card. In 0.27 the circuit was a badge in the badge grid, which added a whole extra row and made the card much taller. It is now a box in the icon row, so the only extra height is one row of 20 pixels (plus any text lines and badges the category already had). A box is only drawn when the recipe has that info, and the voltage box is always the rightmost.
+* **Voltage label moved into the last box.** GregTech's own tier label (EV, HV, ...) is moved into the fourth box and centred, with GregTech's click-to-step-overclock button resized to match, so the overclock control still works. This only happens in categories that have the icon row.
+* **Research is one box.** The research data item is shown in the research box. If the research is for a specific item, that item is named in the tooltip; the separate target icon and arrow are gone. Research and coil no longer share a position, so a recipe with both shows both.
+* **Frames use GregTech's slot texture**, added to the recipe widget under the voltage label, so the boxes match GregTech's own slots. EMI slots in the row have their own background turned off to avoid a double frame.
+* **Card height.** A category's extra height is now the text and badge height plus one 20 pixel row when any of its recipes has research, a coil or a circuit, instead of the larger of the two.
+* **JEI fallback tooltip** over the row now covers the coil, research and circuit boxes separately.
+* **README documents the icon row** in a new section replacing "Programmed circuit badge".
+* **Version bumped to 0.28.**
+
+### Fixed
+* **The circuit no longer adds a badge row.** The circuit is no longer part of the badge grid, so it does not grow the card by a badge row or push the other badges down.
+
 ## 0.27
 
 ### Added

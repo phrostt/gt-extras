@@ -13,6 +13,7 @@
   "client": [
     "CoilRecipeSizeMixin",
     "GtRecipeWidgetMixin",
+    "GtRecipeTypeUiMixin",
     "LdlibJeiTooltipMixin",
     "CoilJeiSlotMixin",
     "EmiLookupMixin"

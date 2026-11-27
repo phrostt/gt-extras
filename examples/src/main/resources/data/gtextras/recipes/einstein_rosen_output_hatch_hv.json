@@ -1,0 +1,36 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "gtceu"
+    },
+    {
+      "type": "forge:item_exists",
+      "item": "gtextras:einstein_rosen_output_hatch_hv"
+    }
+  ],
+  "pattern": [
+    "CHC",
+    "PXP"
+  ],
+  "key": {
+    "P": {
+      "tag": "forge:plates/stainless_steel"
+    },
+    "C": {
+      "tag": "gtceu:circuits/hv"
+    },
+    "H": {
+      "item": "gtceu:hv_machine_hull"
+    },
+    "X": {
+      "type": "gtextras:bridge_item",
+      "bridge": "einstein_rosen"
+    }
+  },
+  "result": {
+    "item": "gtextras:einstein_rosen_output_hatch_hv"
+  }
+}
